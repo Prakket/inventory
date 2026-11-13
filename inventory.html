@@ -1,0 +1,1770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockFlow - Inventory Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .table-container::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .table-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        #reader video {
+            width: 100% !important;
+            height: auto !important;
+            object-fit: cover;
+            border-radius: 0.5rem;
+        }
+        @media print {
+            html, body {
+                height: auto !important;
+                overflow: visible !important;
+                background: #ffffff !important;
+            }
+            body > *:not(#print-container) {
+                display: none !important;
+            }
+            #print-container {
+                display: flex !important;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                padding: 1.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Top Navigation -->
+    <nav class="bg-indigo-600 text-white shadow-md sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center gap-2">
+                <div class="flex items-center min-w-0">
+                    <svg class="w-7 h-7 sm:w-8 sm:h-8 mr-2.5 text-indigo-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                    <span class="font-bold text-lg sm:text-xl tracking-tight truncate">StockFlow</span>
+                </div>
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <button onclick="syncNow()" id="quickSyncBtn" class="hidden items-center px-2.5 py-1.5 rounded-lg bg-indigo-500/70 hover:bg-indigo-500 text-xs font-medium text-white transition-colors" title="Sync with Google Sheets">
+                        <svg id="quickSyncIcon" class="w-4 h-4 sm:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        <span class="hidden sm:inline">Sync</span>
+                    </button>
+                    <button onclick="openSheetsModal()" id="auth-status" class="text-xs sm:text-sm font-medium bg-indigo-700/70 hover:bg-indigo-700 px-3 py-1.5 rounded-full text-indigo-100 flex items-center transition-colors cursor-pointer">
+                        <span class="h-2 w-2 rounded-full bg-amber-300 mr-2"></span>
+                        <span>Local Mode</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-4 sm:p-6 lg:p-8 bg-slate-50">
+        <div class="max-w-7xl mx-auto">
+
+            <!-- Dashboard Header & Controls -->
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900">Clothing Inventory Dashboard</h1>
+                    <p class="mt-1 text-sm text-slate-500">Manage apparel, track stock by size/color, scan barcodes, and sync with Google Sheets.</p>
+                </div>
+                <div class="grid grid-cols-2 sm:flex sm:flex-row gap-2.5">
+                    <button onclick="openScannerModal(false)" class="inline-flex items-center justify-center px-3.5 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                        <svg class="w-5 h-5 mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                        <span>Scan</span>
+                    </button>
+                    <button onclick="openAddModal()" class="inline-flex items-center justify-center px-3.5 py-2.5 border border-slate-300 rounded-lg shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                        <svg class="w-5 h-5 mr-1.5 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        <span>Add Item</span>
+                    </button>
+                    <button onclick="openSheetsModal()" class="col-span-2 sm:col-span-1 inline-flex items-center justify-center px-3.5 py-2.5 border border-emerald-300 rounded-lg shadow-sm text-sm font-medium text-emerald-800 bg-emerald-50 hover:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+                        <svg class="w-5 h-5 mr-1.5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        <span>Google Sheets</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Summary Stats -->
+            <div class="mb-5 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4 shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-slate-500">Total SKUs</p>
+                        <div class="flex items-baseline gap-2">
+                            <p id="statTotal" class="text-2xl font-bold text-slate-900">0</p>
+                            <span id="statUnits" class="text-xs text-slate-500">(0 units)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center">
+                    <div class="p-3 rounded-full bg-amber-100 text-amber-600 mr-4 shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-slate-500">Low Stock (&le;10)</p>
+                        <p id="statLow" class="text-2xl font-bold text-slate-900">0</p>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center">
+                    <div class="p-3 rounded-full bg-red-100 text-red-600 mr-4 shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-slate-500">Out of Stock</p>
+                        <p id="statOut" class="text-2xl font-bold text-slate-900">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="mb-5 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+                    <div class="relative lg:col-span-2">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <input type="text" id="searchInput" placeholder="Search name or SKU..." class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm transition-shadow">
+                    </div>
+                    <select id="filterType" class="block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                        <option value="">All Types</option>
+                        <option value="Shirt">Shirt</option>
+                        <option value="Pant">Pant</option>
+                        <option value="Dress">Dress</option>
+                        <option value="Tops">Tops</option>
+                        <option value="Accessories">Accessories</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <select id="filterGender" class="block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                        <option value="">All Genders</option>
+                        <option value="Men">Men</option>
+                        <option value="Women">Women</option>
+                        <option value="Unisex">Unisex</option>
+                        <option value="Kids">Kids</option>
+                    </select>
+                    <select id="filterSize" class="block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                        <option value="">All Sizes</option>
+                        <option value="XS">XS</option>
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                        <option value="XXL">XXL</option>
+                        <option value="N/A">N/A</option>
+                    </select>
+                    <div class="flex gap-2">
+                        <input type="text" id="filterColor" placeholder="Color..." class="block w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                        <button onclick="resetFilters()" id="resetFiltersBtn" class="hidden px-3 py-2 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg shrink-0" title="Clear filters">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desktop Table View (md and up) -->
+            <div class="hidden md:block bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="table-container overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Item Details</th>
+                                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Category</th>
+                                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Specs</th>
+                                <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Quantity</th>
+                                <th scope="col" class="px-6 py-3.5 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody" class="bg-white divide-y divide-slate-200">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Mobile Card View (below md) -->
+            <div id="inventoryMobileList" class="md:hidden space-y-3">
+                <!-- Populated dynamically -->
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modals Overlay -->
+    <div id="modalOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto">
+
+        <!-- Add/Edit Item Modal -->
+        <div id="itemModal" class="bg-white rounded-2xl shadow-xl w-full max-w-md hidden flex-col overflow-hidden my-auto">
+            <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 id="modalTitle" class="text-lg font-bold text-slate-900">Add New Item</h3>
+                <button type="button" onclick="closeModals()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-5 sm:p-6">
+                <form id="itemForm" class="space-y-4">
+                    <input type="hidden" id="docId">
+                    <div>
+                        <label for="itemSku" class="block text-sm font-medium text-slate-700">Barcode / QR / SKU</label>
+                        <div class="mt-1 flex rounded-lg shadow-sm">
+                            <input type="text" id="itemSku" required class="block w-full border border-slate-300 rounded-l-lg px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm" placeholder="e.g. PRD-001">
+                            <button type="button" onclick="generateSku()" class="px-2.5 flex items-center bg-slate-50 border-y border-slate-300 hover:bg-slate-100 text-xs font-medium text-slate-600 transition-colors" title="Auto-generate SKU">Auto</button>
+                            <button type="button" onclick="openScannerModal(true)" class="px-3 flex items-center bg-slate-100 border border-l-0 border-slate-300 rounded-r-lg hover:bg-slate-200 text-slate-700 transition-colors" title="Scan barcode to fill SKU">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="itemName" class="block text-sm font-medium text-slate-700">Item Name</label>
+                        <input type="text" id="itemName" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm" placeholder="e.g. Classic Cotton Tee">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                        <div>
+                            <label for="itemType" class="block text-sm font-medium text-slate-700">Type</label>
+                            <select id="itemType" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                <option value="Shirt">Shirt</option>
+                                <option value="Pant">Pant</option>
+                                <option value="Dress">Dress</option>
+                                <option value="Tops">Tops</option>
+                                <option value="Accessories">Accessories</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="itemGender" class="block text-sm font-medium text-slate-700">Gender</label>
+                            <select id="itemGender" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                <option value="Men">Men</option>
+                                <option value="Women">Women</option>
+                                <option value="Unisex">Unisex</option>
+                                <option value="Kids">Kids</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                        <div>
+                            <label for="itemSize" class="block text-sm font-medium text-slate-700">Size</label>
+                            <select id="itemSize" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                <option value="XS">XS</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                                <option value="N/A">N/A</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="itemColor" class="block text-sm font-medium text-slate-700">Color</label>
+                            <input type="text" id="itemColor" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm" placeholder="e.g. Black">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="itemQty" class="block text-sm font-medium text-slate-700">Quantity</label>
+                        <input type="number" id="itemQty" min="0" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm" value="1">
+                    </div>
+                    <div class="pt-3 flex justify-end gap-3">
+                        <button type="button" onclick="closeModals()" class="px-4 py-2 border border-slate-300 shadow-sm text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 focus:outline-none transition-colors">Cancel</button>
+                        <button type="submit" id="saveItemBtn" class="px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none transition-colors flex items-center justify-center min-w-[90px]">
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Scanner Modal -->
+        <div id="scannerModal" class="bg-white rounded-2xl shadow-xl w-full max-w-md hidden flex-col overflow-hidden my-auto">
+            <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 class="text-lg font-bold text-slate-900">Scan Barcode / QR Code</h3>
+                <button type="button" onclick="cancelScannerModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-5 flex flex-col items-center space-y-4">
+                <!-- Camera selector for PC/Mobile -->
+                <div id="cameraSelectWrap" class="w-full hidden">
+                    <label for="cameraSelect" class="block text-xs font-medium text-slate-600 mb-1">Camera</label>
+                    <select id="cameraSelect" class="block w-full border border-slate-300 rounded-lg px-3 py-1.5 bg-white text-sm focus:ring-indigo-500 focus:border-indigo-500"></select>
+                </div>
+
+                <div id="reader" class="w-full rounded-lg overflow-hidden border-2 border-indigo-100 bg-slate-900 min-h-[240px] flex items-center justify-center relative">
+                    <p class="text-slate-300 text-sm absolute z-0 text-center px-4" id="scannerPlaceholderText">Starting camera...</p>
+                </div>
+
+                <p class="text-xs text-slate-500 text-center" id="scannerInstructions">
+                    Supports 1D barcodes (Code 128, EAN, UPC) and QR codes.
+                </p>
+
+                <!-- USB Scanner / Manual Entry & Image Scan Fallback -->
+                <div class="w-full pt-2 border-t border-slate-100 space-y-2.5">
+                    <form id="manualScanForm" class="flex gap-2">
+                        <input type="text" id="manualScanInput" placeholder="Type or use USB scanner..." class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <button type="submit" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg">Go</button>
+                    </form>
+                    <div class="flex items-center justify-between gap-2">
+                        <label class="flex-1 inline-flex items-center justify-center px-3 py-2 border border-slate-300 rounded-lg text-xs font-medium text-slate-700 bg-white hover:bg-slate-50 cursor-pointer transition-colors">
+                            <svg class="w-4 h-4 mr-1.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            Scan Image File
+                            <input type="file" id="qrFileInput" accept="image/*" class="hidden">
+                        </label>
+                        <button type="button" onclick="cancelScannerModal()" class="flex-1 px-3 py-2 border border-slate-300 text-xs font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 transition-colors">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Delete Confirmation Modal -->
+        <div id="confirmModal" class="bg-white rounded-2xl shadow-xl w-full max-w-sm hidden flex-col overflow-hidden my-auto">
+            <div class="p-6">
+                <div class="flex items-start gap-3">
+                    <div class="p-2.5 rounded-full bg-red-100 text-red-600 shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900">Delete Item</h3>
+                        <p id="confirmMessage" class="mt-1 text-sm text-slate-600">Are you sure you want to delete this item?</p>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end gap-3">
+                    <button type="button" onclick="closeModals()" class="px-4 py-2 border border-slate-300 text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50">Cancel</button>
+                    <button type="button" id="confirmDeleteBtn" class="px-4 py-2 text-sm font-medium rounded-lg text-white bg-red-600 hover:bg-red-700">Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Google Sheets Master Data Modal -->
+        <div id="sheetsModal" class="bg-white rounded-2xl shadow-xl w-full max-w-2xl hidden flex-col overflow-hidden my-auto max-h-[92vh]">
+            <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    <h3 class="text-lg font-bold text-slate-900">Google Sheets Master Data</h3>
+                </div>
+                <button type="button" onclick="closeModals()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-5 sm:p-6 overflow-y-auto space-y-5">
+                <!-- Web App URL Input -->
+                <div>
+                    <label for="gsUrlInput" class="block text-sm font-semibold text-slate-800">Google Apps Script Web App URL</label>
+                    <p class="text-xs text-slate-500 mt-0.5">Connects your master inventory directly to Google Sheets (2-way read &amp; write on PC and Mobile).</p>
+                    <div class="mt-2 flex flex-col sm:flex-row gap-2">
+                        <input type="url" id="gsUrlInput" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        <button type="button" onclick="saveAndTestGoogleSheets()" id="gsTestSaveBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg shrink-0">Save &amp; Connect</button>
+                    </div>
+                    <div class="mt-2 flex items-center justify-between flex-wrap gap-2">
+                        <label class="inline-flex items-center text-xs text-slate-600 cursor-pointer">
+                            <input type="checkbox" id="gsAutoSyncCheckbox" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 mr-2" checked>
+                            Auto-sync every Add / Edit / Delete / Qty change
+                        </label>
+                        <button type="button" onclick="disconnectGoogleSheets()" class="text-xs text-red-600 hover:underline">Disconnect</button>
+                    </div>
+                </div>
+
+                <!-- Sync Actions -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <button type="button" onclick="pullFromGoogleSheets()" class="inline-flex items-center justify-center px-3 py-2.5 border border-emerald-300 rounded-lg text-sm font-medium text-emerald-800 bg-emerald-50 hover:bg-emerald-100">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Pull Master Data (Sheet &rarr; App)
+                    </button>
+                    <button type="button" onclick="pushAllToGoogleSheets()" class="inline-flex items-center justify-center px-3 py-2.5 border border-indigo-300 rounded-lg text-sm font-medium text-indigo-800 bg-indigo-50 hover:bg-indigo-100">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        Push All Data (App &rarr; Sheet)
+                    </button>
+                </div>
+
+                <!-- CSV Import / Export -->
+                <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-700">CSV Backup / Bulk Import</p>
+                        <p class="text-[11px] text-slate-500">Columns: sku, name, type, gender, size, color, qty</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="exportCsv()" class="px-3 py-1.5 border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 text-xs font-medium rounded-lg">Export CSV</button>
+                        <label class="px-3 py-1.5 border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 text-xs font-medium rounded-lg cursor-pointer">
+                            Import CSV
+                            <input type="file" id="csvFileInput" accept=".csv,text/csv" class="hidden">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Setup Instructions + Apps Script Code -->
+                <div class="border border-slate-200 rounded-xl overflow-hidden">
+                    <div class="bg-slate-100 px-4 py-2.5 flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-700">How to Connect Your Google Sheet (2 Minutes)</span>
+                        <button type="button" onclick="copyAppsScriptCode()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium rounded-md transition-colors">Copy Apps Script</button>
+                    </div>
+                    <div class="p-4 text-xs text-slate-600 space-y-2 bg-white">
+                        <ol class="list-decimal pl-4 space-y-1">
+                            <li>Open a Google Sheet &rarr; click <strong>Extensions &rarr; Apps Script</strong>.</li>
+                            <li>Delete any existing code, click <strong>Copy Apps Script</strong> above, and paste it in.</li>
+                            <li>Click <strong>Deploy &rarr; New deployment</strong> &rarr; Type: <strong>Web app</strong>.</li>
+                            <li>Set <em>Execute as</em>: <strong>Me</strong>, and <em>Who has access</em>: <strong>Anyone</strong>, then click <strong>Deploy</strong>.</li>
+                            <li>Copy the generated <code>.../exec</code> URL and paste it above!</li>
+                        </ol>
+                        <pre id="appsScriptPreview" class="mt-2 p-2.5 bg-slate-900 text-slate-100 rounded-lg overflow-x-auto text-[11px] max-h-40"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 left-4 sm:left-auto bg-slate-800 text-white px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 translate-y-24 opacity-0 pointer-events-none flex items-center gap-3 z-50">
+        <div id="toastIcon" class="shrink-0"></div>
+        <p id="toastMessage" class="text-sm font-medium"></p>
+    </div>
+
+    <!-- Print Container for Barcode -->
+    <div id="print-container" class="hidden">
+        <h2 id="print-item-name" class="text-xl font-bold mb-1 text-center font-sans text-black"></h2>
+        <p id="print-item-meta" class="text-sm mb-2 text-center font-sans text-slate-700"></p>
+        <svg id="barcode"></svg>
+    </div>
+
+    <script type="module">
+        // ==========================================
+        // Google Apps Script Template (2-Way Master Sync)
+        // ==========================================
+        const APPS_SCRIPT_CODE = `const SHEET_NAME = "Inventory";
+const HEADERS = ["id", "sku", "name", "type", "gender", "size", "color", "qty", "updatedAt", "createdAt"];
+
+function getOrCreateSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(HEADERS);
+    sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight("bold").setBackground("#f1f5f9");
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+function jsonOutput(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function readAllItems(sheet) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow <= 1) return [];
+  const data = sheet.getRange(2, 1, lastRow - 1, HEADERS.length).getValues();
+  const items = [];
+  for (let i = 0; i < data.length; i++) {
+    const row = data[i];
+    if (String(row[1]).trim() === "" && String(row[2]).trim() === "") continue;
+    items.push({
+      docId: String(row[0] || row[1] || ("ROW-" + (i + 2))),
+      sku: String(row[1] || ""),
+      name: String(row[2] || ""),
+      type: String(row[3] || "Other"),
+      gender: String(row[4] || "Unisex"),
+      size: String(row[5] || "N/A"),
+      color: String(row[6] || ""),
+      qty: Number(row[7]) || 0,
+      updatedAt: Number(row[8]) || Date.now(),
+      createdAt: Number(row[9]) || Date.now()
+    });
+  }
+  return items;
+}
+
+function doGet(e) {
+  try {
+    const sheet = getOrCreateSheet();
+    const action = (e && e.parameter && e.parameter.action) ? e.parameter.action : "list";
+    if (action === "ping") {
+      return jsonOutput({ ok: true, message: "Connected to Google Sheets", sheetName: SHEET_NAME });
+    }
+    return jsonOutput({ ok: true, items: readAllItems(sheet) });
+  } catch (err) {
+    return jsonOutput({ ok: false, error: err.message });
+  }
+}
+
+function doPost(e) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(15000);
+  try {
+    const payload = JSON.parse(e.postData.contents);
+    const sheet = getOrCreateSheet();
+    const action = payload.action;
+
+    if (action === "upsert" && payload.item) {
+      const item = payload.item;
+      const lastRow = sheet.getLastRow();
+      let targetRow = -1;
+      if (lastRow > 1) {
+        const ids = sheet.getRange(2, 1, lastRow - 1, 2).getValues();
+        for (let i = 0; i < ids.length; i++) {
+          if (String(ids[i][0]) === String(item.docId) || String(ids[i][1]) === String(item.sku)) {
+            targetRow = i + 2;
+            break;
+          }
+        }
+      }
+      const rowValues = [
+        String(item.docId), String(item.sku), String(item.name),
+        String(item.type || "Other"), String(item.gender || "Unisex"),
+        String(item.size || "N/A"), String(item.color || ""),
+        Number(item.qty) || 0, Number(item.updatedAt) || Date.now(), Number(item.createdAt) || Date.now()
+      ];
+      if (targetRow > 0) {
+        sheet.getRange(targetRow, 1, 1, HEADERS.length).setValues([rowValues]);
+      } else {
+        sheet.appendRow(rowValues);
+      }
+      return jsonOutput({ ok: true, action: "upsert", docId: item.docId });
+    }
+
+    if (action === "delete") {
+      const lastRow = sheet.getLastRow();
+      if (lastRow > 1) {
+        const ids = sheet.getRange(2, 1, lastRow - 1, 2).getValues();
+        for (let i = ids.length - 1; i >= 0; i--) {
+          if (String(ids[i][0]) === String(payload.docId) || (payload.sku && String(ids[i][1]) === String(payload.sku))) {
+            sheet.deleteRow(i + 2);
+            break;
+          }
+        }
+      }
+      return jsonOutput({ ok: true, action: "delete" });
+    }
+
+    if (action === "syncAll" && Array.isArray(payload.items)) {
+      const lastRow = sheet.getLastRow();
+      if (lastRow > 1) sheet.getRange(2, 1, lastRow - 1, HEADERS.length).clearContent();
+      if (payload.items.length > 0) {
+        const rows = payload.items.map(item => [
+          String(item.docId), String(item.sku), String(item.name),
+          String(item.type || "Other"), String(item.gender || "Unisex"),
+          String(item.size || "N/A"), String(item.color || ""),
+          Number(item.qty) || 0, Number(item.updatedAt) || Date.now(), Number(item.createdAt) || Date.now()
+        ]);
+        sheet.getRange(2, 1, rows.length, HEADERS.length).setValues(rows);
+      }
+      return jsonOutput({ ok: true, action: "syncAll", count: payload.items.length });
+    }
+
+    return jsonOutput({ ok: false, error: "Unknown action" });
+  } catch (err) {
+    return jsonOutput({ ok: false, error: err.message });
+  } finally {
+    lock.releaseLock();
+  }
+}`;
+
+        // ==========================================
+        // App State & Constants
+        // ==========================================
+        const LOCAL_STORAGE_KEY = 'stockflow_inventory_v1';
+        const GS_URL_KEY = 'stockflow_gs_url';
+        const GS_AUTOSYNC_KEY = 'stockflow_gs_autosync';
+
+        let inventoryData = [];
+        let pendingDeleteId = null;
+
+        // Optional Firebase state (only used when sandbox injects __firebase_config)
+        let fb = null;
+        let userId = null;
+
+        // Scanner state
+        let html5QrCode = null;
+        let isScannerStopping = false;
+        let isScanningForInput = false;
+
+        // Google Sheets state
+        let gsUrl = localStorage.getItem(GS_URL_KEY) || '';
+        let gsAutoSync = localStorage.getItem(GS_AUTOSYNC_KEY) !== 'false';
+        const qtySyncTimers = new Map();
+
+        // DOM references
+        const inventoryTableBody = document.getElementById('inventoryTableBody');
+        const inventoryMobileList = document.getElementById('inventoryMobileList');
+        const searchInput = document.getElementById('searchInput');
+        const filterType = document.getElementById('filterType');
+        const filterGender = document.getElementById('filterGender');
+        const filterSize = document.getElementById('filterSize');
+        const filterColor = document.getElementById('filterColor');
+        const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const itemModal = document.getElementById('itemModal');
+        const scannerModal = document.getElementById('scannerModal');
+        const confirmModal = document.getElementById('confirmModal');
+        const sheetsModal = document.getElementById('sheetsModal');
+        const itemForm = document.getElementById('itemForm');
+
+        // ==========================================
+        // Initialization
+        // ==========================================
+        async function init() {
+            document.getElementById('appsScriptPreview').textContent = APPS_SCRIPT_CODE;
+            document.getElementById('gsUrlInput').value = gsUrl;
+            document.getElementById('gsAutoSyncCheckbox').checked = gsAutoSync;
+
+            // Load cached local data immediately for instant startup on PC & Mobile
+            loadFromLocalStorage();
+            refreshView();
+
+            // Optional Firebase connection if sandbox globals exist
+            if (typeof __firebase_config !== 'undefined') {
+                try {
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'demo-inventory-app';
+                    const firebaseConfig = JSON.parse(__firebase_config);
+                    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
+                    const { getAuth, signInAnonymously, signInWithCustomToken } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
+                    const fs = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+
+                    const app = initializeApp(firebaseConfig);
+                    const auth = getAuth(app);
+                    const db = fs.getFirestore(app);
+
+                    if (typeof __initial_auth_token !== 'undefined') {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+
+                    userId = auth.currentUser.uid;
+                    fb = { db, appId, ...fs };
+
+                    const inventoryRef = fb.collection(fb.db, 'artifacts', fb.appId, 'users', userId, 'inventory');
+                    fb.onSnapshot(inventoryRef, (snapshot) => {
+                        inventoryData = [];
+                        snapshot.forEach((docSnap) => {
+                            inventoryData.push({ docId: docSnap.id, ...docSnap.data() });
+                        });
+                        sortInventory();
+                        saveToLocalStorage();
+                        refreshView();
+                    }, (err) => {
+                        console.error("Firestore snapshot error:", err);
+                        showToast("Cloud sync error. Using local storage.", "error");
+                    });
+                } catch (err) {
+                    console.warn("Firebase unavailable, continuing in Local / Google Sheets mode:", err);
+                }
+            }
+
+            updateConnectionStatus();
+
+            // Pull latest master data from Google Sheets if configured
+            if (gsUrl) {
+                await pullFromGoogleSheets({ silent: true });
+            }
+        }
+
+        function updateConnectionStatus(state = null) {
+            const statusEl = document.getElementById('auth-status');
+            const quickSyncBtn = document.getElementById('quickSyncBtn');
+
+            if (gsUrl) {
+                quickSyncBtn.classList.remove('hidden');
+                quickSyncBtn.classList.add('inline-flex');
+            } else {
+                quickSyncBtn.classList.add('hidden');
+                quickSyncBtn.classList.remove('inline-flex');
+            }
+
+            if (state === 'syncing') {
+                statusEl.innerHTML = `
+                    <svg class="animate-spin h-3.5 w-3.5 mr-2 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                    </svg>
+                    <span>Syncing...</span>`;
+                return;
+            }
+
+            if (gsUrl) {
+                statusEl.innerHTML = `<span class="h-2 w-2 rounded-full bg-emerald-400 mr-2"></span><span>Google Sheets</span>`;
+            } else if (userId) {
+                statusEl.innerHTML = `<span class="h-2 w-2 rounded-full bg-green-400 mr-2"></span><span>Cloud Connected</span>`;
+            } else {
+                statusEl.innerHTML = `<span class="h-2 w-2 rounded-full bg-amber-300 mr-2"></span><span>Local Storage</span>`;
+            }
+        }
+
+        // ==========================================
+        // Local Storage & Sorting
+        // ==========================================
+        function loadFromLocalStorage() {
+            try {
+                const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+                inventoryData = raw ? JSON.parse(raw) : [];
+                if (!Array.isArray(inventoryData)) inventoryData = [];
+                sortInventory();
+            } catch (e) {
+                inventoryData = [];
+            }
+        }
+
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(inventoryData));
+            } catch (e) {
+                console.error("Failed to save to localStorage:", e);
+            }
+        }
+
+        function sortInventory() {
+            inventoryData.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        }
+
+        function createId() {
+            if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+            return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+        }
+
+        // ==========================================
+        // Rendering (Desktop Table + Mobile Cards)
+        // ==========================================
+        function refreshView() {
+            handleFilters();
+            updateStats();
+        }
+
+        function resolveCssColor(colorStr) {
+            if (!colorStr) return 'transparent';
+            const cleaned = colorStr.trim().toLowerCase();
+            const map = {
+                'navy blue': '#001f3f',
+                'sky blue': '#38bdf8',
+                'royal blue': '#2563eb',
+                'dark blue': '#1e3a8a',
+                'light blue': '#93c5fd',
+                'dark green': '#14532d',
+                'olive green': '#556b2f',
+                'dark grey': '#4b5563',
+                'dark gray': '#4b5563',
+                'light grey': '#d1d5db',
+                'light gray': '#d1d5db',
+                'charcoal': '#36454f',
+                'cream': '#fffdd0',
+                'off white': '#faf9f6',
+                'maroon': '#800000',
+                'burgundy': '#800020',
+                'khaki': '#c3b091',
+                'beige': '#f5f5dc'
+            };
+            if (map[cleaned]) return map[cleaned];
+            const noSpaces = cleaned.replace(/\s+/g, '');
+            if (window.CSS && CSS.supports && CSS.supports('color', noSpaces)) {
+                return noSpaces;
+            }
+            if (window.CSS && CSS.supports && CSS.supports('color', cleaned)) {
+                return cleaned;
+            }
+            return 'transparent';
+        }
+
+        function getStockBadge(qty) {
+            if (qty === 0) return { label: "Out of Stock", cls: "bg-red-100 text-red-800 border-red-200" };
+            if (qty <= 10) return { label: "Low Stock", cls: "bg-amber-100 text-amber-800 border-amber-200" };
+            return { label: "In Stock", cls: "bg-emerald-100 text-emerald-800 border-emerald-200" };
+        }
+
+        function renderEmptyState() {
+            const emptyHtml = `
+                <div class="px-6 py-12 text-center text-slate-500 bg-white rounded-xl border border-slate-200">
+                    <svg class="mx-auto h-12 w-12 text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                    <p class="text-base font-medium">No items found.</p>
+                    <p class="text-sm mt-1">Add items manually, scan a barcode, or pull from Google Sheets.</p>
+                </div>`;
+
+            inventoryTableBody.innerHTML = `<tr><td colspan="5">${emptyHtml.replace('rounded-xl border border-slate-200', '')}</td></tr>`;
+            inventoryMobileList.innerHTML = emptyHtml;
+        }
+
+        function renderTable(dataToRender = inventoryData) {
+            if (dataToRender.length === 0) {
+                renderEmptyState();
+                return;
+            }
+
+            inventoryTableBody.innerHTML = '';
+            inventoryMobileList.innerHTML = '';
+
+            dataToRender.forEach(item => {
+                const qty = Math.max(0, parseInt(item.qty, 10) || 0);
+                const badge = getStockBadge(qty);
+                const swatchColor = resolveCssColor(item.color);
+
+                // --- Desktop Row ---
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-colors group";
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex flex-col">
+                            <span class="text-sm font-semibold text-slate-900">${escapeHtml(item.name)}</span>
+                            <span class="text-xs text-slate-500 font-mono mt-0.5">ID: ${escapeHtml(item.sku)}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex flex-col gap-1">
+                            <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-medium rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200 w-fit">
+                                ${escapeHtml(item.type || 'N/A')}
+                            </span>
+                            <span class="text-xs text-slate-500 font-medium">${escapeHtml(item.gender || 'N/A')}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex flex-col gap-1">
+                            <span class="font-medium text-xs text-slate-900 border border-slate-300 rounded px-2 py-0.5 bg-slate-50 w-fit text-center min-w-[30px]">${escapeHtml(item.size || 'N/A')}</span>
+                            <span class="text-xs text-slate-600 flex items-center gap-1.5">
+                                <span class="swatch-dot w-3 h-3 rounded-full border border-slate-300 shrink-0"></span>
+                                ${escapeHtml(item.color || 'N/A')}
+                            </span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center gap-2">
+                            <button type="button" class="qty-dec w-7 h-7 flex items-center justify-center rounded-md border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold text-sm" data-id="${escapeHtml(item.docId)}" title="Decrease quantity">-</button>
+                            <span class="text-sm font-bold min-w-[28px] text-center ${qty === 0 ? 'text-red-600' : 'text-slate-900'}">${qty}</span>
+                            <button type="button" class="qty-inc w-7 h-7 flex items-center justify-center rounded-md border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold text-sm" data-id="${escapeHtml(item.docId)}" title="Increase quantity">+</button>
+                        </div>
+                        <div class="mt-1.5">
+                            <span class="px-2.5 py-0.5 inline-flex text-[10px] leading-4 font-semibold rounded-full border ${badge.cls}">
+                                ${badge.label}
+                            </span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div class="flex justify-end gap-2 opacity-100 md:opacity-75 md:group-hover:opacity-100 transition-opacity">
+                            <button type="button" class="print-btn text-slate-600 hover:text-slate-900 p-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors" data-id="${escapeHtml(item.docId)}" title="Print Barcode">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                            </button>
+                            <button type="button" class="edit-btn text-indigo-600 hover:text-indigo-900 p-2 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors" data-id="${escapeHtml(item.docId)}" title="Edit">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            </button>
+                            <button type="button" class="delete-btn text-red-600 hover:text-red-900 p-2 bg-red-50 hover:bg-red-100 rounded-lg transition-colors" data-id="${escapeHtml(item.docId)}" title="Delete">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tr.querySelector('.swatch-dot').style.backgroundColor = swatchColor;
+                inventoryTableBody.appendChild(tr);
+
+                // --- Mobile Card ---
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-3";
+                card.innerHTML = `
+                    <div class="flex justify-between items-start gap-3">
+                        <div class="min-w-0">
+                            <h3 class="text-sm font-bold text-slate-900 truncate">${escapeHtml(item.name)}</h3>
+                            <p class="text-xs text-slate-500 font-mono mt-0.5">SKU: ${escapeHtml(item.sku)}</p>
+                        </div>
+                        <span class="px-2.5 py-0.5 shrink-0 text-[11px] font-semibold rounded-full border ${badge.cls}">
+                            ${badge.label}
+                        </span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 text-xs">
+                        <span class="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 font-medium">${escapeHtml(item.type || 'N/A')}</span>
+                        <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-medium">${escapeHtml(item.gender || 'N/A')}</span>
+                        <span class="px-2 py-0.5 rounded border border-slate-300 bg-slate-50 font-semibold text-slate-800">${escapeHtml(item.size || 'N/A')}</span>
+                        <span class="inline-flex items-center gap-1.5 text-slate-600 ml-1">
+                            <span class="swatch-dot-m w-3 h-3 rounded-full border border-slate-300 shrink-0"></span>
+                            ${escapeHtml(item.color || 'N/A')}
+                        </span>
+                    </div>
+                    <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <button type="button" class="qty-dec w-9 h-9 flex items-center justify-center rounded-lg border border-slate-300 bg-slate-50 active:bg-slate-200 text-slate-700 font-bold text-base" data-id="${escapeHtml(item.docId)}">-</button>
+                            <span class="text-base font-bold min-w-[32px] text-center ${qty === 0 ? 'text-red-600' : 'text-slate-900'}">${qty}</span>
+                            <button type="button" class="qty-inc w-9 h-9 flex items-center justify-center rounded-lg border border-slate-300 bg-slate-50 active:bg-slate-200 text-slate-700 font-bold text-base" data-id="${escapeHtml(item.docId)}">+</button>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" class="print-btn p-2.5 bg-slate-100 active:bg-slate-200 text-slate-700 rounded-lg" data-id="${escapeHtml(item.docId)}" title="Print Barcode">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                            </button>
+                            <button type="button" class="edit-btn p-2.5 bg-indigo-50 active:bg-indigo-100 text-indigo-700 rounded-lg" data-id="${escapeHtml(item.docId)}" title="Edit">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            </button>
+                            <button type="button" class="delete-btn p-2.5 bg-red-50 active:bg-red-100 text-red-600 rounded-lg" data-id="${escapeHtml(item.docId)}" title="Delete">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                card.querySelector('.swatch-dot-m').style.backgroundColor = swatchColor;
+                inventoryMobileList.appendChild(card);
+            });
+
+            bindRowActions();
+        }
+
+        function bindRowActions() {
+            document.querySelectorAll('.qty-dec').forEach(btn => {
+                btn.onclick = () => adjustQty(btn.getAttribute('data-id'), -1);
+            });
+            document.querySelectorAll('.qty-inc').forEach(btn => {
+                btn.onclick = () => adjustQty(btn.getAttribute('data-id'), 1);
+            });
+            document.querySelectorAll('.print-btn').forEach(btn => {
+                btn.onclick = () => {
+                    const item = inventoryData.find(i => i.docId === btn.getAttribute('data-id'));
+                    if (item) printBarcode(item);
+                };
+            });
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.onclick = () => {
+                    const item = inventoryData.find(i => i.docId === btn.getAttribute('data-id'));
+                    if (item) openEditModal(item);
+                };
+            });
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.onclick = () => requestDeleteItem(btn.getAttribute('data-id'));
+            });
+        }
+
+        function updateStats() {
+            const totalSkus = inventoryData.length;
+            const totalUnits = inventoryData.reduce((sum, i) => sum + (parseInt(i.qty, 10) || 0), 0);
+            const low = inventoryData.filter(i => {
+                const q = parseInt(i.qty, 10) || 0;
+                return q > 0 && q <= 10;
+            }).length;
+            const out = inventoryData.filter(i => (parseInt(i.qty, 10) || 0) === 0).length;
+
+            document.getElementById('statTotal').innerText = totalSkus;
+            document.getElementById('statUnits').innerText = `(${totalUnits} units)`;
+            document.getElementById('statLow').innerText = low;
+            document.getElementById('statOut').innerText = out;
+        }
+
+        // ==========================================
+        // Search & Filters
+        // ==========================================
+        function handleFilters() {
+            const query = searchInput.value.toLowerCase().trim();
+            const fType = filterType.value;
+            const fGender = filterGender.value;
+            const fSize = filterSize.value;
+            const fColor = filterColor.value.toLowerCase().trim();
+
+            const hasFilter = Boolean(query || fType || fGender || fSize || fColor);
+            resetFiltersBtn.classList.toggle('hidden', !hasFilter);
+
+            const filtered = inventoryData.filter(item => {
+                const matchSearch = !query ||
+                    (item.name && item.name.toLowerCase().includes(query)) ||
+                    (item.sku && item.sku.toLowerCase().includes(query));
+                const matchType = !fType || item.type === fType;
+                const matchGender = !fGender || item.gender === fGender;
+                const matchSize = !fSize || item.size === fSize;
+                const matchColor = !fColor || (item.color && item.color.toLowerCase().includes(fColor));
+                return matchSearch && matchType && matchGender && matchSize && matchColor;
+            });
+
+            renderTable(filtered);
+        }
+
+        window.resetFilters = () => {
+            searchInput.value = '';
+            filterType.value = '';
+            filterGender.value = '';
+            filterSize.value = '';
+            filterColor.value = '';
+            handleFilters();
+        };
+
+        searchInput.addEventListener('input', handleFilters);
+        filterType.addEventListener('change', handleFilters);
+        filterGender.addEventListener('change', handleFilters);
+        filterSize.addEventListener('change', handleFilters);
+        filterColor.addEventListener('input', handleFilters);
+
+        // ==========================================
+        // CRUD Operations (Local + Firebase + Google Sheets)
+        // ==========================================
+        window.generateSku = () => {
+            const typePrefix = (document.getElementById('itemType').value || 'ITM').slice(0, 3).toUpperCase();
+            const rand = Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('itemSku').value = `${typePrefix}-${rand}`;
+        };
+
+        itemForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('saveItemBtn');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = `<svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>`;
+            submitBtn.disabled = true;
+
+            try {
+                const existingDocId = document.getElementById('docId').value.trim();
+                const sku = document.getElementById('itemSku').value.trim();
+                const name = document.getElementById('itemName').value.trim();
+                const type = document.getElementById('itemType').value;
+                const gender = document.getElementById('itemGender').value;
+                const size = document.getElementById('itemSize').value;
+                const color = document.getElementById('itemColor').value.trim();
+                const qty = Math.max(0, parseInt(document.getElementById('itemQty').value, 10) || 0);
+
+                // Duplicate SKU check
+                const duplicate = inventoryData.find(i =>
+                    i.sku && i.sku.toLowerCase() === sku.toLowerCase() && i.docId !== existingDocId
+                );
+                if (duplicate) {
+                    showToast("An item with this SKU/ID already exists.", "error");
+                    return;
+                }
+
+                const now = Date.now();
+                let savedItem;
+
+                if (existingDocId) {
+                    const idx = inventoryData.findIndex(i => i.docId === existingDocId);
+                    const createdAt = idx >= 0 ? (inventoryData[idx].createdAt || now) : now;
+                    savedItem = { docId: existingDocId, sku, name, type, gender, size, color, qty, updatedAt: now, createdAt };
+
+                    if (idx >= 0) inventoryData[idx] = savedItem;
+                    else inventoryData.unshift(savedItem);
+
+                    if (fb && userId) {
+                        const { docId, ...fbData } = savedItem;
+                        await fb.updateDoc(fb.doc(fb.db, 'artifacts', fb.appId, 'users', userId, 'inventory', existingDocId), fbData);
+                    }
+                    showToast("Item updated.", "success");
+                } else {
+                    const newId = createId();
+                    savedItem = { docId: newId, sku, name, type, gender, size, color, qty, updatedAt: now, createdAt: now };
+
+                    if (fb && userId) {
+                        const { docId, ...fbData } = savedItem;
+                        const docRef = await fb.addDoc(fb.collection(fb.db, 'artifacts', fb.appId, 'users', userId, 'inventory'), fbData);
+                        savedItem.docId = docRef.id;
+                    } else {
+                        inventoryData.unshift(savedItem);
+                    }
+                    showToast("Item added.", "success");
+                }
+
+                sortInventory();
+                saveToLocalStorage();
+                refreshView();
+                closeModals();
+
+                if (gsUrl && gsAutoSync) {
+                    syncItemToGoogleSheets('upsert', savedItem);
+                }
+            } catch (error) {
+                console.error("Save error:", error);
+                showToast("Failed to save item.", "error");
+            } finally {
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        function adjustQty(docId, delta) {
+            const idx = inventoryData.findIndex(i => i.docId === docId);
+            if (idx < 0) return;
+
+            const currentQty = parseInt(inventoryData[idx].qty, 10) || 0;
+            const nextQty = Math.max(0, currentQty + delta);
+            if (nextQty === currentQty) return;
+
+            inventoryData[idx] = {
+                ...inventoryData[idx],
+                qty: nextQty,
+                updatedAt: Date.now()
+            };
+
+            saveToLocalStorage();
+            refreshView();
+
+            const updatedItem = inventoryData[idx];
+
+            // Debounce remote sync so rapid taps on + / - don't flood requests
+            if (qtySyncTimers.has(docId)) clearTimeout(qtySyncTimers.get(docId));
+            qtySyncTimers.set(docId, setTimeout(async () => {
+                qtySyncTimers.delete(docId);
+                if (fb && userId) {
+                    try {
+                        await fb.updateDoc(fb.doc(fb.db, 'artifacts', fb.appId, 'users', userId, 'inventory', docId), {
+                            qty: updatedItem.qty,
+                            updatedAt: updatedItem.updatedAt
+                        });
+                    } catch (err) {
+                        console.error("Firebase qty update error:", err);
+                    }
+                }
+                if (gsUrl && gsAutoSync) {
+                    syncItemToGoogleSheets('upsert', updatedItem);
+                }
+            }, 600));
+        }
+
+        function requestDeleteItem(docId) {
+            const item = inventoryData.find(i => i.docId === docId);
+            if (!item) return;
+
+            pendingDeleteId = docId;
+            document.getElementById('confirmMessage').innerText =
+                `Are you sure you want to delete "${item.name}" (SKU: ${item.sku})? This action cannot be undone.`;
+
+            hideAllModalPanels();
+            modalOverlay.classList.remove('hidden');
+            modalOverlay.classList.add('flex');
+            confirmModal.classList.remove('hidden');
+            confirmModal.classList.add('flex');
+        }
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+            if (!pendingDeleteId) return;
+            const docId = pendingDeleteId;
+            pendingDeleteId = null;
+
+            const itemToDelete = inventoryData.find(i => i.docId === docId);
+            inventoryData = inventoryData.filter(i => i.docId !== docId);
+            saveToLocalStorage();
+            refreshView();
+            closeModals();
+            showToast("Item deleted.", "success");
+
+            if (fb && userId) {
+                try {
+                    await fb.deleteDoc(fb.doc(fb.db, 'artifacts', fb.appId, 'users', userId, 'inventory', docId));
+                } catch (err) {
+                    console.error("Firebase delete error:", err);
+                    showToast("Cloud delete failed.", "error");
+                }
+            }
+
+            if (gsUrl && gsAutoSync && itemToDelete) {
+                syncItemToGoogleSheets('delete', itemToDelete);
+            }
+        });
+
+        // ==========================================
+        // Modal Management
+        // ==========================================
+        function hideAllModalPanels() {
+            [itemModal, scannerModal, confirmModal, sheetsModal].forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('flex');
+            });
+        }
+
+        window.openAddModal = (scannedSku = "") => {
+            itemForm.reset();
+            document.getElementById('docId').value = "";
+            document.getElementById('itemQty').value = "1";
+            if (typeof scannedSku === 'string' && scannedSku) {
+                document.getElementById('itemSku').value = scannedSku;
+            }
+            document.getElementById('modalTitle').innerText = "Add New Item";
+
+            stopScanner();
+            hideAllModalPanels();
+            modalOverlay.classList.remove('hidden');
+            modalOverlay.classList.add('flex');
+            itemModal.classList.remove('hidden');
+            itemModal.classList.add('flex');
+        };
+
+        window.openEditModal = (item) => {
+            document.getElementById('docId').value = item.docId;
+            document.getElementById('itemSku').value = item.sku || '';
+            document.getElementById('itemName').value = item.name || '';
+            document.getElementById('itemType').value = item.type || 'Shirt';
+            document.getElementById('itemGender').value = item.gender || 'Unisex';
+            document.getElementById('itemSize').value = item.size || 'M';
+            document.getElementById('itemColor').value = item.color || '';
+            document.getElementById('itemQty').value = item.qty ?? 0;
+            document.getElementById('modalTitle').innerText = "Edit Item";
+
+            stopScanner();
+            hideAllModalPanels();
+            modalOverlay.classList.remove('hidden');
+            modalOverlay.classList.add('flex');
+            itemModal.classList.remove('hidden');
+            itemModal.classList.add('flex');
+        };
+
+        window.openScannerModal = (forInputFill = false) => {
+            isScanningForInput = Boolean(forInputFill);
+            document.getElementById('manualScanInput').value = '';
+
+            // Hide other modal panels WITHOUT resetting itemForm (preserves Edit form data!)
+            hideAllModalPanels();
+            modalOverlay.classList.remove('hidden');
+            modalOverlay.classList.add('flex');
+            scannerModal.classList.remove('hidden');
+            scannerModal.classList.add('flex');
+
+            startScanner();
+        };
+
+        window.cancelScannerModal = async () => {
+            await stopScanner();
+            if (isScanningForInput) {
+                // Return to the Add/Edit modal with form fields preserved
+                hideAllModalPanels();
+                itemModal.classList.remove('hidden');
+                itemModal.classList.add('flex');
+            } else {
+                closeModals();
+            }
+        };
+
+        window.openSheetsModal = () => {
+            document.getElementById('gsUrlInput').value = gsUrl;
+            document.getElementById('gsAutoSyncCheckbox').checked = gsAutoSync;
+            stopScanner();
+            hideAllModalPanels();
+            modalOverlay.classList.remove('hidden');
+            modalOverlay.classList.add('flex');
+            sheetsModal.classList.remove('hidden');
+            sheetsModal.classList.add('flex');
+        };
+
+        window.closeModals = () => {
+            modalOverlay.classList.add('hidden');
+            modalOverlay.classList.remove('flex');
+            hideAllModalPanels();
+            pendingDeleteId = null;
+            stopScanner();
+        };
+
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                if (!scannerModal.classList.contains('hidden') && isScanningForInput) {
+                    cancelScannerModal();
+                } else {
+                    closeModals();
+                }
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !modalOverlay.classList.contains('hidden')) {
+                if (!scannerModal.classList.contains('hidden') && isScanningForInput) {
+                    cancelScannerModal();
+                } else {
+                    closeModals();
+                }
+            }
+        });
+
+        // ==========================================
+        // Barcode Printing
+        // ==========================================
+        function printBarcode(item) {
+            try {
+                document.getElementById('print-item-name').innerText = item.name || '';
+                document.getElementById('print-item-meta').innerText =
+                    [item.type, item.gender, item.size, item.color].filter(Boolean).join(' • ');
+
+                JsBarcode("#barcode", item.sku, {
+                    format: "CODE128",
+                    width: 2,
+                    height: 90,
+                    displayValue: true,
+                    fontSize: 16,
+                    margin: 10
+                });
+
+                window.print();
+            } catch (err) {
+                console.error("Barcode print error:", err);
+                showToast("Could not generate barcode for this SKU.", "error");
+            }
+        }
+
+        // ==========================================
+        // Camera, Image File & USB Scanner Logic
+        // ==========================================
+        const SUPPORTED_FORMATS = typeof Html5QrcodeSupportedFormats !== 'undefined' ? [
+            Html5QrcodeSupportedFormats.QR_CODE,
+            Html5QrcodeSupportedFormats.CODE_128,
+            Html5QrcodeSupportedFormats.CODE_39,
+            Html5QrcodeSupportedFormats.CODE_93,
+            Html5QrcodeSupportedFormats.EAN_13,
+            Html5QrcodeSupportedFormats.EAN_8,
+            Html5QrcodeSupportedFormats.UPC_A,
+            Html5QrcodeSupportedFormats.UPC_E,
+            Html5QrcodeSupportedFormats.ITF,
+            Html5QrcodeSupportedFormats.CODABAR,
+            Html5QrcodeSupportedFormats.DATA_MATRIX
+        ] : undefined;
+
+        function getScannerConfig() {
+            return {
+                fps: 10,
+                qrbox: (viewfinderWidth, viewfinderHeight) => ({
+                    width: Math.max(160, Math.floor(viewfinderWidth * 0.82)),
+                    height: Math.max(100, Math.floor(viewfinderHeight * 0.5))
+                })
+            };
+        }
+
+        async function startScanner(preferredCameraId = null) {
+            if (typeof Html5Qrcode === 'undefined') {
+                document.getElementById('scannerPlaceholderText').innerText = "Scanner library failed to load.";
+                return;
+            }
+
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                document.getElementById('scannerPlaceholderText').innerText =
+                    "Camera requires HTTPS or localhost. Use Image Scan or USB/Manual entry below.";
+                return;
+            }
+
+            await stopScanner();
+            document.getElementById('scannerPlaceholderText').innerText = "Requesting camera...";
+
+            html5QrCode = new Html5Qrcode(
+                "reader",
+                SUPPORTED_FORMATS ? { formatsToSupport: SUPPORTED_FORMATS, verbose: false } : false
+            );
+
+            try {
+                // Populate available cameras (works on both PC webcams and mobile cameras)
+                const cameras = await Html5Qrcode.getCameras().catch(() => []);
+                const cameraSelect = document.getElementById('cameraSelect');
+                const cameraSelectWrap = document.getElementById('cameraSelectWrap');
+
+                if (cameras && cameras.length > 0) {
+                    cameraSelect.innerHTML = '';
+                    cameras.forEach((cam, index) => {
+                        const opt = document.createElement('option');
+                        opt.value = cam.id;
+                        opt.text = cam.label || `Camera ${index + 1}`;
+                        cameraSelect.appendChild(opt);
+                    });
+
+                    // Prefer back/environment camera if not manually selected
+                    if (!preferredCameraId) {
+                        const backCam = cameras.find(c => /back|rear|environment/i.test(c.label));
+                        preferredCameraId = backCam ? backCam.id : cameras[0].id;
+                    }
+                    cameraSelect.value = preferredCameraId;
+                    cameraSelectWrap.classList.toggle('hidden', cameras.length <= 1);
+                    cameraSelect.onchange = () => startScanner(cameraSelect.value);
+
+                    await html5QrCode.start(preferredCameraId, getScannerConfig(), onScanSuccess, () => {});
+                } else {
+                    cameraSelectWrap.classList.add('hidden');
+                    // Fallback facingMode constraint (environment first, then user)
+                    try {
+                        await html5QrCode.start({ facingMode: "environment" }, getScannerConfig(), onScanSuccess, () => {});
+                    } catch {
+                        await html5QrCode.start({ facingMode: "user" }, getScannerConfig(), onScanSuccess, () => {});
+                    }
+                }
+            } catch (err) {
+                console.error("Scanner start error:", err);
+                document.getElementById('scannerPlaceholderText').innerText =
+                    "Camera access denied or unavailable. Use Image Scan or Manual entry below.";
+                showToast("Could not access camera.", "error");
+                html5QrCode = null;
+            }
+        }
+
+        async function stopScanner() {
+            if (!html5QrCode || isScannerStopping) return;
+            isScannerStopping = true;
+            try {
+                if (html5QrCode.isScanning) {
+                    await html5QrCode.stop();
+                }
+                html5QrCode.clear();
+            } catch (err) {
+                console.warn("Scanner stop warning:", err);
+            } finally {
+                html5QrCode = null;
+                isScannerStopping = false;
+            }
+        }
+
+        async function handleDecodedCode(decodedText) {
+            const scannedId = (decodedText || '').trim();
+            if (!scannedId) return;
+
+            await stopScanner();
+
+            if (isScanningForInput) {
+                // Keep all existing Add/Edit modal inputs intact! Only fill SKU
+                document.getElementById('itemSku').value = scannedId;
+                hideAllModalPanels();
+                itemModal.classList.remove('hidden');
+                itemModal.classList.add('flex');
+                showToast("Barcode captured into SKU field.", "success");
+            } else {
+                const existingItem = inventoryData.find(
+                    item => item.sku && item.sku.toLowerCase() === scannedId.toLowerCase()
+                );
+                if (existingItem) {
+                    openEditModal(existingItem);
+                    showToast("Item found in inventory.", "success");
+                } else {
+                    openAddModal(scannedId);
+                    showToast("New barcode scanned. Fill details to add.", "success");
+                }
+            }
+        }
+
+        function onScanSuccess(decodedText) {
+            handleDecodedCode(decodedText);
+        }
+
+        document.getElementById('manualScanForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const val = document.getElementById('manualScanInput').value.trim();
+            if (val) handleDecodedCode(val);
+        });
+
+        document.getElementById('qrFileInput').addEventListener('change', async (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file || typeof Html5Qrcode === 'undefined') return;
+
+            try {
+                await stopScanner();
+                const fileScanner = new Html5Qrcode(
+                    "reader",
+                    SUPPORTED_FORMATS ? { formatsToSupport: SUPPORTED_FORMATS, verbose: false } : false
+                );
+                const result = await fileScanner.scanFile(file, true);
+                fileScanner.clear();
+                handleDecodedCode(result);
+            } catch (err) {
+                console.error("File scan error:", err);
+                showToast("No barcode or QR code detected in image.", "error");
+                startScanner();
+            } finally {
+                e.target.value = '';
+            }
+        });
+
+        // ==========================================
+        // Google Sheets Master Data Integration
+        // ==========================================
+        async function callGoogleSheetsGet(url, action = 'list') {
+            const sep = url.includes('?') ? '&' : '?';
+            const res = await fetch(`${url}${sep}action=${encodeURIComponent(action)}&_t=${Date.now()}`, {
+                method: 'GET',
+                redirect: 'follow'
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return await res.json();
+        }
+
+        async function callGoogleSheetsPost(url, payload) {
+            // text/plain avoids CORS preflight OPTIONS requests on Google Apps Script
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload),
+                redirect: 'follow'
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return await res.json();
+        }
+
+        window.saveAndTestGoogleSheets = async () => {
+            const inputUrl = document.getElementById('gsUrlInput').value.trim();
+            gsAutoSync = document.getElementById('gsAutoSyncCheckbox').checked;
+            localStorage.setItem(GS_AUTOSYNC_KEY, String(gsAutoSync));
+
+            if (!inputUrl) {
+                showToast("Please paste your Google Apps Script Web App URL.", "error");
+                return;
+            }
+            if (!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec/i.test(inputUrl)) {
+                showToast("URL should look like https://script.google.com/macros/s/.../exec", "error");
+                return;
+            }
+
+            const btn = document.getElementById('gsTestSaveBtn');
+            const orig = btn.innerText;
+            btn.innerText = "Connecting...";
+            btn.disabled = true;
+
+            try {
+                const ping = await callGoogleSheetsGet(inputUrl, 'ping');
+                if (!ping || !ping.ok) throw new Error(ping?.error || "Invalid response");
+
+                gsUrl = inputUrl;
+                localStorage.setItem(GS_URL_KEY, gsUrl);
+                updateConnectionStatus();
+                showToast("Connected to Google Sheets!", "success");
+                await pullFromGoogleSheets({ silent: false });
+            } catch (err) {
+                console.error("Google Sheets connection error:", err);
+                showToast("Connection failed. Check deployment access is set to 'Anyone'.", "error");
+            } finally {
+                btn.innerText = orig;
+                btn.disabled = false;
+            }
+        };
+
+        window.disconnectGoogleSheets = () => {
+            gsUrl = '';
+            localStorage.removeItem(GS_URL_KEY);
+            document.getElementById('gsUrlInput').value = '';
+            updateConnectionStatus();
+            showToast("Disconnected from Google Sheets.", "success");
+        };
+
+        window.pullFromGoogleSheets = async ({ silent = false } = {}) => {
+            if (!gsUrl) {
+                showToast("Connect a Google Sheets URL first.", "error");
+                return;
+            }
+            updateConnectionStatus('syncing');
+            try {
+                const data = await callGoogleSheetsGet(gsUrl, 'list');
+                if (!data || !data.ok || !Array.isArray(data.items)) {
+                    throw new Error(data?.error || "Invalid sheet data");
+                }
+                inventoryData = data.items.map(item => ({
+                    docId: String(item.docId || item.sku || createId()),
+                    sku: String(item.sku || ''),
+                    name: String(item.name || ''),
+                    type: String(item.type || 'Other'),
+                    gender: String(item.gender || 'Unisex'),
+                    size: String(item.size || 'N/A'),
+                    color: String(item.color || ''),
+                    qty: Math.max(0, parseInt(item.qty, 10) || 0),
+                    updatedAt: Number(item.updatedAt) || Date.now(),
+                    createdAt: Number(item.createdAt) || Date.now()
+                }));
+                sortInventory();
+                saveToLocalStorage();
+                refreshView();
+                if (!silent) showToast(`Pulled ${inventoryData.length} items from Google Sheets.`, "success");
+            } catch (err) {
+                console.error("Pull error:", err);
+                showToast("Failed to pull from Google Sheets. Using local cache.", "error");
+            } finally {
+                updateConnectionStatus();
+            }
+        };
+
+        window.pushAllToGoogleSheets = async () => {
+            if (!gsUrl) {
+                showToast("Connect a Google Sheets URL first.", "error");
+                return;
+            }
+            updateConnectionStatus('syncing');
+            try {
+                const res = await callGoogleSheetsPost(gsUrl, { action: 'syncAll', items: inventoryData });
+                if (!res || !res.ok) throw new Error(res?.error || "Push failed");
+                showToast(`Pushed ${inventoryData.length} items to Google Sheets.`, "success");
+            } catch (err) {
+                console.error("Push all error:", err);
+                showToast("Failed to push data to Google Sheets.", "error");
+            } finally {
+                updateConnectionStatus();
+            }
+        };
+
+        async function syncItemToGoogleSheets(action, item) {
+            if (!gsUrl) return;
+            updateConnectionStatus('syncing');
+            try {
+                const payload = action === 'delete'
+                    ? { action: 'delete', docId: item.docId, sku: item.sku }
+                    : { action: 'upsert', item };
+                const res = await callGoogleSheetsPost(gsUrl, payload);
+                if (!res || !res.ok) throw new Error(res?.error || "Sync failed");
+            } catch (err) {
+                console.error("Google Sheets item sync error:", err);
+                showToast("Google Sheets sync failed (saved locally).", "error");
+            } finally {
+                updateConnectionStatus();
+            }
+        }
+
+        window.syncNow = () => pullFromGoogleSheets({ silent: false });
+
+        document.getElementById('gsAutoSyncCheckbox').addEventListener('change', (e) => {
+            gsAutoSync = e.target.checked;
+            localStorage.setItem(GS_AUTOSYNC_KEY, String(gsAutoSync));
+        });
+
+        window.copyAppsScriptCode = async () => {
+            try {
+                await navigator.clipboard.writeText(APPS_SCRIPT_CODE);
+                showToast("Apps Script code copied!", "success");
+            } catch {
+                showToast("Copy failed. Please select and copy from the box below.", "error");
+            }
+        };
+
+        // ==========================================
+        // CSV Export & Import
+        // ==========================================
+        window.exportCsv = () => {
+            const headers = ['sku', 'name', 'type', 'gender', 'size', 'color', 'qty'];
+            const esc = (val) => `"${String(val ?? '').replace(/"/g, '""')}"`;
+            const lines = [headers.join(',')];
+            inventoryData.forEach(item => {
+                lines.push(headers.map(h => esc(item[h])).join(','));
+            });
+            const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `stockflow-inventory-${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast("CSV exported.", "success");
+        };
+
+        function parseCsvRows(text) {
+            const rows = [];
+            let row = [], cell = '', inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                const ch = text[i];
+                const next = text[i + 1];
+                if (inQuotes) {
+                    if (ch === '"' && next === '"') { cell += '"'; i++; }
+                    else if (ch === '"') { inQuotes = false; }
+                    else { cell += ch; }
+                } else {
+                    if (ch === '"') { inQuotes = true; }
+                    else if (ch === ',') { row.push(cell.trim()); cell = ''; }
+                    else if (ch === '\n' || ch === '\r') {
+                        if (ch === '\r' && next === '\n') i++;
+                        row.push(cell.trim());
+                        if (row.some(v => v !== '')) rows.push(row);
+                        row = []; cell = '';
+                    } else { cell += ch; }
+                }
+            }
+            if (cell.length > 0 || row.length > 0) {
+                row.push(cell.trim());
+                if (row.some(v => v !== '')) rows.push(row);
+            }
+            return rows;
+        }
+
+        document.getElementById('csvFileInput').addEventListener('change', async (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            try {
+                const text = await file.text();
+                const rows = parseCsvRows(text);
+                if (rows.length < 2) {
+                    showToast("CSV file is empty or missing rows.", "error");
+                    return;
+                }
+                const header = rows[0].map(h => h.toLowerCase());
+                const col = (name, fallbackIdx) => {
+                    const idx = header.indexOf(name);
+                    return idx >= 0 ? idx : fallbackIdx;
+                };
+                const now = Date.now();
+                let imported = 0;
+
+                for (let r = 1; r < rows.length; r++) {
+                    const vals = rows[r];
+                    const sku = vals[col('sku', 0)] || '';
+                    const name = vals[col('name', 1)] || '';
+                    if (!sku || !name) continue;
+
+                    const item = {
+                        docId: createId(),
+                        sku,
+                        name,
+                        type: vals[col('type', 2)] || 'Other',
+                        gender: vals[col('gender', 3)] || 'Unisex',
+                        size: vals[col('size', 4)] || 'N/A',
+                        color: vals[col('color', 5)] || '',
+                        qty: Math.max(0, parseInt(vals[col('qty', 6)], 10) || 0),
+                        updatedAt: now,
+                        createdAt: now - r
+                    };
+
+                    const existingIdx = inventoryData.findIndex(i => i.sku.toLowerCase() === sku.toLowerCase());
+                    if (existingIdx >= 0) {
+                        item.docId = inventoryData[existingIdx].docId;
+                        item.createdAt = inventoryData[existingIdx].createdAt;
+                        inventoryData[existingIdx] = item;
+                    } else {
+                        inventoryData.unshift(item);
+                    }
+                    imported++;
+                }
+
+                sortInventory();
+                saveToLocalStorage();
+                refreshView();
+                showToast(`Imported ${imported} items from CSV.`, "success");
+                if (gsUrl && gsAutoSync) {
+                    await pushAllToGoogleSheets();
+                }
+            } catch (err) {
+                console.error("CSV import error:", err);
+                showToast("Failed to parse CSV file.", "error");
+            } finally {
+                e.target.value = '';
+            }
+        });
+
+        // ==========================================
+        // Toast & Utilities
+        // ==========================================
+        let toastTimeout;
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toastIcon');
+            const toastMessage = document.getElementById('toastMessage');
+
+            clearTimeout(toastTimeout);
+            toastMessage.innerText = message;
+
+            const bg = type === "success" ? "bg-emerald-600" : "bg-red-600";
+            toast.className = `fixed bottom-4 right-4 left-4 sm:left-auto ${bg} text-white px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 flex items-center gap-3 z-50 translate-y-0 opacity-100`;
+            toastIcon.innerHTML = type === "success"
+                ? `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
+                : `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+            }, 3200);
+        }
+
+        function escapeHtml(unsafe) {
+            if (unsafe === null || unsafe === undefined) return '';
+            return unsafe
+                .toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
