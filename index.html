@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockFlow - Inventory &amp; Sales Management</title>
+    <title>Rikai - Inventory &amp; Stock and Sales Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
@@ -57,12 +57,12 @@
 <body class="text-slate-800 antialiased min-h-screen flex flex-col">
 
     <!-- Top Navigation -->
-    <nav class="bg-indigo-600 text-white shadow-md sticky top-0 z-30">
+    <nav id="mainNavbar" class="bg-indigo-600 text-white shadow-md sticky top-0 z-30 transition-colors">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center gap-3">
                 <div class="flex items-center gap-6 min-w-0">
                     <div class="flex items-center min-w-0">
-                        <svg class="w-7 h-7 sm:w-8 sm:h-8 mr-2.5 text-indigo-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-7 h-7 sm:w-8 sm:h-8 mr-2.5 text-white/80 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                         </svg>
                         <span id="navBrandName" class="font-bold text-lg sm:text-xl tracking-tight truncate">StockFlow</span>
@@ -70,27 +70,27 @@
 
                     <!-- Desktop Tabs -->
                     <div class="hidden md:flex items-center space-x-1">
-                        <button type="button" onclick="switchTab('inventory')" data-tab="inventory" class="nav-tab px-3.5 py-2 rounded-lg text-sm font-medium transition-colors bg-indigo-700 text-white">
+                        <button type="button" onclick="switchTab('inventory')" data-tab="inventory" class="nav-tab px-3.5 py-2 rounded-lg text-sm font-medium transition-colors bg-black/20 text-white">
                             Inventory
                         </button>
-                        <button type="button" onclick="switchTab('sales')" data-tab="sales" class="nav-tab px-3.5 py-2 rounded-lg text-sm font-medium transition-colors text-indigo-100 hover:bg-indigo-500/60 flex items-center gap-1.5">
+                        <button type="button" onclick="switchTab('sales')" data-tab="sales" class="nav-tab px-3.5 py-2 rounded-lg text-sm font-medium transition-colors text-white/85 hover:bg-white/15 flex items-center gap-1.5">
                             <span>Products Sold</span>
-                            <span id="navSalesBadge" class="px-1.5 py-0.5 text-[10px] rounded-full bg-indigo-800 text-indigo-100 font-semibold">0</span>
+                            <span id="navSalesBadge" class="px-1.5 py-0.5 text-[10px] rounded-full bg-black/25 text-white font-semibold">0</span>
                         </button>
-                        <button type="button" onclick="switchTab('settings')" data-tab="settings" class="nav-tab px-3.5 py-2 rounded-lg text-sm font-medium transition-colors text-indigo-100 hover:bg-indigo-500/60">
+                        <button type="button" onclick="switchTab('settings')" data-tab="settings" class="nav-tab px-3.5 py-2 rounded-lg text-sm font-medium transition-colors text-white/85 hover:bg-white/15">
                             Master Settings
                         </button>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-                    <button type="button" onclick="syncNow()" id="quickSyncBtn" class="hidden items-center px-2.5 py-1.5 rounded-lg bg-indigo-500/70 hover:bg-indigo-500 text-xs font-medium text-white transition-colors" title="Sync with Google Sheets">
+                    <button type="button" onclick="syncNow()" id="quickSyncBtn" class="hidden items-center px-2.5 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-xs font-medium text-white transition-colors" title="Sync with Google Sheets">
                         <svg class="w-4 h-4 sm:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                         </svg>
                         <span class="hidden sm:inline">Sync</span>
                     </button>
-                    <button type="button" onclick="goToSheetsSettings()" id="auth-status" class="text-xs sm:text-sm font-medium bg-indigo-700/70 hover:bg-indigo-700 px-3 py-1.5 rounded-full text-indigo-100 flex items-center transition-colors cursor-pointer">
+                    <button type="button" onclick="goToSheetsSettings()" id="auth-status" class="text-xs sm:text-sm font-medium bg-black/20 hover:bg-black/30 px-3 py-1.5 rounded-full text-white flex items-center transition-colors cursor-pointer">
                         <span class="h-2 w-2 rounded-full bg-amber-300 mr-2"></span>
                         <span>Local Storage</span>
                     </button>
@@ -99,14 +99,14 @@
         </div>
 
         <!-- Mobile Tabs Bar -->
-        <div class="md:hidden border-t border-indigo-500/50 bg-indigo-700/60 px-2 py-1.5 grid grid-cols-3 gap-1">
-            <button type="button" onclick="switchTab('inventory')" data-tab="inventory" class="nav-tab-mobile py-1.5 px-2 rounded-md text-xs font-semibold text-center bg-white text-indigo-700">
+        <div class="md:hidden border-t border-white/15 bg-black/15 px-2 py-1.5 grid grid-cols-3 gap-1">
+            <button type="button" onclick="switchTab('inventory')" data-tab="inventory" class="nav-tab-mobile py-1.5 px-2 rounded-md text-xs font-semibold text-center bg-white text-slate-900">
                 Inventory
             </button>
-            <button type="button" onclick="switchTab('sales')" data-tab="sales" class="nav-tab-mobile py-1.5 px-2 rounded-md text-xs font-semibold text-center text-indigo-100">
+            <button type="button" onclick="switchTab('sales')" data-tab="sales" class="nav-tab-mobile py-1.5 px-2 rounded-md text-xs font-semibold text-center text-white/90">
                 Sold (<span id="mobileSalesBadge">0</span>)
             </button>
-            <button type="button" onclick="switchTab('settings')" data-tab="settings" class="nav-tab-mobile py-1.5 px-2 rounded-md text-xs font-semibold text-center text-indigo-100">
+            <button type="button" onclick="switchTab('settings')" data-tab="settings" class="nav-tab-mobile py-1.5 px-2 rounded-md text-xs font-semibold text-center text-white/90">
                 Settings
             </button>
         </div>
@@ -124,7 +124,7 @@
                 <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                     <div>
                         <h1 class="text-xl sm:text-2xl font-bold text-slate-900">Inventory &amp; Stock in Hand</h1>
-                        <p class="mt-1 text-sm text-slate-500">Scan barcodes to add, remove, or mark items sold with customer details.</p>
+                        <p class="mt-1 text-sm text-slate-500">Track apparel by type, dress length, sleeves, style look, size, and color.</p>
                     </div>
                     <div class="grid grid-cols-2 sm:flex sm:flex-row gap-2.5">
                         <button type="button" onclick="openScannerModal(false, 'ask')" class="inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition-colors">
@@ -177,13 +177,13 @@
                 </div>
 
                 <!-- Filters -->
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-3">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
                         <div class="relative lg:col-span-2">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                             </div>
-                            <input type="text" id="searchInput" placeholder="Search name, SKU, or custom type..." class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                            <input type="text" id="searchInput" placeholder="Search name, SKU, sleeves, length, notes..." class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
                         </div>
                         <select id="filterType" class="block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:ring-indigo-500 text-sm"></select>
                         <select id="filterGender" class="block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:ring-indigo-500 text-sm">
@@ -194,9 +194,18 @@
                             <option value="Kids">Kids</option>
                         </select>
                         <select id="filterSize" class="block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:ring-indigo-500 text-sm"></select>
-                        <div class="flex gap-2">
-                            <input type="text" id="filterColor" placeholder="Color..." class="block w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-indigo-500 text-sm">
-                            <button type="button" onclick="resetFilters()" id="resetFiltersBtn" class="hidden px-3 py-2 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg shrink-0">Clear</button>
+                        <input type="text" id="filterColor" placeholder="Color..." class="block w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-indigo-500 text-sm">
+                    </div>
+
+                    <!-- Looks Filter Row -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-3 pt-2 border-t border-slate-100">
+                        <select id="filterLength" class="block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:ring-indigo-500 text-sm"></select>
+                        <select id="filterSleeves" class="block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:ring-indigo-500 text-sm"></select>
+                        <select id="filterLook" class="block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:ring-indigo-500 text-sm"></select>
+                        <div class="flex items-center justify-end">
+                            <button type="button" onclick="resetFilters()" id="resetFiltersBtn" class="hidden w-full sm:w-auto px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
+                                Clear All Filters
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -208,8 +217,8 @@
                             <thead class="bg-slate-50">
                                 <tr>
                                     <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Item Details</th>
-                                    <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Category</th>
-                                    <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Specs &amp; Price</th>
+                                    <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Category &amp; Looks</th>
+                                    <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Size, Color &amp; Price</th>
                                     <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Stock in Hand</th>
                                     <th scope="col" class="px-6 py-3.5 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
                                 </tr>
@@ -280,9 +289,9 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                         </div>
-                        <input type="text" id="salesSearchInput" placeholder="Search customer name, phone, item, or SKU..." class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="text" id="salesSearchInput" placeholder="Search customer name, phone, item, or SKU..." class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-indigo-500">
                     </div>
-                    <input type="date" id="salesDateFilter" class="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <input type="date" id="salesDateFilter" class="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-indigo-500">
                     <button type="button" onclick="resetSalesFilters()" id="resetSalesFilterBtn" class="hidden px-3 py-2 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg">Clear</button>
                 </div>
 
@@ -316,7 +325,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <h1 class="text-xl sm:text-2xl font-bold text-slate-900">Master Settings</h1>
-                        <p class="mt-1 text-sm text-slate-500">Configure stock alert thresholds, categories, barcode labels, scanner rules, and Google Sheets sync.</p>
+                        <p class="mt-1 text-sm text-slate-500">Customize stock alerts, apparel looks (length, sleeves, style), UI theme, scanner rules, and Google Sheets sync.</p>
                     </div>
                     <button type="button" onclick="saveSettingsFromPage()" class="inline-flex items-center justify-center px-5 py-2.5 rounded-lg shadow-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors">
                         Save All Settings
@@ -340,13 +349,13 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label for="setLowStock" class="block text-sm font-medium text-slate-700">Low Stock Threshold (&le;)</label>
-                                <input type="number" id="setLowStock" min="1" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <input type="number" id="setLowStock" min="1" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
                                 <p class="mt-1 text-[11px] text-slate-500">Items at or below this count show as Low Stock.</p>
                             </div>
                             <div>
                                 <label for="setOutStock" class="block text-sm font-medium text-slate-700">Out of Stock Threshold (&le;)</label>
-                                <input type="number" id="setOutStock" min="0" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
-                                <p class="mt-1 text-[11px] text-slate-500">Usually 0 (set higher to keep a safety buffer).</p>
+                                <input type="number" id="setOutStock" min="0" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                                <p class="mt-1 text-[11px] text-slate-500">Usually 0 (increase for a safety buffer).</p>
                             </div>
                         </div>
 
@@ -359,15 +368,15 @@
                         </label>
                     </div>
 
-                    <!-- Card 2: Store, Currency & Item Defaults -->
+                    <!-- Card 2: Store, Theme, Currency & Defaults -->
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-4">
                         <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
                             <span class="p-2 rounded-lg bg-indigo-100 text-indigo-700">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                             </span>
                             <div>
-                                <h2 class="text-base font-bold text-slate-900">Store, Currency &amp; Item Defaults</h2>
-                                <p class="text-xs text-slate-500">Branding, currency formatting, and default new-item values</p>
+                                <h2 class="text-base font-bold text-slate-900">Store, Visual Look &amp; Defaults</h2>
+                                <p class="text-xs text-slate-500">Branding, dashboard color theme, currency, and new item defaults</p>
                             </div>
                         </div>
 
@@ -375,6 +384,16 @@
                             <div>
                                 <label for="setStoreName" class="block text-sm font-medium text-slate-700">Store / Brand Name</label>
                                 <input type="text" id="setStoreName" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                            </div>
+                            <div>
+                                <label for="setThemeColor" class="block text-sm font-medium text-slate-700">Dashboard Theme Color</label>
+                                <select id="setThemeColor" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
+                                    <option value="indigo">Indigo (Default)</option>
+                                    <option value="emerald">Emerald Green</option>
+                                    <option value="rose">Rose / Boutique Pink</option>
+                                    <option value="violet">Royal Violet</option>
+                                    <option value="slate">Charcoal Slate</option>
+                                </select>
                             </div>
                             <div>
                                 <label for="setCurrency" class="block text-sm font-medium text-slate-700">Currency Symbol</label>
@@ -396,30 +415,44 @@
                         </div>
                     </div>
 
-                    <!-- Card 3: Categories & Sizes Master Lists -->
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-4">
+                    <!-- Card 3: Categories, Sizes & Apparel Looks Master Lists -->
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-4">
                         <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
                             <span class="p-2 rounded-lg bg-purple-100 text-purple-700">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
                             </span>
                             <div>
-                                <h2 class="text-base font-bold text-slate-900">Product Types &amp; Sizes</h2>
-                                <p class="text-xs text-slate-500">Comma-separated master lists (Note: "Other" with custom input is always included)</p>
+                                <h2 class="text-base font-bold text-slate-900">Apparel Types, Sizes &amp; Customizable Looks</h2>
+                                <p class="text-xs text-slate-500">Comma-separated master options ("Other" with custom write-in is always available in every dropdown)</p>
                             </div>
                         </div>
 
-                        <div>
-                            <label for="setCustomTypes" class="block text-sm font-medium text-slate-700">Product Types (comma-separated)</label>
-                            <input type="text" id="setCustomTypes" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="Shirt, Pant, Dress, Tops, Accessories">
-                        </div>
-                        <div>
-                            <label for="setCustomSizes" class="block text-sm font-medium text-slate-700">Available Sizes (comma-separated)</label>
-                            <input type="text" id="setCustomSizes" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="XS, S, M, L, XL, XXL, N/A">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="setCustomTypes" class="block text-sm font-medium text-slate-700">Product Types</label>
+                                <input type="text" id="setCustomTypes" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="Shirt, Pant, Dress, Tops, Accessories">
+                            </div>
+                            <div>
+                                <label for="setCustomSizes" class="block text-sm font-medium text-slate-700">Sizes</label>
+                                <input type="text" id="setCustomSizes" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="XS, S, M, L, XL, XXL, N/A">
+                            </div>
+                            <div>
+                                <label for="setCustomLengths" class="block text-sm font-medium text-slate-700">Dress / Garment Lengths</label>
+                                <input type="text" id="setCustomLengths" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="N/A, Short, Knee-Length, Midi, Long, Cropped, Full Length">
+                            </div>
+                            <div>
+                                <label for="setCustomSleeves" class="block text-sm font-medium text-slate-700">Sleeve Styles</label>
+                                <input type="text" id="setCustomSleeves" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="N/A, Full Sleeves, Short Sleeves, No Sleeves, 3/4 Sleeves, Cap Sleeves">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="setCustomLooks" class="block text-sm font-medium text-slate-700">Look / Occasion / Style Tags</label>
+                                <input type="text" id="setCustomLooks" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="N/A, Casual, Formal, Party, Ethnic, Festive, Streetwear">
+                            </div>
                         </div>
                     </div>
 
                     <!-- Card 4: Scanner & Barcode Label Settings -->
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-4">
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-4">
                         <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
                             <span class="p-2 rounded-lg bg-cyan-100 text-cyan-700">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
@@ -451,14 +484,14 @@
                             </div>
                         </div>
 
-                        <div class="space-y-2.5 pt-1">
-                            <label class="flex items-center gap-3 cursor-pointer">
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-4 pt-1">
+                            <label class="flex items-center gap-2.5 cursor-pointer">
                                 <input type="checkbox" id="setBeepOnScan" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
-                                <span class="text-sm text-slate-800">Play confirmation beep when barcode scans</span>
+                                <span class="text-sm text-slate-800">Play beep when barcode scans</span>
                             </label>
-                            <label class="flex items-center gap-3 cursor-pointer">
+                            <label class="flex items-center gap-2.5 cursor-pointer">
                                 <input type="checkbox" id="setShowStoreOnLabel" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
-                                <span class="text-sm text-slate-800">Include Store Name &amp; Price on printed barcode labels</span>
+                                <span class="text-sm text-slate-800">Show Store Name &amp; Price on printed barcode labels</span>
                             </label>
                         </div>
                     </div>
@@ -472,7 +505,7 @@
                                 </span>
                                 <div>
                                     <h2 class="text-base font-bold text-slate-900">Google Sheets Master Data Sync</h2>
-                                    <p class="text-xs text-slate-500">Syncs 3 tabs automatically: <strong>Inventory</strong>, <strong>Sales</strong>, and <strong>Settings</strong></p>
+                                    <p class="text-xs text-slate-500">Syncs 3 tabs automatically: <strong>Inventory</strong> (with Looks), <strong>Sales</strong>, and <strong>Settings</strong></p>
                                 </div>
                             </div>
                             <button type="button" onclick="disconnectGoogleSheets()" class="text-xs text-red-600 hover:underline self-start sm:self-center">Disconnect URL</button>
@@ -481,7 +514,7 @@
                         <div>
                             <label for="gsUrlInput" class="block text-sm font-medium text-slate-700">Google Apps Script Web App URL</label>
                             <div class="mt-1.5 flex flex-col sm:flex-row gap-2">
-                                <input type="url" id="gsUrlInput" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                <input type="url" id="gsUrlInput" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500">
                                 <button type="button" onclick="saveAndTestGoogleSheets()" id="gsTestSaveBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg shrink-0">Save &amp; Connect</button>
                             </div>
                             <label class="mt-2.5 inline-flex items-center text-xs text-slate-600 cursor-pointer">
@@ -502,7 +535,7 @@
                         <!-- Apps Script Code Box -->
                         <div class="border border-slate-200 rounded-xl overflow-hidden">
                             <div class="bg-slate-100 px-4 py-2.5 flex items-center justify-between gap-2">
-                                <span class="text-xs font-semibold text-slate-700">Google Apps Script Code (Inventory + Sales + Settings)</span>
+                                <span class="text-xs font-semibold text-slate-700">Google Apps Script Code (Inventory + Looks + Sales + Settings)</span>
                                 <button type="button" onclick="copyAppsScriptCode()" class="px-3 py-1 bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium rounded-md">Copy Script</button>
                             </div>
                             <div class="p-4 text-xs text-slate-600 space-y-2 bg-white">
@@ -521,7 +554,7 @@
                     <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <h2 class="text-base font-bold text-slate-900">Import, Export &amp; Full Backup</h2>
-                            <p class="text-xs text-slate-500">Export inventory CSV, import CSV (<code>sku, name, type, customType, gender, size, color, price, qty</code>), or backup full JSON.</p>
+                            <p class="text-xs text-slate-500">Export or import CSV including length, sleeves, look, and notes, or download a full JSON backup.</p>
                         </div>
                         <div class="flex flex-wrap gap-2">
                             <button type="button" onclick="exportCsv()" class="px-3 py-2 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-lg">Export Inventory CSV</button>
@@ -549,7 +582,7 @@
     <div id="modalOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto">
 
         <!-- Add / Edit Item Modal -->
-        <div id="itemModal" class="bg-white rounded-2xl shadow-xl w-full max-w-md hidden flex-col overflow-hidden my-auto max-h-[92vh]">
+        <div id="itemModal" class="bg-white rounded-2xl shadow-xl w-full max-w-lg hidden flex-col overflow-hidden my-auto max-h-[92vh]">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <h3 id="modalTitle" class="text-lg font-bold text-slate-900">Add New Item</h3>
                 <button type="button" onclick="closeModals()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
@@ -562,17 +595,19 @@
                     <div>
                         <label for="itemSku" class="block text-sm font-medium text-slate-700">Barcode / QR / SKU</label>
                         <div class="mt-1 flex rounded-lg shadow-sm">
-                            <input type="text" id="itemSku" required class="block w-full border border-slate-300 rounded-l-lg px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm" placeholder="e.g. PRD-001">
+                            <input type="text" id="itemSku" required class="block w-full border border-slate-300 rounded-l-lg px-3 py-2 focus:ring-indigo-500 text-sm" placeholder="e.g. DRS-101">
                             <button type="button" onclick="generateSku()" class="px-2.5 flex items-center bg-slate-50 border-y border-slate-300 hover:bg-slate-100 text-xs font-medium text-slate-600">Auto</button>
                             <button type="button" onclick="openScannerModal(true)" class="px-3 flex items-center bg-slate-100 border border-l-0 border-slate-300 rounded-r-lg hover:bg-slate-200 text-slate-700" title="Scan barcode to fill SKU">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
                             </button>
                         </div>
                     </div>
+
                     <div>
                         <label for="itemName" class="block text-sm font-medium text-slate-700">Item Name</label>
-                        <input type="text" id="itemName" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-indigo-500 text-sm" placeholder="e.g. Classic Cotton Tee">
+                        <input type="text" id="itemName" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-indigo-500 text-sm" placeholder="e.g. Floral Maxi Dress">
                     </div>
+
                     <div class="grid grid-cols-2 gap-3 sm:gap-4">
                         <div>
                             <label for="itemType" class="block text-sm font-medium text-slate-700">Type</label>
@@ -589,35 +624,72 @@
                         </div>
                     </div>
 
-                    <!-- Custom Type Field when "Other" is selected -->
                     <div id="customTypeWrap" class="hidden">
-                        <label for="itemCustomType" class="block text-sm font-medium text-indigo-700">Specify What It Is (Other Type)</label>
-                        <input type="text" id="itemCustomType" class="mt-1 block w-full border border-indigo-300 bg-indigo-50/40 rounded-lg px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm" placeholder="e.g. Kurti, Denim Jacket, Scarf, Saree...">
+                        <label for="itemCustomType" class="block text-xs font-semibold text-indigo-700">Specify Type (Other)</label>
+                        <input type="text" id="itemCustomType" class="mt-1 block w-full border border-indigo-300 bg-indigo-50/40 rounded-lg px-3 py-2 text-sm" placeholder="e.g. Kurti, Denim Jacket, Saree...">
+                    </div>
+
+                    <!-- Apparel Looks & Style Section -->
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-600">Look &amp; Style Details</p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label for="itemLength" class="block text-xs font-medium text-slate-700">Length / Cut</label>
+                                <select id="itemLength" class="mt-1 block w-full border border-slate-300 rounded-lg px-2.5 py-2 bg-white text-sm"></select>
+                            </div>
+                            <div>
+                                <label for="itemSleeves" class="block text-xs font-medium text-slate-700">Sleeves</label>
+                                <select id="itemSleeves" class="mt-1 block w-full border border-slate-300 rounded-lg px-2.5 py-2 bg-white text-sm"></select>
+                            </div>
+                            <div>
+                                <label for="itemLook" class="block text-xs font-medium text-slate-700">Style / Look</label>
+                                <select id="itemLook" class="mt-1 block w-full border border-slate-300 rounded-lg px-2.5 py-2 bg-white text-sm"></select>
+                            </div>
+                        </div>
+
+                        <div id="customLengthWrap" class="hidden">
+                            <label for="itemCustomLength" class="block text-xs font-semibold text-indigo-700">Specify Length (Other)</label>
+                            <input type="text" id="itemCustomLength" class="mt-1 block w-full border border-indigo-300 bg-white rounded-lg px-3 py-1.5 text-sm" placeholder="e.g. Floor-Length, Asymmetric">
+                        </div>
+                        <div id="customSleevesWrap" class="hidden">
+                            <label for="itemCustomSleeves" class="block text-xs font-semibold text-indigo-700">Specify Sleeves (Other)</label>
+                            <input type="text" id="itemCustomSleeves" class="mt-1 block w-full border border-indigo-300 bg-white rounded-lg px-3 py-1.5 text-sm" placeholder="e.g. Bell Sleeves, Puff Sleeves, Cold Shoulder">
+                        </div>
+                        <div id="customLookWrap" class="hidden">
+                            <label for="itemCustomLook" class="block text-xs font-semibold text-indigo-700">Specify Style / Look (Other)</label>
+                            <input type="text" id="itemCustomLook" class="mt-1 block w-full border border-indigo-300 bg-white rounded-lg px-3 py-1.5 text-sm" placeholder="e.g. Boho, Indo-Western, Vintage">
+                        </div>
+
+                        <div>
+                            <label for="itemLookNotes" class="block text-xs font-medium text-slate-700">Look / Pattern Notes (Optional)</label>
+                            <input type="text" id="itemLookNotes" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-1.5 bg-white text-sm" placeholder="e.g. V-neck, floral print, side slit, cotton">
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3 sm:gap-4">
                         <div>
                             <label for="itemSize" class="block text-sm font-medium text-slate-700">Size</label>
-                            <select id="itemSize" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:ring-indigo-500 text-sm"></select>
+                            <select id="itemSize" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm"></select>
                         </div>
                         <div>
                             <label for="itemColor" class="block text-sm font-medium text-slate-700">Color</label>
-                            <input type="text" id="itemColor" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-indigo-500 text-sm" placeholder="e.g. Black">
+                            <input type="text" id="itemColor" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="e.g. Navy Blue">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3 sm:gap-4">
                         <div>
                             <label for="itemQty" class="block text-sm font-medium text-slate-700">Stock in Hand (Qty)</label>
-                            <input type="number" id="itemQty" min="0" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-indigo-500 text-sm" value="1">
+                            <input type="number" id="itemQty" min="0" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" value="1">
                         </div>
                         <div>
                             <label for="itemPrice" class="block text-sm font-medium text-slate-700">Unit Price (<span class="currency-symbol">₹</span>)</label>
-                            <input type="number" id="itemPrice" min="0" step="0.01" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-indigo-500 text-sm" value="0">
+                            <input type="number" id="itemPrice" min="0" step="0.01" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" value="0">
                         </div>
                     </div>
 
-                    <div class="pt-3 flex justify-end gap-3">
+                    <div class="pt-2 flex justify-end gap-3">
                         <button type="button" onclick="closeModals()" class="px-4 py-2 border border-slate-300 text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50">Cancel</button>
                         <button type="submit" id="saveItemBtn" class="px-5 py-2 text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center min-w-[90px]">Save</button>
                     </div>
@@ -625,7 +697,7 @@
             </div>
         </div>
 
-        <!-- Scanned Item Quick Action Modal (Add Qty / Delete Qty / Mark Sold) -->
+        <!-- Scanned Item Quick Action Modal -->
         <div id="scanActionModal" class="bg-white rounded-2xl shadow-xl w-full max-w-md hidden flex-col overflow-hidden my-auto max-h-[92vh]">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <div>
@@ -638,11 +710,11 @@
             </div>
 
             <div class="p-5 overflow-y-auto space-y-4">
-                <!-- Item Summary Banner -->
                 <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
                     <div class="min-w-0">
                         <p id="qaItemName" class="text-sm font-bold text-slate-900 truncate">--</p>
                         <p id="qaItemSpecs" class="text-xs text-slate-600 mt-0.5">--</p>
+                        <p id="qaItemLooks" class="text-[11px] text-indigo-700 font-medium mt-0.5"></p>
                     </div>
                     <div class="text-right shrink-0">
                         <p class="text-[11px] uppercase tracking-wide text-slate-500 font-semibold">Stock in Hand</p>
@@ -653,7 +725,6 @@
                     </div>
                 </div>
 
-                <!-- 3 Action Mode Switcher -->
                 <div class="grid grid-cols-3 gap-1.5 bg-slate-100 p-1 rounded-xl">
                     <button type="button" onclick="switchQuickActionMode('add')" data-qamode="add" class="qa-mode-btn py-2 px-2 rounded-lg text-xs font-semibold transition-colors bg-white text-indigo-700 shadow-sm">
                         + Add Qty
@@ -666,7 +737,7 @@
                     </button>
                 </div>
 
-                <!-- Panel A: Add Quantity -->
+                <!-- Add Qty -->
                 <form id="qaAddForm" class="space-y-3">
                     <div>
                         <label class="block text-sm font-medium text-slate-700">Quantity to Add</label>
@@ -674,7 +745,7 @@
                             <button type="button" onclick="bumpInput('qaAddQty', 1)" class="px-3 py-2 rounded-lg border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold">+1</button>
                             <button type="button" onclick="bumpInput('qaAddQty', 5)" class="px-3 py-2 rounded-lg border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold">+5</button>
                             <button type="button" onclick="bumpInput('qaAddQty', 10)" class="px-3 py-2 rounded-lg border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold">+10</button>
-                            <input type="number" id="qaAddQty" min="1" value="1" required class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-center focus:ring-indigo-500">
+                            <input type="number" id="qaAddQty" min="1" value="1" required class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-center">
                         </div>
                     </div>
                     <p id="qaAddPreview" class="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 font-medium"></p>
@@ -683,7 +754,7 @@
                     </button>
                 </form>
 
-                <!-- Panel B: Remove / Delete Quantity -->
+                <!-- Remove Qty -->
                 <form id="qaRemoveForm" class="hidden space-y-3">
                     <div>
                         <label class="block text-sm font-medium text-slate-700">Quantity to Remove / Delete</label>
@@ -691,7 +762,7 @@
                             <button type="button" onclick="bumpInput('qaRemoveQty', 1)" class="px-3 py-2 rounded-lg border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold">1</button>
                             <button type="button" onclick="bumpInput('qaRemoveQty', 5)" class="px-3 py-2 rounded-lg border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold">5</button>
                             <button type="button" onclick="bumpInput('qaRemoveQty', 10)" class="px-3 py-2 rounded-lg border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold">10</button>
-                            <input type="number" id="qaRemoveQty" min="1" value="1" required class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-center focus:ring-red-500">
+                            <input type="number" id="qaRemoveQty" min="1" value="1" required class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-center">
                         </div>
                     </div>
                     <p id="qaRemovePreview" class="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 font-medium"></p>
@@ -700,16 +771,16 @@
                     </button>
                 </form>
 
-                <!-- Panel C: Mark as Sold + Customer Details -->
+                <!-- Mark Sold -->
                 <form id="qaSellForm" class="hidden space-y-3">
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label for="qaSellQty" class="block text-xs font-medium text-slate-700">Qty Sold</label>
-                            <input type="number" id="qaSellQty" min="1" value="1" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold focus:ring-emerald-500">
+                            <input type="number" id="qaSellQty" min="1" value="1" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold">
                         </div>
                         <div>
                             <label for="qaSellPrice" class="block text-xs font-medium text-slate-700">Unit Price (<span class="currency-symbol">₹</span>)</label>
-                            <input type="number" id="qaSellPrice" min="0" step="0.01" value="0" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold focus:ring-emerald-500">
+                            <input type="number" id="qaSellPrice" min="0" step="0.01" value="0" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold">
                         </div>
                     </div>
                     <p id="qaSellPreview" class="text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 font-medium"></p>
@@ -719,12 +790,10 @@
                             <span class="text-xs font-semibold text-slate-700 uppercase tracking-wide">Customer Details</span>
                             <button type="button" onclick="document.getElementById('qaCustomerName').value='Walk-in Customer'" class="text-[11px] text-indigo-600 hover:underline font-medium">Fill "Walk-in"</button>
                         </div>
-                        <div>
-                            <input type="text" id="qaCustomerName" required placeholder="Customer Name *" class="block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500">
-                        </div>
+                        <input type="text" id="qaCustomerName" required placeholder="Customer Name *" class="block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                            <input type="tel" id="qaCustomerPhone" placeholder="Phone / WhatsApp" class="block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500">
-                            <input type="text" id="qaCustomerNotes" placeholder="Notes / Address / Payment" class="block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500">
+                            <input type="tel" id="qaCustomerPhone" placeholder="Phone / WhatsApp" class="block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                            <input type="text" id="qaCustomerNotes" placeholder="Notes / Address / Payment" class="block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
                         </div>
                     </div>
 
@@ -733,7 +802,6 @@
                     </button>
                 </form>
 
-                <!-- Footer shortcuts -->
                 <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                     <button type="button" onclick="editFromQuickAction()" class="text-xs font-medium text-indigo-600 hover:underline">Edit Full Item Details</button>
                     <button type="button" onclick="scanAnother()" class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-medium text-slate-700">
@@ -765,7 +833,7 @@
 
                 <div class="w-full pt-2 border-t border-slate-100 space-y-2.5">
                     <form id="manualScanForm" class="flex gap-2">
-                        <input type="text" id="manualScanInput" placeholder="Type or use USB scanner..." class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-indigo-500">
+                        <input type="text" id="manualScanInput" placeholder="Type or use USB scanner..." class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm">
                         <button type="submit" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg">Go</button>
                     </form>
                     <div class="flex items-center gap-2">
@@ -817,13 +885,18 @@
 
     <script type="module">
         // ==========================================
-        // Google Apps Script (Inventory + Sales + Settings)
+        // Google Apps Script (Inventory + Looks + Sales + Settings)
         // ==========================================
         const APPS_SCRIPT_CODE = `const INV_SHEET = "Inventory";
 const SALES_SHEET = "Sales";
 const SETTINGS_SHEET = "Settings";
 
-const INV_HEADERS = ["id", "sku", "name", "type", "customType", "gender", "size", "color", "price", "qty", "updatedAt", "createdAt"];
+// Appends Look columns at the end so existing 12-col sheets upgrade without shifting existing rows
+const INV_HEADERS = [
+  "id", "sku", "name", "type", "customType", "gender", "size", "color",
+  "price", "qty", "updatedAt", "createdAt",
+  "length", "customLength", "sleeves", "customSleeves", "look", "customLook", "lookNotes"
+];
 const SALES_HEADERS = ["saleId", "docId", "sku", "itemName", "specs", "qtySold", "stockAfter", "unitPrice", "totalAmount", "customerName", "customerPhone", "customerNotes", "soldAt"];
 const SETTINGS_HEADERS = ["key", "value"];
 
@@ -835,6 +908,8 @@ function getOrCreateSheet(name, headers) {
     sheet.appendRow(headers);
     sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#f1f5f9");
     sheet.setFrozenRows(1);
+  } else if (sheet.getLastColumn() < headers.length) {
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight("bold").setBackground("#f1f5f9");
   }
   return sheet;
 }
@@ -846,11 +921,12 @@ function jsonOutput(obj) {
 function readInventory(sheet) {
   const lastRow = sheet.getLastRow();
   if (lastRow <= 1) return [];
-  const data = sheet.getRange(2, 1, lastRow - 1, INV_HEADERS.length).getValues();
+  const cols = Math.max(sheet.getLastColumn(), INV_HEADERS.length);
+  const data = sheet.getRange(2, 1, lastRow - 1, cols).getValues();
   const items = [];
   for (let i = 0; i < data.length; i++) {
     const r = data[i];
-    if (String(r[1]).trim() === "" && String(r[2]).trim() === "") continue;
+    if (String(r[1] || "").trim() === "" && String(r[2] || "").trim() === "") continue;
     items.push({
       docId: String(r[0] || r[1] || ("ROW-" + (i + 2))),
       sku: String(r[1] || ""),
@@ -863,7 +939,14 @@ function readInventory(sheet) {
       price: Number(r[8]) || 0,
       qty: Number(r[9]) || 0,
       updatedAt: Number(r[10]) || Date.now(),
-      createdAt: Number(r[11]) || Date.now()
+      createdAt: Number(r[11]) || Date.now(),
+      length: String(r[12] || "N/A"),
+      customLength: String(r[13] || ""),
+      sleeves: String(r[14] || "N/A"),
+      customSleeves: String(r[15] || ""),
+      look: String(r[16] || "N/A"),
+      customLook: String(r[17] || ""),
+      lookNotes: String(r[18] || "")
     });
   }
   return items;
@@ -876,7 +959,7 @@ function readSales(sheet) {
   const sales = [];
   for (let i = 0; i < data.length; i++) {
     const r = data[i];
-    if (String(r[0]).trim() === "" && String(r[2]).trim() === "") continue;
+    if (String(r[0] || "").trim() === "" && String(r[2] || "").trim() === "") continue;
     sales.push({
       saleId: String(r[0] || ("SALE-" + (i + 2))),
       docId: String(r[1] || ""),
@@ -903,6 +986,20 @@ function readSettings(sheet) {
   try { return JSON.parse(val); } catch (e) { return null; }
 }
 
+function itemToRow(item) {
+  return [
+    String(item.docId), String(item.sku), String(item.name),
+    String(item.type || "Other"), String(item.customType || ""),
+    String(item.gender || "Unisex"), String(item.size || "N/A"),
+    String(item.color || ""), Number(item.price) || 0,
+    Number(item.qty) || 0, Number(item.updatedAt) || Date.now(), Number(item.createdAt) || Date.now(),
+    String(item.length || "N/A"), String(item.customLength || ""),
+    String(item.sleeves || "N/A"), String(item.customSleeves || ""),
+    String(item.look || "N/A"), String(item.customLook || ""),
+    String(item.lookNotes || "")
+  ];
+}
+
 function upsertInventoryRow(invSheet, item) {
   const lastRow = invSheet.getLastRow();
   let targetRow = -1;
@@ -915,13 +1012,7 @@ function upsertInventoryRow(invSheet, item) {
       }
     }
   }
-  const rowValues = [
-    String(item.docId), String(item.sku), String(item.name),
-    String(item.type || "Other"), String(item.customType || ""),
-    String(item.gender || "Unisex"), String(item.size || "N/A"),
-    String(item.color || ""), Number(item.price) || 0,
-    Number(item.qty) || 0, Number(item.updatedAt) || Date.now(), Number(item.createdAt) || Date.now()
-  ];
+  const rowValues = itemToRow(item);
   if (targetRow > 0) invSheet.getRange(targetRow, 1, 1, INV_HEADERS.length).setValues([rowValues]);
   else invSheet.appendRow(rowValues);
 }
@@ -1010,13 +1101,7 @@ function doPost(e) {
       if (Array.isArray(payload.items)) {
         if (invSheet.getLastRow() > 1) invSheet.getRange(2, 1, invSheet.getLastRow() - 1, INV_HEADERS.length).clearContent();
         if (payload.items.length > 0) {
-          const rows = payload.items.map(item => [
-            String(item.docId), String(item.sku), String(item.name),
-            String(item.type || "Other"), String(item.customType || ""),
-            String(item.gender || "Unisex"), String(item.size || "N/A"),
-            String(item.color || ""), Number(item.price) || 0,
-            Number(item.qty) || 0, Number(item.updatedAt) || Date.now(), Number(item.createdAt) || Date.now()
-          ]);
+          const rows = payload.items.map(itemToRow);
           invSheet.getRange(2, 1, rows.length, INV_HEADERS.length).setValues(rows);
         }
       }
@@ -1058,6 +1143,7 @@ function doPost(e) {
 
         const DEFAULT_SETTINGS = {
             storeName: 'StockFlow',
+            themeColor: 'indigo',
             currency: '₹',
             lowStockThreshold: 10,
             outOfStockThreshold: 0,
@@ -1069,7 +1155,18 @@ function doPost(e) {
             defaultScanAction: 'ask',
             beepOnScan: true,
             customTypes: ['Shirt', 'Pant', 'Dress', 'Tops', 'Accessories'],
-            customSizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'N/A']
+            customSizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'N/A'],
+            customLengths: ['N/A', 'Short', 'Knee-Length', 'Midi', 'Long', 'Cropped', 'Full Length'],
+            customSleeves: ['N/A', 'Full Sleeves', 'Short Sleeves', 'No Sleeves', '3/4 Sleeves', 'Cap Sleeves'],
+            customLooks: ['N/A', 'Casual', 'Formal', 'Party', 'Ethnic', 'Festive', 'Streetwear']
+        };
+
+        const THEME_NAV_CLASSES = {
+            indigo: 'bg-indigo-600 text-white shadow-md sticky top-0 z-30 transition-colors',
+            emerald: 'bg-emerald-700 text-white shadow-md sticky top-0 z-30 transition-colors',
+            rose: 'bg-rose-600 text-white shadow-md sticky top-0 z-30 transition-colors',
+            violet: 'bg-violet-700 text-white shadow-md sticky top-0 z-30 transition-colors',
+            slate: 'bg-slate-800 text-white shadow-md sticky top-0 z-30 transition-colors'
         };
 
         let inventoryData = [];
@@ -1080,7 +1177,7 @@ function doPost(e) {
         let activeConfirmHandler = null;
         let currentQuickActionItemId = null;
         let currentQuickActionMode = 'add';
-        let scannerLookupIntent = 'ask'; // 'ask' | 'sell'
+        let scannerLookupIntent = 'ask';
 
         let fb = null;
         let userId = null;
@@ -1104,6 +1201,9 @@ function doPost(e) {
         const filterGender = document.getElementById('filterGender');
         const filterSize = document.getElementById('filterSize');
         const filterColor = document.getElementById('filterColor');
+        const filterLength = document.getElementById('filterLength');
+        const filterSleeves = document.getElementById('filterSleeves');
+        const filterLook = document.getElementById('filterLook');
         const resetFiltersBtn = document.getElementById('resetFiltersBtn');
 
         const salesSearchInput = document.getElementById('salesSearchInput');
@@ -1126,7 +1226,6 @@ function doPost(e) {
             applySettingsToUI();
             refreshAllViews();
 
-            // Optional Firebase if sandbox globals exist
             if (typeof __firebase_config !== 'undefined') {
                 try {
                     const appId = typeof __app_id !== 'undefined' ? __app_id : 'demo-inventory-app';
@@ -1168,7 +1267,6 @@ function doPost(e) {
 
         function loadAllLocal() {
             try {
-                // Backward-compatible fallback to v1 inventory key if v2 is empty
                 const invRaw = localStorage.getItem(LOCAL_INV_KEY) || localStorage.getItem('stockflow_inventory_v1');
                 inventoryData = invRaw ? JSON.parse(invRaw) : [];
                 if (!Array.isArray(inventoryData)) inventoryData = [];
@@ -1226,17 +1324,17 @@ function doPost(e) {
 
             document.querySelectorAll('.nav-tab').forEach(btn => {
                 const isActive = btn.getAttribute('data-tab') === tabName;
-                btn.classList.toggle('bg-indigo-700', isActive);
+                btn.classList.toggle('bg-black/20', isActive);
                 btn.classList.toggle('text-white', isActive);
-                btn.classList.toggle('text-indigo-100', !isActive);
-                btn.classList.toggle('hover:bg-indigo-500/60', !isActive);
+                btn.classList.toggle('text-white/85', !isActive);
+                btn.classList.toggle('hover:bg-white/15', !isActive);
             });
 
             document.querySelectorAll('.nav-tab-mobile').forEach(btn => {
                 const isActive = btn.getAttribute('data-tab') === tabName;
                 btn.classList.toggle('bg-white', isActive);
-                btn.classList.toggle('text-indigo-700', isActive);
-                btn.classList.toggle('text-indigo-100', !isActive);
+                btn.classList.toggle('text-slate-900', isActive);
+                btn.classList.toggle('text-white/90', !isActive);
             });
 
             if (tabName === 'settings') populateSettingsForm();
@@ -1250,8 +1348,21 @@ function doPost(e) {
             }, 50);
         };
 
+        function populateSelectWithOther(selectEl, list, defaultAllLabel = null) {
+            const prev = selectEl.value;
+            let html = defaultAllLabel ? `<option value="">${escapeHtml(defaultAllLabel)}</option>` : '';
+            html += list.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+            html += `<option value="Other">${defaultAllLabel ? 'Other' : 'Other (Specify...)'}</option>`;
+            selectEl.innerHTML = html;
+            if (prev && Array.from(selectEl.options).some(o => o.value === prev)) {
+                selectEl.value = prev;
+            }
+        }
+
         function applySettingsToUI() {
             document.getElementById('navBrandName').innerText = settings.storeName || 'StockFlow';
+            document.getElementById('mainNavbar').className = THEME_NAV_CLASSES[settings.themeColor] || THEME_NAV_CLASSES.indigo;
+
             document.querySelectorAll('.currency-symbol').forEach(el => {
                 el.innerText = settings.currency || '₹';
             });
@@ -1259,28 +1370,26 @@ function doPost(e) {
             document.getElementById('statLowLabel').innerText = `Low Stock (≤${settings.lowStockThreshold})`;
             document.getElementById('statOutLabel').innerText = `Out of Stock (≤${settings.outOfStockThreshold})`;
 
-            // Rebuild Type & Size dropdowns in Filters and Add/Edit Modal
-            const types = Array.isArray(settings.customTypes) && settings.customTypes.length
-                ? settings.customTypes : DEFAULT_SETTINGS.customTypes;
-            const sizes = Array.isArray(settings.customSizes) && settings.customSizes.length
-                ? settings.customSizes : DEFAULT_SETTINGS.customSizes;
+            const types = settings.customTypes?.length ? settings.customTypes : DEFAULT_SETTINGS.customTypes;
+            const sizes = settings.customSizes?.length ? settings.customSizes : DEFAULT_SETTINGS.customSizes;
+            const lengths = settings.customLengths?.length ? settings.customLengths : DEFAULT_SETTINGS.customLengths;
+            const sleeves = settings.customSleeves?.length ? settings.customSleeves : DEFAULT_SETTINGS.customSleeves;
+            const looks = settings.customLooks?.length ? settings.customLooks : DEFAULT_SETTINGS.customLooks;
 
-            const prevFilterType = filterType.value;
-            filterType.innerHTML = `<option value="">All Types</option>` +
-                types.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('') +
-                `<option value="Other">Other</option>`;
-            filterType.value = prevFilterType;
+            populateSelectWithOther(filterType, types, 'All Types');
+            populateSelectWithOther(document.getElementById('itemType'), types, null);
 
-            const itemTypeEl = document.getElementById('itemType');
-            const prevItemType = itemTypeEl.value;
-            itemTypeEl.innerHTML =
-                types.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('') +
-                `<option value="Other">Other (Specify...)</option>`;
-            if (prevItemType) itemTypeEl.value = prevItemType;
+            populateSelectWithOther(filterLength, lengths, 'All Lengths');
+            populateSelectWithOther(document.getElementById('itemLength'), lengths, null);
+
+            populateSelectWithOther(filterSleeves, sleeves, 'All Sleeves');
+            populateSelectWithOther(document.getElementById('itemSleeves'), sleeves, null);
+
+            populateSelectWithOther(filterLook, looks, 'All Styles / Looks');
+            populateSelectWithOther(document.getElementById('itemLook'), looks, null);
 
             const prevFilterSize = filterSize.value;
-            filterSize.innerHTML = `<option value="">All Sizes</option>` +
-                sizes.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+            filterSize.innerHTML = `<option value="">All Sizes</option>` + sizes.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
             filterSize.value = prevFilterSize;
 
             const itemSizeEl = document.getElementById('itemSize');
@@ -1294,11 +1403,15 @@ function doPost(e) {
             document.getElementById('setOutStock').value = settings.outOfStockThreshold;
             document.getElementById('setPreventOversell').checked = Boolean(settings.preventOversell);
             document.getElementById('setStoreName').value = settings.storeName || 'StockFlow';
+            document.getElementById('setThemeColor').value = settings.themeColor || 'indigo';
             document.getElementById('setCurrency').value = settings.currency || '₹';
             document.getElementById('setDefaultGender').value = settings.defaultGender || 'Unisex';
             document.getElementById('setDefaultQty').value = settings.defaultQty ?? 1;
             document.getElementById('setCustomTypes').value = (settings.customTypes || []).join(', ');
             document.getElementById('setCustomSizes').value = (settings.customSizes || []).join(', ');
+            document.getElementById('setCustomLengths').value = (settings.customLengths || []).join(', ');
+            document.getElementById('setCustomSleeves').value = (settings.customSleeves || []).join(', ');
+            document.getElementById('setCustomLooks').value = (settings.customLooks || []).join(', ');
             document.getElementById('setDefaultScanAction').value = settings.defaultScanAction || 'ask';
             document.getElementById('setBarcodeFormat').value = settings.barcodeFormat || 'CODE128';
             document.getElementById('setBeepOnScan').checked = Boolean(settings.beepOnScan);
@@ -1316,8 +1429,9 @@ function doPost(e) {
                 return;
             }
 
-            const parseCsvList = (str, fallback) => {
-                const arr = str.split(',').map(s => s.trim()).filter(Boolean).filter(s => s.toLowerCase() !== 'other');
+            const parseCsvList = (str, fallback, excludeOther = true) => {
+                const arr = str.split(',').map(s => s.trim()).filter(Boolean)
+                    .filter(s => !excludeOther || s.toLowerCase() !== 'other');
                 return arr.length > 0 ? [...new Set(arr)] : fallback;
             };
 
@@ -1327,11 +1441,15 @@ function doPost(e) {
                 outOfStockThreshold: out,
                 preventOversell: document.getElementById('setPreventOversell').checked,
                 storeName: document.getElementById('setStoreName').value.trim() || 'StockFlow',
+                themeColor: document.getElementById('setThemeColor').value || 'indigo',
                 currency: document.getElementById('setCurrency').value.trim() || '₹',
                 defaultGender: document.getElementById('setDefaultGender').value || 'Unisex',
                 defaultQty: Math.max(0, parseInt(document.getElementById('setDefaultQty').value, 10) || 0),
                 customTypes: parseCsvList(document.getElementById('setCustomTypes').value, DEFAULT_SETTINGS.customTypes),
-                customSizes: parseCsvList(document.getElementById('setCustomSizes').value, DEFAULT_SETTINGS.customSizes),
+                customSizes: parseCsvList(document.getElementById('setCustomSizes').value, DEFAULT_SETTINGS.customSizes, false),
+                customLengths: parseCsvList(document.getElementById('setCustomLengths').value, DEFAULT_SETTINGS.customLengths),
+                customSleeves: parseCsvList(document.getElementById('setCustomSleeves').value, DEFAULT_SETTINGS.customSleeves),
+                customLooks: parseCsvList(document.getElementById('setCustomLooks').value, DEFAULT_SETTINGS.customLooks),
                 defaultScanAction: document.getElementById('setDefaultScanAction').value || 'ask',
                 barcodeFormat: document.getElementById('setBarcodeFormat').value || 'CODE128',
                 beepOnScan: document.getElementById('setBeepOnScan').checked,
@@ -1357,21 +1475,28 @@ function doPost(e) {
             return `${cur}${num.toLocaleString(undefined, { minimumFractionDigits: num % 1 === 0 ? 0 : 2, maximumFractionDigits: 2 })}`;
         }
 
+        function formatOptionDisplay(val, customVal, prefixOther = false) {
+            if (!val || val === 'N/A') return '';
+            if (val === 'Other' && customVal) return prefixOther ? `Other: ${customVal}` : customVal;
+            if (val === 'Other') return 'Other';
+            return val;
+        }
+
         function formatItemType(item) {
-            if (item.type === 'Other' && item.customType) {
-                return `Other: ${item.customType}`;
-            }
-            return item.type || 'N/A';
+            return formatOptionDisplay(item.type, item.customType, true) || 'N/A';
+        }
+
+        function getItemLookTags(item) {
+            const len = formatOptionDisplay(item.length, item.customLength);
+            const slv = formatOptionDisplay(item.sleeves, item.customSleeves);
+            const lk = formatOptionDisplay(item.look, item.customLook);
+            return [len, slv, lk].filter(Boolean);
         }
 
         function getStockBadge(qty) {
             const q = Math.max(0, parseInt(qty, 10) || 0);
-            if (q <= settings.outOfStockThreshold) {
-                return { label: "Out of Stock", cls: "bg-red-100 text-red-800 border-red-200" };
-            }
-            if (q <= settings.lowStockThreshold) {
-                return { label: "Low Stock", cls: "bg-amber-100 text-amber-800 border-amber-200" };
-            }
+            if (q <= settings.outOfStockThreshold) return { label: "Out of Stock", cls: "bg-red-100 text-red-800 border-red-200" };
+            if (q <= settings.lowStockThreshold) return { label: "Low Stock", cls: "bg-amber-100 text-amber-800 border-amber-200" };
             return { label: "In Stock", cls: "bg-emerald-100 text-emerald-800 border-emerald-200" };
         }
 
@@ -1423,20 +1548,30 @@ function doPost(e) {
             const fGender = filterGender.value;
             const fSize = filterSize.value;
             const fColor = filterColor.value.toLowerCase().trim();
+            const fLength = filterLength.value;
+            const fSleeves = filterSleeves.value;
+            const fLook = filterLook.value;
 
-            const hasFilter = Boolean(query || fType || fGender || fSize || fColor);
+            const hasFilter = Boolean(query || fType || fGender || fSize || fColor || fLength || fSleeves || fLook);
             resetFiltersBtn.classList.toggle('hidden', !hasFilter);
 
             const filtered = inventoryData.filter(item => {
-                const matchSearch = !query ||
-                    (item.name && item.name.toLowerCase().includes(query)) ||
-                    (item.sku && item.sku.toLowerCase().includes(query)) ||
-                    (item.customType && item.customType.toLowerCase().includes(query));
+                const matchSearch = !query || [
+                    item.name, item.sku, item.customType,
+                    item.length, item.customLength,
+                    item.sleeves, item.customSleeves,
+                    item.look, item.customLook, item.lookNotes
+                ].some(v => v && v.toLowerCase().includes(query));
+
                 const matchType = !fType || item.type === fType;
                 const matchGender = !fGender || item.gender === fGender;
                 const matchSize = !fSize || item.size === fSize;
                 const matchColor = !fColor || (item.color && item.color.toLowerCase().includes(fColor));
-                return matchSearch && matchType && matchGender && matchSize && matchColor;
+                const matchLength = !fLength || (item.length || 'N/A') === fLength;
+                const matchSleeves = !fSleeves || (item.sleeves || 'N/A') === fSleeves;
+                const matchLook = !fLook || (item.look || 'N/A') === fLook;
+
+                return matchSearch && matchType && matchGender && matchSize && matchColor && matchLength && matchSleeves && matchLook;
             });
 
             renderInventory(filtered);
@@ -1448,14 +1583,14 @@ function doPost(e) {
             filterGender.value = '';
             filterSize.value = '';
             filterColor.value = '';
+            filterLength.value = '';
+            filterSleeves.value = '';
+            filterLook.value = '';
             handleFilters();
         };
 
-        searchInput.addEventListener('input', handleFilters);
-        filterType.addEventListener('change', handleFilters);
-        filterGender.addEventListener('change', handleFilters);
-        filterSize.addEventListener('change', handleFilters);
-        filterColor.addEventListener('input', handleFilters);
+        [searchInput, filterColor].forEach(el => el.addEventListener('input', handleFilters));
+        [filterType, filterGender, filterSize, filterLength, filterSleeves, filterLook].forEach(el => el.addEventListener('change', handleFilters));
 
         function renderInventory(dataToRender) {
             if (dataToRender.length === 0) {
@@ -1478,24 +1613,33 @@ function doPost(e) {
                 const badge = getStockBadge(qty);
                 const swatchColor = resolveCssColor(item.color);
                 const typeDisplay = formatItemType(item);
+                const lookTags = getItemLookTags(item);
                 const priceDisplay = item.price ? formatMoney(item.price) : '—';
+
+                const lookPillsHtml = lookTags.map(tag =>
+                    `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200 text-[11px] font-medium">${escapeHtml(tag)}</span>`
+                ).join('');
 
                 // Desktop Row
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition-colors group";
                 tr.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="px-6 py-4">
                         <div class="flex flex-col">
                             <span class="text-sm font-semibold text-slate-900">${escapeHtml(item.name)}</span>
                             <span class="text-xs text-slate-500 font-mono mt-0.5">SKU: ${escapeHtml(item.sku)}</span>
+                            ${item.lookNotes ? `<span class="text-[11px] text-slate-500 italic mt-0.5">${escapeHtml(item.lookNotes)}</span>` : ''}
                         </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex flex-col gap-1">
-                            <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-medium rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200 w-fit">
-                                ${escapeHtml(typeDisplay)}
-                            </span>
-                            <span class="text-xs text-slate-500 font-medium">${escapeHtml(item.gender || 'N/A')}</span>
+                    <td class="px-6 py-4">
+                        <div class="flex flex-col gap-1.5">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-medium rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">
+                                    ${escapeHtml(typeDisplay)}
+                                </span>
+                                <span class="text-xs text-slate-500 font-medium">${escapeHtml(item.gender || 'N/A')}</span>
+                            </div>
+                            ${lookPillsHtml ? `<div class="flex flex-wrap gap-1">${lookPillsHtml}</div>` : ''}
                         </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
@@ -1524,9 +1668,7 @@ function doPost(e) {
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div class="flex justify-end gap-1.5 opacity-100 md:opacity-80 md:group-hover:opacity-100 transition-opacity">
-                            <button type="button" class="sell-btn px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-semibold" data-id="${escapeHtml(item.docId)}" title="Mark as Sold">
-                                Sell
-                            </button>
+                            <button type="button" class="sell-btn px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-semibold" data-id="${escapeHtml(item.docId)}">Sell</button>
                             <button type="button" class="print-btn text-slate-600 hover:text-slate-900 p-2 bg-slate-100 hover:bg-slate-200 rounded-lg" data-id="${escapeHtml(item.docId)}" title="Print Barcode">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                             </button>
@@ -1544,7 +1686,7 @@ function doPost(e) {
 
                 // Mobile Card
                 const card = document.createElement('div');
-                card.className = "bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-3";
+                card.className = "bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-2.5";
                 card.innerHTML = `
                     <div class="flex justify-between items-start gap-3">
                         <div class="min-w-0">
@@ -1555,16 +1697,22 @@ function doPost(e) {
                             ${badge.label}
                         </span>
                     </div>
-                    <div class="flex flex-wrap items-center gap-2 text-xs">
+                    <div class="flex flex-wrap items-center gap-1.5 text-xs">
                         <span class="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 font-medium">${escapeHtml(typeDisplay)}</span>
                         <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-medium">${escapeHtml(item.gender || 'N/A')}</span>
                         <span class="px-2 py-0.5 rounded border border-slate-300 bg-slate-50 font-semibold text-slate-800">${escapeHtml(item.size || 'N/A')}</span>
-                        <span class="inline-flex items-center gap-1.5 text-slate-600">
+                        <span class="inline-flex items-center gap-1 text-slate-600 ml-0.5">
                             <span class="swatch-dot-m w-3 h-3 rounded-full border border-slate-300 shrink-0"></span>
                             ${escapeHtml(item.color || 'N/A')}
                         </span>
                         <span class="ml-auto font-bold text-slate-800">${escapeHtml(priceDisplay)}</span>
                     </div>
+                    ${(lookPillsHtml || item.lookNotes) ? `
+                        <div class="flex flex-wrap items-center gap-1 pt-0.5">
+                            ${lookPillsHtml}
+                            ${item.lookNotes ? `<span class="text-[11px] text-slate-500 italic ml-1">${escapeHtml(item.lookNotes)}</span>` : ''}
+                        </div>
+                    ` : ''}
                     <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2">
                         <div class="flex items-center gap-2">
                             <button type="button" class="qty-dec w-9 h-9 flex items-center justify-center rounded-lg border border-slate-300 bg-slate-50 active:bg-slate-200 text-slate-700 font-bold" data-id="${escapeHtml(item.docId)}">-</button>
@@ -1629,7 +1777,7 @@ function doPost(e) {
 
         function handleSalesFilters() {
             const q = salesSearchInput.value.toLowerCase().trim();
-            const d = salesDateFilter.value; // YYYY-MM-DD
+            const d = salesDateFilter.value;
             resetSalesFilterBtn.classList.toggle('hidden', !q && !d);
 
             const filtered = salesData.filter(s => {
@@ -1637,7 +1785,8 @@ function doPost(e) {
                     (s.customerName && s.customerName.toLowerCase().includes(q)) ||
                     (s.customerPhone && s.customerPhone.toLowerCase().includes(q)) ||
                     (s.itemName && s.itemName.toLowerCase().includes(q)) ||
-                    (s.sku && s.sku.toLowerCase().includes(q));
+                    (s.sku && s.sku.toLowerCase().includes(q)) ||
+                    (s.specs && s.specs.toLowerCase().includes(q));
                 let matchD = true;
                 if (d) {
                     const dt = new Date(s.soldAt);
@@ -1677,12 +1826,10 @@ function doPost(e) {
 
             list.forEach(s => {
                 const dateStr = new Date(s.soldAt).toLocaleString();
-                // Live lookup of current stock in hand
                 const liveItem = inventoryData.find(i => i.docId === s.docId || (i.sku && i.sku === s.sku));
                 const liveStock = liveItem ? Math.max(0, parseInt(liveItem.qty, 10) || 0) : null;
                 const stockLeftLabel = liveStock !== null ? `${liveStock} in hand` : `Deleted item`;
 
-                // Desktop Row
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition-colors";
                 tr.innerHTML = `
@@ -1713,7 +1860,6 @@ function doPost(e) {
                 `;
                 salesTableBody.appendChild(tr);
 
-                // Mobile Card
                 const card = document.createElement('div');
                 card.className = "bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-2.5";
                 card.innerHTML = `
@@ -1721,6 +1867,7 @@ function doPost(e) {
                         <div>
                             <h3 class="text-sm font-bold text-slate-900">${escapeHtml(s.itemName)}</h3>
                             <p class="text-[11px] text-slate-500">${escapeHtml(dateStr)} • SKU: ${escapeHtml(s.sku)}</p>
+                            ${s.specs ? `<p class="text-[11px] text-slate-600 mt-0.5">${escapeHtml(s.specs)}</p>` : ''}
                         </div>
                         <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 shrink-0">-${escapeHtml(s.qtySold)} sold</span>
                     </div>
@@ -1748,24 +1895,55 @@ function doPost(e) {
         }
 
         // ==========================================
-        // Add / Edit Item & "Other" Custom Type
+        // Add / Edit Item & "Other" Custom Fields
         // ==========================================
         const itemTypeSelect = document.getElementById('itemType');
-        const customTypeWrap = document.getElementById('customTypeWrap');
-        const itemCustomTypeInput = document.getElementById('itemCustomType');
+        const itemLengthSelect = document.getElementById('itemLength');
+        const itemSleevesSelect = document.getElementById('itemSleeves');
+        const itemLookSelect = document.getElementById('itemLook');
 
-        function handleCustomTypeVisibility() {
-            const isOther = itemTypeSelect.value === 'Other';
-            customTypeWrap.classList.toggle('hidden', !isOther);
-            itemCustomTypeInput.required = isOther;
-            if (!isOther) itemCustomTypeInput.value = '';
+        function toggleOtherInput(selectEl, wrapId, inputId) {
+            const isOther = selectEl.value === 'Other';
+            const wrap = document.getElementById(wrapId);
+            const input = document.getElementById(inputId);
+            wrap.classList.toggle('hidden', !isOther);
+            input.required = isOther;
+            if (!isOther) input.value = '';
         }
 
-        itemTypeSelect.addEventListener('change', handleCustomTypeVisibility);
+        function handleAllOtherVisibility() {
+            toggleOtherInput(itemTypeSelect, 'customTypeWrap', 'itemCustomType');
+            toggleOtherInput(itemLengthSelect, 'customLengthWrap', 'itemCustomLength');
+            toggleOtherInput(itemSleevesSelect, 'customSleevesWrap', 'itemCustomSleeves');
+            toggleOtherInput(itemLookSelect, 'customLookWrap', 'itemCustomLook');
+        }
+
+        itemTypeSelect.addEventListener('change', () => toggleOtherInput(itemTypeSelect, 'customTypeWrap', 'itemCustomType'));
+        itemLengthSelect.addEventListener('change', () => toggleOtherInput(itemLengthSelect, 'customLengthWrap', 'itemCustomLength'));
+        itemSleevesSelect.addEventListener('change', () => toggleOtherInput(itemSleevesSelect, 'customSleevesWrap', 'itemCustomSleeves'));
+        itemLookSelect.addEventListener('change', () => toggleOtherInput(itemLookSelect, 'customLookWrap', 'itemCustomLook'));
+
+        function setSelectOrOther(selectEl, customInputId, value, customValue, fallbackVal) {
+            const opts = Array.from(selectEl.options).map(o => o.value);
+            const customInput = document.getElementById(customInputId);
+            if (!value) {
+                selectEl.value = opts.includes(fallbackVal) ? fallbackVal : opts[0];
+                customInput.value = '';
+            } else if (value === 'Other') {
+                selectEl.value = 'Other';
+                customInput.value = customValue || '';
+            } else if (opts.includes(value)) {
+                selectEl.value = value;
+                customInput.value = '';
+            } else {
+                selectEl.value = 'Other';
+                customInput.value = customValue || value;
+            }
+        }
 
         window.generateSku = () => {
             const typeVal = itemTypeSelect.value === 'Other'
-                ? (itemCustomTypeInput.value || 'OTH')
+                ? (document.getElementById('itemCustomType').value || 'OTH')
                 : (itemTypeSelect.value || 'ITM');
             const prefix = typeVal.replace(/[^a-zA-Z0-9]/g, '').slice(0, 3).toUpperCase() || 'ITM';
             const rand = Math.floor(1000 + Math.random() * 9000);
@@ -1779,11 +1957,14 @@ function doPost(e) {
             document.getElementById('itemGender').value = settings.defaultGender || 'Unisex';
             document.getElementById('itemQty').value = settings.defaultQty ?? 1;
             document.getElementById('itemPrice').value = 0;
+            itemLengthSelect.value = itemLengthSelect.options[0]?.value || 'N/A';
+            itemSleevesSelect.value = itemSleevesSelect.options[0]?.value || 'N/A';
+            itemLookSelect.value = itemLookSelect.options[0]?.value || 'N/A';
             if (typeof scannedSku === 'string' && scannedSku) {
                 document.getElementById('itemSku').value = scannedSku;
             }
             document.getElementById('modalTitle').innerText = "Add New Item";
-            handleCustomTypeVisibility();
+            handleAllOtherVisibility();
 
             stopScanner();
             hideAllModalPanels();
@@ -1799,20 +1980,15 @@ function doPost(e) {
             document.getElementById('itemSku').value = item.sku || '';
             document.getElementById('itemName').value = item.name || '';
 
-            // Ensure item's type exists in select (or fall back to Other)
-            const typeOpts = Array.from(itemTypeSelect.options).map(o => o.value);
-            if (typeOpts.includes(item.type)) {
-                itemTypeSelect.value = item.type;
-            } else {
-                itemTypeSelect.value = 'Other';
-                itemCustomTypeInput.value = item.customType || item.type || '';
-            }
-            if (item.type === 'Other') {
-                itemCustomTypeInput.value = item.customType || '';
-            }
-            handleCustomTypeVisibility();
+            setSelectOrOther(itemTypeSelect, 'itemCustomType', item.type, item.customType, 'Shirt');
+            setSelectOrOther(itemLengthSelect, 'itemCustomLength', item.length, item.customLength, 'N/A');
+            setSelectOrOther(itemSleevesSelect, 'itemCustomSleeves', item.sleeves, item.customSleeves, 'N/A');
+            setSelectOrOther(itemLookSelect, 'itemCustomLook', item.look, item.customLook, 'N/A');
+            handleAllOtherVisibility();
 
+            document.getElementById('itemLookNotes').value = item.lookNotes || '';
             document.getElementById('itemGender').value = item.gender || 'Unisex';
+
             const sizeEl = document.getElementById('itemSize');
             const sizeOpts = Array.from(sizeEl.options).map(o => o.value);
             sizeEl.value = sizeOpts.includes(item.size) ? item.size : (sizeOpts[0] || 'N/A');
@@ -1841,8 +2017,20 @@ function doPost(e) {
                 const existingDocId = document.getElementById('docId').value.trim();
                 const sku = document.getElementById('itemSku').value.trim();
                 const name = document.getElementById('itemName').value.trim();
+
                 const type = itemTypeSelect.value;
-                const customType = type === 'Other' ? itemCustomTypeInput.value.trim() : '';
+                const customType = type === 'Other' ? document.getElementById('itemCustomType').value.trim() : '';
+
+                const length = itemLengthSelect.value || 'N/A';
+                const customLength = length === 'Other' ? document.getElementById('itemCustomLength').value.trim() : '';
+
+                const sleeves = itemSleevesSelect.value || 'N/A';
+                const customSleeves = sleeves === 'Other' ? document.getElementById('itemCustomSleeves').value.trim() : '';
+
+                const look = itemLookSelect.value || 'N/A';
+                const customLook = look === 'Other' ? document.getElementById('itemCustomLook').value.trim() : '';
+
+                const lookNotes = document.getElementById('itemLookNotes').value.trim();
                 const gender = document.getElementById('itemGender').value;
                 const size = document.getElementById('itemSize').value;
                 const color = document.getElementById('itemColor').value.trim();
@@ -1868,7 +2056,11 @@ function doPost(e) {
                 if (existingDocId) {
                     const idx = inventoryData.findIndex(i => i.docId === existingDocId);
                     const createdAt = idx >= 0 ? (inventoryData[idx].createdAt || now) : now;
-                    savedItem = { docId: existingDocId, sku, name, type, customType, gender, size, color, price, qty, updatedAt: now, createdAt };
+                    savedItem = {
+                        docId: existingDocId, sku, name, type, customType,
+                        length, customLength, sleeves, customSleeves, look, customLook, lookNotes,
+                        gender, size, color, price, qty, updatedAt: now, createdAt
+                    };
                     if (idx >= 0) inventoryData[idx] = savedItem;
                     else inventoryData.unshift(savedItem);
 
@@ -1879,7 +2071,11 @@ function doPost(e) {
                     showToast("Item updated.", "success");
                 } else {
                     const newId = createId('itm');
-                    savedItem = { docId: newId, sku, name, type, customType, gender, size, color, price, qty, updatedAt: now, createdAt: now };
+                    savedItem = {
+                        docId: newId, sku, name, type, customType,
+                        length, customLength, sleeves, customSleeves, look, customLook, lookNotes,
+                        gender, size, color, price, qty, updatedAt: now, createdAt: now
+                    };
 
                     if (fb && userId) {
                         const { docId, ...fbData } = savedItem;
@@ -1909,7 +2105,7 @@ function doPost(e) {
         });
 
         // ==========================================
-        // Quick Qty (+/-) & Delete / Return Confirmations
+        // Quick Qty (+/-) & Confirmations
         // ==========================================
         function adjustQty(docId, delta) {
             const idx = inventoryData.findIndex(i => i.docId === docId);
@@ -1992,7 +2188,7 @@ function doPost(e) {
             if (!sale) return;
             openConfirmModal({
                 title: 'Return / Undo Sale',
-                message: `Undo sale of ${sale.qtySold}x "${sale.itemName}" for ${sale.customerName || 'customer'} and add ${sale.qtySold} back to Stock in Hand?`,
+                message: `Undo sale of ${sale.qtySold}x "${sale.itemName}" for ${sale.customerName || 'customer'} and restore ${sale.qtySold} to Stock in Hand?`,
                 btnText: 'Return Stock',
                 btnClass: 'bg-amber-600 hover:bg-amber-700',
                 onConfirm: async () => {
@@ -2025,24 +2221,30 @@ function doPost(e) {
         }
 
         // ==========================================
-        // Scanned Item Quick Action Modal (Add / Remove / Mark Sold)
+        // Scanned Item Quick Action Modal
         // ==========================================
+        function buildSpecsString(item) {
+            return [formatItemType(item), item.gender, item.size, item.color, ...getItemLookTags(item)].filter(Boolean).join(' • ');
+        }
+
         window.openQuickActionModal = (item, preferredMode = null) => {
             currentQuickActionItemId = item.docId;
             const currentQty = Math.max(0, parseInt(item.qty, 10) || 0);
             const badge = getStockBadge(currentQty);
+            const lookTags = getItemLookTags(item);
 
             document.getElementById('qaItemSku').innerText = `SKU: ${item.sku}`;
             document.getElementById('qaItemName').innerText = item.name;
             document.getElementById('qaItemSpecs').innerText =
                 [formatItemType(item), item.gender, item.size, item.color].filter(Boolean).join(' • ');
+            document.getElementById('qaItemLooks').innerText =
+                [...lookTags, item.lookNotes].filter(Boolean).join(' • ');
             document.getElementById('qaCurrentStock').innerText = currentQty;
 
             const badgeEl = document.getElementById('qaStockBadge');
             badgeEl.innerText = badge.label;
             badgeEl.className = `px-2 py-0.5 text-[10px] font-semibold rounded-full border ${badge.cls}`;
 
-            // Reset forms
             document.getElementById('qaAddQty').value = 1;
             document.getElementById('qaRemoveQty').value = 1;
             document.getElementById('qaSellQty').value = 1;
@@ -2051,7 +2253,7 @@ function doPost(e) {
             document.getElementById('qaCustomerPhone').value = '';
             document.getElementById('qaCustomerNotes').value = '';
 
-            const mode = preferredMode || (settings.defaultScanAction === 'sell' || settings.defaultScanAction === 'remove' ? settings.defaultScanAction : 'add');
+            const mode = preferredMode || (['sell', 'remove'].includes(settings.defaultScanAction) ? settings.defaultScanAction : 'add');
             switchQuickActionMode(mode);
             updateQuickActionPreviews();
 
@@ -2187,7 +2389,7 @@ function doPost(e) {
                 docId: item.docId,
                 sku: item.sku,
                 itemName: item.name,
-                specs: [formatItemType(item), item.gender, item.size, item.color].filter(Boolean).join(' • '),
+                specs: buildSpecsString(item),
                 qtySold,
                 stockAfter,
                 unitPrice,
@@ -2278,21 +2480,15 @@ function doPost(e) {
 
         modalOverlay.addEventListener('click', (e) => {
             if (e.target === modalOverlay) {
-                if (!scannerModal.classList.contains('hidden') && isScanningForInput) {
-                    cancelScannerModal();
-                } else {
-                    closeModals();
-                }
+                if (!scannerModal.classList.contains('hidden') && isScanningForInput) cancelScannerModal();
+                else closeModals();
             }
         });
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && !modalOverlay.classList.contains('hidden')) {
-                if (!scannerModal.classList.contains('hidden') && isScanningForInput) {
-                    cancelScannerModal();
-                } else {
-                    closeModals();
-                }
+                if (!scannerModal.classList.contains('hidden') && isScanningForInput) cancelScannerModal();
+                else closeModals();
             }
         });
 
@@ -2310,10 +2506,7 @@ function doPost(e) {
                 osc.connect(gain);
                 gain.connect(ctx.destination);
                 osc.start();
-                setTimeout(() => {
-                    osc.stop();
-                    ctx.close();
-                }, 110);
+                setTimeout(() => { osc.stop(); ctx.close(); }, 110);
             } catch {}
         }
 
@@ -2439,7 +2632,6 @@ function doPost(e) {
                 return;
             }
 
-            // Existing item scanned!
             if (scannerLookupIntent === 'sell') {
                 openQuickActionModal(existingItem, 'sell');
             } else if (settings.defaultScanAction === 'edit') {
@@ -2470,7 +2662,7 @@ function doPost(e) {
                 const result = await fileScanner.scanFile(file, true);
                 fileScanner.clear();
                 handleDecodedCode(result);
-            } catch (err) {
+            } catch {
                 showToast("No barcode or QR code found in image.", "error");
                 startScanner();
             } finally {
@@ -2488,7 +2680,7 @@ function doPost(e) {
                 storeEl.classList.toggle('hidden', !settings.showStoreOnLabel);
 
                 document.getElementById('print-item-name').innerText = item.name || '';
-                const metaParts = [formatItemType(item), item.gender, item.size, item.color];
+                const metaParts = [formatItemType(item), item.gender, item.size, item.color, ...getItemLookTags(item)];
                 if (settings.showStoreOnLabel && item.price) metaParts.push(formatMoney(item.price));
                 document.getElementById('print-item-meta').innerText = metaParts.filter(Boolean).join(' • ');
 
@@ -2629,6 +2821,13 @@ function doPost(e) {
                         name: String(item.name || ''),
                         type: String(item.type || 'Other'),
                         customType: String(item.customType || ''),
+                        length: String(item.length || 'N/A'),
+                        customLength: String(item.customLength || ''),
+                        sleeves: String(item.sleeves || 'N/A'),
+                        customSleeves: String(item.customSleeves || ''),
+                        look: String(item.look || 'N/A'),
+                        customLook: String(item.customLook || ''),
+                        lookNotes: String(item.lookNotes || ''),
                         gender: String(item.gender || 'Unisex'),
                         size: String(item.size || 'N/A'),
                         color: String(item.color || ''),
@@ -2733,7 +2932,11 @@ function doPost(e) {
         }
 
         window.exportCsv = () => {
-            const headers = ['sku', 'name', 'type', 'customType', 'gender', 'size', 'color', 'price', 'qty'];
+            const headers = [
+                'sku', 'name', 'type', 'customType', 'gender', 'size', 'color',
+                'length', 'customLength', 'sleeves', 'customSleeves', 'look', 'customLook', 'lookNotes',
+                'price', 'qty'
+            ];
             const esc = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
             const lines = [headers.join(','), ...inventoryData.map(i => headers.map(h => esc(i[h])).join(','))];
             downloadBlob(lines.join('\n'), `stockflow-inventory-${new Date().toISOString().slice(0, 10)}.csv`, 'text/csv;charset=utf-8;');
@@ -2752,7 +2955,7 @@ function doPost(e) {
         };
 
         window.exportFullBackup = () => {
-            const payload = { version: 2, exportedAt: Date.now(), settings, inventoryData, salesData };
+            const payload = { version: 3, exportedAt: Date.now(), settings, inventoryData, salesData };
             downloadBlob(JSON.stringify(payload, null, 2), `stockflow-backup-${new Date().toISOString().slice(0, 10)}.json`, 'application/json');
             showToast("Full JSON backup downloaded.", "success");
         };
@@ -2795,6 +2998,10 @@ function doPost(e) {
                     const idx = header.indexOf(name.toLowerCase());
                     return idx >= 0 ? idx : fbIdx;
                 };
+                const getOpt = (v, name) => {
+                    const idx = header.indexOf(name.toLowerCase());
+                    return idx >= 0 ? (v[idx] || '') : '';
+                };
                 const now = Date.now();
                 let count = 0;
 
@@ -2809,12 +3016,19 @@ function doPost(e) {
                         sku,
                         name,
                         type: v[col('type', 2)] || 'Other',
-                        customType: v[col('customType', 3)] || '',
+                        customType: getOpt(v, 'customType'),
                         gender: v[col('gender', 4)] || 'Unisex',
                         size: v[col('size', 5)] || 'N/A',
                         color: v[col('color', 6)] || '',
-                        price: Math.max(0, parseFloat(v[col('price', 7)]) || 0),
-                        qty: Math.max(0, parseInt(v[col('qty', 8)], 10) || 0),
+                        length: getOpt(v, 'length') || 'N/A',
+                        customLength: getOpt(v, 'customLength'),
+                        sleeves: getOpt(v, 'sleeves') || 'N/A',
+                        customSleeves: getOpt(v, 'customSleeves'),
+                        look: getOpt(v, 'look') || 'N/A',
+                        customLook: getOpt(v, 'customLook'),
+                        lookNotes: getOpt(v, 'lookNotes'),
+                        price: Math.max(0, parseFloat(getOpt(v, 'price') || v[col('price', 7)]) || 0),
+                        qty: Math.max(0, parseInt(getOpt(v, 'qty') || v[col('qty', 8)], 10) || 0),
                         updatedAt: now,
                         createdAt: now - r
                     };
@@ -2860,7 +3074,7 @@ function doPost(e) {
                 refreshAllViews();
                 showToast("Backup restored!", "success");
                 if (gsUrl && gsAutoSync) await pushAllToGoogleSheets();
-            } catch (err) {
+            } catch {
                 showToast("Invalid backup JSON file.", "error");
             } finally {
                 e.target.value = '';
