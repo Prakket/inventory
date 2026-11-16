@@ -90,6 +90,45 @@
             .print-label-thermal-roll:last-child {
                 border-bottom: none !important;
             }
+            .print-label-thermal-portrait-page {
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+                align-items: stretch !important;
+                text-align: left !important;
+                width: 47mm !important;
+                min-height: 70mm !important;
+                max-height: 72mm !important;
+                margin: 0 auto !important;
+                padding: 2mm !important;
+                box-sizing: border-box !important;
+                overflow: hidden !important;
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+                break-after: page !important;
+                page-break-after: always !important;
+            }
+            .print-label-thermal-portrait-page:last-child {
+                break-after: auto !important;
+                page-break-after: auto !important;
+            }
+            .print-label-thermal-portrait-roll {
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+                align-items: stretch !important;
+                text-align: left !important;
+                width: 47mm !important;
+                margin: 0 auto !important;
+                padding: 2.5mm 2mm !important;
+                border-bottom: 1px dashed #000000 !important;
+                box-sizing: border-box !important;
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+            }
+            .print-label-thermal-portrait-roll:last-child {
+                border-bottom: none !important;
+            }
             .print-label-standard {
                 border: 1px dashed #cbd5e1 !important;
                 padding: 8px !important;
@@ -548,7 +587,7 @@
                             </span>
                             <div>
                                 <h2 class="text-base font-bold text-slate-900">Scanner &amp; Thermal / Barcode Printing Defaults</h2>
-                                <p class="text-xs text-slate-500">Configure default thermal label text ("Rikai"), paper size, barcode format, and scan behavior</p>
+                                <p class="text-xs text-slate-500">Configure default thermal label text ("Rikai"), paper size, portrait 50×75mm tags, barcode format, and scan behavior</p>
                             </div>
                         </div>
 
@@ -575,6 +614,7 @@
                                 <label for="setDefaultPrintMode" class="block text-sm font-medium text-slate-700">Default Label Mode</label>
                                 <select id="setDefaultPrintMode" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
                                     <option value="thermal">Thermal (Barcode + Rikai Only)</option>
+                                    <option value="thermal-portrait">Thermal Portrait (50×75mm Detailed Tag)</option>
                                     <option value="standard">Standard (Full Item Details)</option>
                                 </select>
                             </div>
@@ -588,6 +628,7 @@
                                     <option value="auto">Auto (Use Printer Driver Size)</option>
                                     <option value="50x25">50 × 25 mm Sticker</option>
                                     <option value="50x30">50 × 30 mm Sticker</option>
+                                    <option value="50x75">50 × 75 mm Portrait (50mm W × 75mm H)</option>
                                     <option value="58mm">58 mm Thermal Roll</option>
                                     <option value="80mm">80 mm Thermal Roll</option>
                                 </select>
@@ -814,7 +855,7 @@
             </div>
         </div>
 
-        <!-- Print Barcodes Modal (Thermal "Rikai + Barcode" & Standard Printer) -->
+        <!-- Print Barcodes Modal (Thermal "Rikai + Barcode", Thermal Portrait 50x75mm & Standard Printer) -->
         <div id="printModal" class="bg-white rounded-2xl shadow-xl w-full max-w-xl hidden flex-col overflow-hidden my-auto max-h-[92vh]">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <div>
@@ -832,6 +873,7 @@
                         <label for="pmMode" class="block text-xs font-semibold text-slate-700">Label Style</label>
                         <select id="pmMode" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
                             <option value="thermal">Thermal (Barcode + Rikai Only)</option>
+                            <option value="thermal-portrait">Thermal Portrait (50×75mm Detailed Tag)</option>
                             <option value="standard">Standard (Full Item Details)</option>
                         </select>
                     </div>
@@ -847,7 +889,7 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div id="pmBrandWrap">
-                        <label for="pmBrandText" class="block text-xs font-semibold text-slate-700">Label Title (Thermal)</label>
+                        <label for="pmBrandText" class="block text-xs font-semibold text-slate-700">Label Header Title (Thermal)</label>
                         <input type="text" id="pmBrandText" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" value="Rikai" placeholder="Rikai">
                     </div>
                     <div id="pmPaperWrap">
@@ -856,6 +898,7 @@
                             <option value="auto">Auto (Printer Driver Size)</option>
                             <option value="50x25">50 × 25 mm Sticker</option>
                             <option value="50x30">50 × 30 mm Sticker</option>
+                            <option value="50x75">50 × 75 mm Portrait (50mm W × 75mm H)</option>
                             <option value="58mm">58 mm Roll</option>
                             <option value="80mm">80 mm Roll</option>
                         </select>
@@ -1750,7 +1793,6 @@ function doPost(e) {
                 mobilePrintBtn.innerText = `Print Selected (${count})`;
             }
 
-            // Update Select All checkboxes based on currently visible items
             const visCount = visibleInventory.length;
             const selectedVisible = visibleInventory.filter(i => selectedIds.has(i.docId)).length;
             const allChecked = visCount > 0 && selectedVisible === visCount;
@@ -2056,7 +2098,7 @@ function doPost(e) {
         }
 
         // ==========================================
-        // Multi-Product & Thermal ("Rikai") Barcode Printing
+        // Multi-Product, Thermal ("Rikai"), Portrait (50x75mm) & Standard Barcode Printing
         // ==========================================
         window.openPrintModalForSelected = () => {
             const items = inventoryData.filter(i => selectedIds.has(i.docId));
@@ -2072,9 +2114,18 @@ function doPost(e) {
 
             const mode = settings.defaultPrintMode || 'thermal';
             document.getElementById('pmMode').value = mode;
-            document.getElementById('pmLayout').value = mode === 'thermal' ? 'thermal-page' : 'standard-grid';
+            if (mode === 'thermal-portrait') {
+                document.getElementById('pmLayout').value = 'thermal-page';
+                document.getElementById('pmPaperSize').value = '50x75';
+            } else if (mode === 'thermal') {
+                document.getElementById('pmLayout').value = 'thermal-page';
+                document.getElementById('pmPaperSize').value = settings.thermalPaperSize || 'auto';
+            } else {
+                document.getElementById('pmLayout').value = 'standard-grid';
+                document.getElementById('pmPaperSize').value = settings.thermalPaperSize || 'auto';
+            }
+
             document.getElementById('pmBrandText').value = settings.thermalBrandText ?? 'Rikai';
-            document.getElementById('pmPaperSize').value = settings.thermalPaperSize || 'auto';
             document.getElementById('pmShowSkuText').checked = true;
             document.getElementById('pmSubtitle').innerText =
                 `${items.length} product(s) ready to print`;
@@ -2094,16 +2145,29 @@ function doPost(e) {
         function syncPrintModalFields() {
             const mode = document.getElementById('pmMode').value;
             const layout = document.getElementById('pmLayout').value;
-            document.getElementById('pmBrandWrap').classList.toggle('hidden', mode !== 'thermal');
+            document.getElementById('pmBrandWrap').classList.toggle('hidden', mode !== 'thermal' && mode !== 'thermal-portrait');
             document.getElementById('pmPaperWrap').classList.toggle('hidden', layout === 'standard-grid');
         }
 
         document.getElementById('pmMode').addEventListener('change', (e) => {
-            // Auto-switch layout helper when switching between Thermal & Standard
-            document.getElementById('pmLayout').value = e.target.value === 'thermal' ? 'thermal-page' : 'standard-grid';
+            const val = e.target.value;
+            if (val === 'thermal-portrait') {
+                document.getElementById('pmLayout').value = 'thermal-page';
+                document.getElementById('pmPaperSize').value = '50x75';
+            } else if (val === 'thermal') {
+                document.getElementById('pmLayout').value = 'thermal-page';
+                if (document.getElementById('pmPaperSize').value === '50x75') {
+                    document.getElementById('pmPaperSize').value = settings.thermalPaperSize !== '50x75'
+                        ? (settings.thermalPaperSize || 'auto')
+                        : 'auto';
+                }
+            } else {
+                document.getElementById('pmLayout').value = 'standard-grid';
+            }
             syncPrintModalFields();
             renderPrintPreview();
         });
+
         ['pmLayout', 'pmBrandText', 'pmPaperSize', 'pmShowSkuText'].forEach(id => {
             document.getElementById(id).addEventListener('input', () => {
                 syncPrintModalFields();
@@ -2174,16 +2238,97 @@ function doPost(e) {
             };
         }
 
+        function buildPortraitDetailRows(item) {
+            const typeVal = formatItemType(item);
+            const cleanType = typeVal && typeVal !== 'N/A' ? typeVal : '';
+            const styleVal = formatOptionDisplay(item.look, item.customLook);
+            const lengthVal = formatOptionDisplay(item.length, item.customLength);
+            const sleevesVal = formatOptionDisplay(item.sleeves, item.customSleeves);
+
+            const rows = [
+                { label: 'Product', value: item.name || '—' },
+                { label: 'Style', value: styleVal || cleanType || '—' }
+            ];
+
+            if (styleVal && cleanType && styleVal.toLowerCase() !== cleanType.toLowerCase()) {
+                rows.push({ label: 'Type', value: cleanType });
+            }
+            if (lengthVal) rows.push({ label: 'Length', value: lengthVal });
+            if (sleevesVal) rows.push({ label: 'Sleeves', value: sleevesVal });
+            if (item.gender && item.gender !== 'N/A') rows.push({ label: 'Gender', value: item.gender });
+            if (item.color) rows.push({ label: 'Color', value: item.color });
+
+            rows.push({ label: 'Size', value: item.size || 'N/A' });
+            rows.push({ label: 'Price', value: formatMoney(item.price || 0) });
+
+            if (item.lookNotes) rows.push({ label: 'Notes', value: item.lookNotes });
+            return rows;
+        }
+
         function createLabelElement(item, cfg) {
             const el = document.createElement('div');
             const isThermalLayout = cfg.layout !== 'standard-grid';
+
+            if (cfg.mode === 'thermal-portrait') {
+                if (cfg.layout === 'thermal-page') el.className = 'print-label-thermal-portrait-page';
+                else if (cfg.layout === 'thermal-roll') el.className = 'print-label-thermal-portrait-roll';
+                else el.className = 'print-label-standard';
+
+                const brand = document.createElement('div');
+                brand.style.cssText = 'font-weight:700;font-size:13px;color:#000000;text-align:center;letter-spacing:0.04em;border-bottom:1px solid #000000;padding-bottom:2px;margin-bottom:4px;font-family:Inter,sans-serif;';
+                brand.innerText = cfg.brandText;
+                el.appendChild(brand);
+
+                const detailsWrap = document.createElement('div');
+                detailsWrap.style.cssText = 'width:100%;text-align:left;display:flex;flex-direction:column;gap:2px;font-size:9.5px;line-height:1.28;color:#000000;font-family:Inter,sans-serif;';
+
+                buildPortraitDetailRows(item).forEach(({ label, value }) => {
+                    const row = document.createElement('div');
+                    row.style.cssText = 'word-break:break-word;';
+                    const keySpan = document.createElement('span');
+                    keySpan.style.fontWeight = '700';
+                    keySpan.innerText = `${label}: `;
+                    const valSpan = document.createElement('span');
+                    valSpan.innerText = value;
+                    row.appendChild(keySpan);
+                    row.appendChild(valSpan);
+                    detailsWrap.appendChild(row);
+                });
+                el.appendChild(detailsWrap);
+
+                const barcodeWrap = document.createElement('div');
+                barcodeWrap.style.cssText = 'margin-top:auto;padding-top:4px;width:100%;display:flex;justify-content:center;align-items:center;';
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.style.maxWidth = '100%';
+                svg.style.height = 'auto';
+                barcodeWrap.appendChild(svg);
+                el.appendChild(barcodeWrap);
+
+                const opts = {
+                    format: settings.barcodeFormat || 'CODE128',
+                    width: 1.3,
+                    height: 34,
+                    displayValue: cfg.showSkuText,
+                    fontSize: 10,
+                    margin: 1,
+                    background: '#ffffff',
+                    lineColor: '#000000'
+                };
+                try {
+                    JsBarcode(svg, item.sku, opts);
+                } catch {
+                    JsBarcode(svg, item.sku, { ...opts, format: 'CODE128' });
+                }
+
+                return el;
+            }
 
             if (cfg.layout === 'thermal-page') el.className = 'print-label-thermal-page';
             else if (cfg.layout === 'thermal-roll') el.className = 'print-label-thermal-roll';
             else el.className = 'print-label-standard';
 
             if (cfg.mode === 'thermal') {
-                // Strictly Barcode + Rikai only!
+                // Strictly Barcode + Rikai only
                 const brand = document.createElement('p');
                 brand.className = 'font-bold text-black tracking-wide leading-tight mb-0.5 font-sans';
                 brand.style.fontSize = cfg.paperSize === '50x25' ? '11px' : '13px';
@@ -2229,7 +2374,6 @@ function doPost(e) {
                     lineColor: '#000000'
                 });
             } catch {
-                // Fallback to CODE128 if SKU isn't valid for e.g. EAN13
                 JsBarcode(svg, item.sku, {
                     format: 'CODE128',
                     width: barWidth,
@@ -2251,7 +2395,15 @@ function doPost(e) {
             if (printQueue.length === 0) return;
             const cfg = getPrintConfig();
             const previewEl = createLabelElement(printQueue[0].item, cfg);
-            previewEl.className = 'flex flex-col items-center justify-center text-center';
+
+            if (cfg.mode === 'thermal-portrait') {
+                box.className = 'bg-white border border-slate-300 rounded-lg p-3 shadow-sm flex flex-col justify-between items-stretch w-[190px] min-h-[275px] max-w-full';
+                previewEl.className = 'flex flex-col justify-between items-stretch text-left flex-1';
+            } else {
+                box.className = 'bg-white border border-slate-300 rounded-lg px-4 py-3 shadow-sm flex flex-col items-center justify-center min-w-[200px] max-w-full';
+                previewEl.className = 'flex flex-col items-center justify-center text-center';
+            }
+
             box.appendChild(previewEl);
         }
 
@@ -2265,6 +2417,7 @@ function doPost(e) {
                 'auto': 'size: auto; margin: 1.5mm;',
                 '50x25': 'size: 50mm 25mm; margin: 1mm;',
                 '50x30': 'size: 50mm 30mm; margin: 1.5mm;',
+                '50x75': 'size: 50mm 75mm; margin: 1.5mm;',
                 '58mm': 'size: 58mm auto; margin: 2mm;',
                 '80mm': 'size: 80mm auto; margin: 2mm;'
             };
@@ -3354,8 +3507,7 @@ function doPost(e) {
             updateConnectionStatus();
             showToast("Disconnected from Google Sheets.", "success");
         };
-
-        window.pullFromGoogleSheets = async ({ silent = false } = {}) => {
+                window.pullFromGoogleSheets = async ({ silent = false } = {}) => {
             if (!gsUrl) {
                 showToast("Connect a Google Sheets URL first.", "error");
                 return;
