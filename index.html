@@ -2275,12 +2275,12 @@ function doPost(e) {
                 else el.className = 'print-label-standard';
 
                 const brand = document.createElement('div');
-                brand.style.cssText = 'font-weight:700;font-size:13px;color:#000000;text-align:center;letter-spacing:0.04em;border-bottom:1px solid #000000;padding-bottom:2px;margin-bottom:4px;font-family:Inter,sans-serif;';
+                brand.style.cssText = 'font-weight:800;font-size:13px;color:#000000;text-align:center;letter-spacing:0.04em;border-bottom:1px solid #000000;padding-bottom:2px;margin-bottom:4px;font-family:Inter,sans-serif;';
                 brand.innerText = cfg.brandText;
                 el.appendChild(brand);
 
                 const detailsWrap = document.createElement('div');
-                detailsWrap.style.cssText = 'width:100%;text-align:left;display:flex;flex-direction:column;gap:2px;font-size:9.5px;line-height:1.28;color:#000000;font-family:Inter,sans-serif;';
+                detailsWrap.style.cssText = 'width:100%;text-align:left;display:flex;flex-direction:column;gap:2px;font-size:15px;line-height:1.28;color:#000000;font-family:Inter,sans-serif;';
 
                 buildPortraitDetailRows(item).forEach(({ label, value }) => {
                     const row = document.createElement('div');
