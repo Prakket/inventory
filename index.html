@@ -127,6 +127,64 @@
                 page-break-inside: avoid !important;
             }
             .print-label-thermal-portrait-roll:last-child {
+                .print-page-rotated {
+                position: relative !important;
+                width: 72mm !important;
+                height: 47mm !important;
+                margin: 0 auto !important;
+                overflow: hidden !important;
+                box-sizing: border-box !important;
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+                break-after: page !important;
+                page-break-after: always !important;
+            }
+            .print-page-rotated:last-child {
+                break-after: auto !important;
+                page-break-after: auto !important;
+            }
+            .print-page-rotated-roll {
+                position: relative !important;
+                width: 72mm !important;
+                height: 47mm !important;
+                margin: 0 auto !important;
+                border-bottom: 1px dashed #000000 !important;
+                overflow: hidden !important;
+                box-sizing: border-box !important;
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+            }
+            .print-page-rotated-roll:last-child {
+                border-bottom: none !important;
+            }
+            .print-label-thermal-portrait-inner {
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+                align-items: stretch !important;
+                text-align: left !important;
+                padding: 2mm !important;
+                box-sizing: border-box !important;
+                overflow: hidden !important;
+            }
+            .print-label-rotated-90 {
+                position: absolute !important;
+                top: 50% !important;
+                left: 50% !important;
+                width: 46mm !important;
+                height: 70mm !important;
+                transform: translate(-50%, -50%) rotate(90deg) !important;
+                transform-origin: center center !important;
+            }
+            .print-label-rotated-270 {
+                position: absolute !important;
+                top: 50% !important;
+                left: 50% !important;
+                width: 46mm !important;
+                height: 70mm !important;
+                transform: translate(-50%, -50%) rotate(-90deg) !important;
+                transform-origin: center center !important;
+            }
                 border-bottom: none !important;
             }
             .print-label-standard {
