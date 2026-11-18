@@ -652,7 +652,7 @@
                             </span>
                             <div>
                                 <h2 class="text-base font-bold text-slate-900">Scanner &amp; Thermal Barcode Printing Defaults</h2>
-                                <p class="text-xs text-slate-500">Configure default thermal label text ("Rikai"), font, paper size, custom dimensions, and scan behavior</p>
+                                <p class="text-xs text-slate-500">Configure default thermal header ("Rikai"), shop address below barcode, font, paper size, and scan behavior</p>
                             </div>
                         </div>
 
@@ -711,6 +711,10 @@
                                     <option value="90">Rotate 90° Clockwise</option>
                                     <option value="270">Rotate -90° Counter-Clockwise</option>
                                 </select>
+                            </div>
+                            <div class="sm:col-span-2 lg:col-span-3">
+                                <label for="setShopAddress" class="block text-sm font-medium text-slate-700">Shop Address (Printed Below Barcode)</label>
+                                <textarea id="setShopAddress" rows="2" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="e.g. 12 MG Road, Bengaluru&#10;Ph: 98765 43210"></textarea>
                             </div>
                         </div>
 
@@ -777,8 +781,8 @@
                             <div class="p-4 text-xs text-slate-600 space-y-2 bg-white">
                                 <ol class="list-decimal pl-4 space-y-1">
                                     <li>Open your Google Sheet &rarr; <strong>Extensions &rarr; Apps Script</strong>.</li>
-                                    <li>Paste the copied code below (if updating from an older version, deploy a <strong>New deployment</strong>).</li>
-                                    <li>Click <strong>Deploy &rarr; New deployment &rarr; Web app</strong> &rarr; Execute as: <strong>Me</strong> &rarr; Who has access: <strong>Anyone</strong>.</li>
+                                    <li>Paste the copied code below (if updating from an older version, deploy a <strong>New version</strong> under <strong>Manage deployments</strong>).</li>
+                                    <li>Execute as: <strong>Me</strong> &rarr; Who has access: <strong>Anyone</strong>.</li>
                                     <li>Paste the <code>.../exec</code> Web App URL above and click <strong>Save &amp; Connect</strong>.</li>
                                 </ol>
                                 <pre id="appsScriptPreview" class="mt-2 p-3 bg-slate-900 text-slate-100 rounded-lg overflow-x-auto text-[11px] max-h-48"></pre>
@@ -1081,6 +1085,11 @@
                     <span>Show SKU number underneath barcode bars</span>
                 </label>
 
+                <div>
+                    <label for="pmShopAddress" class="block text-xs font-semibold text-slate-700">Shop Address (Below Barcode)</label>
+                    <textarea id="pmShopAddress" rows="2" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs bg-white" placeholder="Enter shop address (supports 2 lines)..."></textarea>
+                </div>
+
                 <div class="p-3 rounded-xl bg-slate-100 border border-slate-200 flex flex-col items-center">
                     <span id="pmPreviewCaption" class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-2">Label Preview (First Item)</span>
                     <div id="pmPreviewBox" class="bg-white border border-slate-300 rounded-lg p-3 shadow-sm flex flex-col justify-between items-stretch w-[190px] min-h-[260px] max-w-full"></div>
@@ -1314,6 +1323,8 @@
 
     <!-- Print Container (Populated dynamically for single or multi-product printing) -->
     <div id="print-container" class="hidden"></div>
+
+
     <script type="module">
         // ==========================================
         // Google Apps Script (Inventory + Looks + Sales + Settings)
@@ -1595,6 +1606,7 @@ function doPost(e) {
             barcodeFormat: 'CODE128',
             defaultPrintLayout: 'thermal-roll',
             thermalBrandText: 'Rikai',
+            shopAddress: '',
             thermalPaperSize: '50x75',
             customPaperWidth: 50,
             customPaperHeight: 75,
@@ -1894,6 +1906,7 @@ function doPost(e) {
             setVal('setDefaultScanAction', settings.defaultScanAction || 'ask');
             setVal('setBarcodeFormat', settings.barcodeFormat || 'CODE128');
             setVal('setThermalBrandText', settings.thermalBrandText ?? 'Rikai');
+            setVal('setShopAddress', settings.shopAddress || '');
             setVal('setDefaultFontFamily', settings.defaultFontFamily || 'Inter, Arial, sans-serif');
             setVal('setThermalPaperSize', settings.thermalPaperSize || '50x75');
             setVal('setDefaultPrintRotation', settings.defaultPrintRotation || '0');
@@ -1938,6 +1951,7 @@ function doPost(e) {
                 defaultScanAction: document.getElementById('setDefaultScanAction')?.value || 'ask',
                 barcodeFormat: document.getElementById('setBarcodeFormat')?.value || 'CODE128',
                 thermalBrandText: document.getElementById('setThermalBrandText')?.value.trim() || 'Rikai',
+                shopAddress: document.getElementById('setShopAddress')?.value.trim() || '',
                 defaultFontFamily: document.getElementById('setDefaultFontFamily')?.value || 'Inter, Arial, sans-serif',
                 thermalPaperSize: document.getElementById('setThermalPaperSize')?.value || '50x75',
                 defaultPrintRotation: document.getElementById('setDefaultPrintRotation')?.value || '0',
@@ -2348,17 +2362,18 @@ function doPost(e) {
         window.openPrintModal = async (items) => {
             printQueue = items.map(item => ({ item, copies: 1 }));
 
-            document.getElementById('pmLayout').value = settings.defaultPrintLayout || 'thermal-roll';
-            document.getElementById('pmPaperSize').value = settings.thermalPaperSize || '50x75';
-            document.getElementById('pmBrandText').value = settings.thermalBrandText ?? 'Rikai';
-            document.getElementById('pmFontFamily').value = settings.defaultFontFamily || 'Inter, Arial, sans-serif';
-            document.getElementById('pmHeaderFontSize').value = settings.headerFontSize || 13;
-            document.getElementById('pmFontSize').value = settings.portraitFontSize || 10;
-            document.getElementById('pmBarcodeSize').value = settings.barcodeSize || 'md';
-            document.getElementById('pmCustomWidth').value = settings.customPaperWidth || 50;
-            document.getElementById('pmCustomHeight').value = settings.customPaperHeight || 75;
-            document.getElementById('pmRotation').value = settings.defaultPrintRotation || '0';
-            document.getElementById('pmShowSkuText').checked = true;
+            setVal('pmLayout', settings.defaultPrintLayout || 'thermal-roll');
+            setVal('pmPaperSize', settings.thermalPaperSize || '50x75');
+            setVal('pmBrandText', settings.thermalBrandText ?? 'Rikai');
+            setVal('pmShopAddress', settings.shopAddress || '');
+            setVal('pmFontFamily', settings.defaultFontFamily || 'Inter, Arial, sans-serif');
+            setVal('pmHeaderFontSize', settings.headerFontSize || 13);
+            setVal('pmFontSize', settings.portraitFontSize || 10);
+            setVal('pmBarcodeSize', settings.barcodeSize || 'md');
+            setVal('pmCustomWidth', settings.customPaperWidth || 50);
+            setVal('pmCustomHeight', settings.customPaperHeight || 75);
+            setVal('pmRotation', settings.defaultPrintRotation || '0');
+            setChk('pmShowSkuText', true);
             document.getElementById('pmSubtitle').innerText = `${items.length} product(s) ready to print`;
 
             renderPrintQueueList();
@@ -2374,7 +2389,7 @@ function doPost(e) {
         };
 
         function syncPrintModalFields() {
-            const paperSize = document.getElementById('pmPaperSize').value;
+            const paperSize = document.getElementById('pmPaperSize')?.value;
             const isCustom = paperSize === 'custom';
             const customWrap = document.getElementById('pmCustomDimWrap');
             if (customWrap) {
@@ -2383,7 +2398,7 @@ function doPost(e) {
             }
         }
 
-        ['pmLayout', 'pmBrandText', 'pmPaperSize', 'pmFontFamily', 'pmHeaderFontSize', 'pmFontSize', 'pmBarcodeSize', 'pmCustomWidth', 'pmCustomHeight', 'pmRotation', 'pmShowSkuText'].forEach(id => {
+        ['pmLayout', 'pmBrandText', 'pmShopAddress', 'pmPaperSize', 'pmFontFamily', 'pmHeaderFontSize', 'pmFontSize', 'pmBarcodeSize', 'pmCustomWidth', 'pmCustomHeight', 'pmRotation', 'pmShowSkuText'].forEach(id => {
             const el = document.getElementById(id);
             if (!el) return;
             el.addEventListener('input', () => { syncPrintModalFields(); renderPrintPreview(); });
@@ -2441,17 +2456,18 @@ function doPost(e) {
 
         function getPrintConfig() {
             return {
-                layout: document.getElementById('pmLayout').value,
-                brandText: document.getElementById('pmBrandText').value.trim() || 'Rikai',
-                paperSize: document.getElementById('pmPaperSize').value,
-                fontFamily: document.getElementById('pmFontFamily').value || 'Inter, Arial, sans-serif',
-                headerFontSize: Math.max(8, Math.min(28, parseFloat(document.getElementById('pmHeaderFontSize').value) || 13)),
-                fontSize: Math.max(7, Math.min(22, parseFloat(document.getElementById('pmFontSize').value) || 10)),
-                barcodeSize: document.getElementById('pmBarcodeSize').value || 'md',
-                customWidth: Math.max(15, Math.min(300, parseFloat(document.getElementById('pmCustomWidth').value) || 50)),
-                customHeight: Math.max(15, Math.min(300, parseFloat(document.getElementById('pmCustomHeight').value) || 75)),
-                rotation: document.getElementById('pmRotation').value || '0',
-                showSkuText: document.getElementById('pmShowSkuText').checked
+                layout: document.getElementById('pmLayout')?.value || 'thermal-roll',
+                brandText: document.getElementById('pmBrandText')?.value.trim() || 'Rikai',
+                shopAddress: document.getElementById('pmShopAddress')?.value.trim() || '',
+                paperSize: document.getElementById('pmPaperSize')?.value || '50x75',
+                fontFamily: document.getElementById('pmFontFamily')?.value || 'Inter, Arial, sans-serif',
+                headerFontSize: Math.max(8, Math.min(28, parseFloat(document.getElementById('pmHeaderFontSize')?.value) || 13)),
+                fontSize: Math.max(7, Math.min(22, parseFloat(document.getElementById('pmFontSize')?.value) || 10)),
+                barcodeSize: document.getElementById('pmBarcodeSize')?.value || 'md',
+                customWidth: Math.max(15, Math.min(300, parseFloat(document.getElementById('pmCustomWidth')?.value) || 50)),
+                customHeight: Math.max(15, Math.min(300, parseFloat(document.getElementById('pmCustomHeight')?.value) || 75)),
+                rotation: document.getElementById('pmRotation')?.value || '0',
+                showSkuText: Boolean(document.getElementById('pmShowSkuText')?.checked)
             };
         }
 
@@ -2489,7 +2505,6 @@ function doPost(e) {
                 gender:  { show: true, label: 'Gender' },
                 color:   { show: true, label: 'Color' },
                 size:    { show: true, label: 'Size' },
-                price:   { show: true, label: 'Price' },
                 notes:   { show: true, label: 'Notes' }
             }
         };
@@ -2515,7 +2530,6 @@ function doPost(e) {
             if (item.gender && item.gender !== 'N/A') add('gender', item.gender);
             add('color', item.color);
             add('size', item.size || 'N/A');
-            add('price', formatMoney(item.price || 0));
             add('notes', item.lookNotes);
             return rows;
         }
@@ -2605,6 +2619,13 @@ function doPost(e) {
             try { JsBarcode(svg, item.sku, opts); }
             catch { JsBarcode(svg, item.sku, { ...opts, format: 'CODE128' }); }
 
+            if (cfg.shopAddress) {
+                const addrEl = document.createElement('div');
+                addrEl.style.cssText = `margin-top:2px;text-align:center;font-size:${Math.max(6.5, cfg.fontSize - 1.5)}px;line-height:1.2;color:#000000;font-family:${cfg.fontFamily};white-space:pre-line;word-break:break-word;`;
+                addrEl.innerText = cfg.shopAddress;
+                el.appendChild(addrEl);
+            }
+
             if (isRotated) {
                 const wrapper = document.createElement('div');
                 wrapper.className = cfg.layout === 'thermal-roll' ? 'print-page-rotated-roll' : 'print-page-rotated';
@@ -2670,6 +2691,7 @@ function doPost(e) {
             if (printQueue.length === 0) return;
             const cfg = getPrintConfig();
             settings.defaultPrintLayout = cfg.layout;
+            settings.shopAddress = cfg.shopAddress;
             settings.defaultFontFamily = cfg.fontFamily;
             settings.headerFontSize = cfg.headerFontSize;
             settings.portraitFontSize = cfg.fontSize;
@@ -3930,9 +3952,9 @@ function doPost(e) {
 
             batchItems.clear();
             lastBatchCode = '';
-            if (document.getElementById('batchCustomerName')) document.getElementById('batchCustomerName').value = '';
-            if (document.getElementById('batchCustomerPhone')) document.getElementById('batchCustomerPhone').value = '';
-            if (document.getElementById('batchCustomerNotes')) document.getElementById('batchCustomerNotes').value = '';
+            setVal('batchCustomerName', '');
+            setVal('batchCustomerPhone', '');
+            setVal('batchCustomerNotes', '');
 
             sortSales();
             saveInventoryLocal();
@@ -4459,3 +4481,6 @@ function doPost(e) {
     </script>
 </body>
 </html>
+
+
+
