@@ -676,16 +676,20 @@
                             </div>
                             <div>
                                <div>
-                                <label for="setDefaultPrintMode" class="block text-sm font-medium text-slate-700">Default Label Mode</label>
-                                <select id="setDefaultPrintMode" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
-                                    <option value="thermal">Thermal (Barcode + Rikai Only)</option>
-                                    <option value="thermal-portrait">Thermal Portrait (Detailed Tag)</option>
-                                    <option value="standard">Standard (Full Item Details)</option>
-                                </select>
+                                <label for="setThermalBrandText" class="block text-sm font-medium text-slate-700">Thermal Header Title Text</label>
+                                <input type="text" id="setThermalBrandText" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="Rikai">
                             </div>
                             <div>
-                                <label for="setThermalBrandText" class="block text-sm font-medium text-slate-700">Thermal Label Title Text</label>
-                                <input type="text" id="setThermalBrandText" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="Rikai">
+                                <label for="setDefaultFontFamily" class="block text-sm font-medium text-slate-700">Default Label Font</label>
+                                <select id="setDefaultFontFamily" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
+                                    <option value="Inter, Arial, sans-serif">Inter (Modern Clean)</option>
+                                    <option value="Arial, Helvetica, sans-serif">Arial / Helvetica</option>
+                                    <option value="'Arial Narrow', 'Roboto Condensed', sans-serif">Narrow / Condensed</option>
+                                    <option value="'Courier New', Courier, monospace">Courier (Receipt Monospace)</option>
+                                    <option value="Georgia, 'Times New Roman', serif">Georgia (Boutique Serif)</option>
+                                    <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                                    <option value="Verdana, sans-serif">Verdana (Wide)</option>
+                                </select>
                             </div>
                             <div>
                                 <label for="setThermalPaperSize" class="block text-sm font-medium text-slate-700">Default Thermal Paper Size</label>
@@ -726,13 +730,8 @@
                                 <input type="checkbox" id="setBeepOnScan" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
                                 <span class="text-sm text-slate-800">Play beep when barcode scans</span>
                             </label>
-                            <label class="flex items-center gap-2.5 cursor-pointer">
-                                <input type="checkbox" id="setShowStoreOnLabel" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
-                                <span class="text-sm text-slate-800">Show Store Name &amp; Price on Standard (Full) labels</span>
-                            </label>
                         </div>
-                    </div>
-
+                            
                     <!-- Card 5: Google Sheets Master Data Connection -->
                     <div id="sheetsSettingsCard" class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-5">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
@@ -942,11 +941,12 @@
         </div>
 
 <!-- Print Barcodes Modal -->
+        <!-- Print Barcodes Modal (Thermal Portrait Roll) -->
         <div id="printModal" class="bg-white rounded-2xl shadow-xl w-full max-w-xl hidden flex-col overflow-hidden my-auto max-h-[92vh]">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <div>
-                    <h3 class="text-lg font-bold text-slate-900">Print Barcodes</h3>
-                    <p id="pmSubtitle" class="text-xs text-slate-500">Thermal &amp; standard printer options</p>
+                    <h3 class="text-lg font-bold text-slate-900">Print Thermal Labels</h3>
+                    <p id="pmSubtitle" class="text-xs text-slate-500">Thermal portrait roll printing</p>
                 </div>
                 <button type="button" onclick="closeModals()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -955,29 +955,20 @@
             <div class="p-5 sm:p-6 overflow-y-auto space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label for="pmMode" class="block text-xs font-semibold text-slate-700">Label Style</label>
-                        <select id="pmMode" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
-                            <option value="thermal">Thermal (Barcode + Rikai Only)</option>
-                            <option value="thermal-portrait">Thermal Portrait (Detailed Tag)</option>
-                            <option value="standard">Standard (Full Item Details)</option>
-                        </select>
+                        <label for="pmBrandText" class="block text-xs font-semibold text-slate-700">Header Title Text</label>
+                        <input type="text" id="pmBrandText" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" value="Rikai" placeholder="Rikai">
                     </div>
                     <div>
-                        <label for="pmLayout" class="block text-xs font-semibold text-slate-700">Printer Paper Layout</label>
+                        <label for="pmLayout" class="block text-xs font-semibold text-slate-700">Thermal Feed Layout</label>
                         <select id="pmLayout" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
+                            <option value="thermal-roll" selected>Thermal Roll (Continuous)</option>
                             <option value="thermal-page">Thermal Sticker (1 per label)</option>
-                            <option value="thermal-roll">Thermal Roll (Continuous)</option>
-                            <option value="standard-grid">Standard A4 / Sheet Grid (3 cols)</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div id="pmBrandWrap">
-                        <label for="pmBrandText" class="block text-xs font-semibold text-slate-700">Label Header Title (Thermal)</label>
-                        <input type="text" id="pmBrandText" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" value="Rikai" placeholder="Rikai">
-                    </div>
-                    <div id="pmPaperWrap">
+                    <div>
                         <label for="pmPaperSize" class="block text-xs font-semibold text-slate-700">Thermal Sticker / Roll Size</label>
                         <select id="pmPaperSize" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
                             <option value="auto">Auto (Printer Driver Size)</option>
@@ -988,6 +979,14 @@
                             <option value="58mm">58 mm Roll</option>
                             <option value="80mm">80 mm Roll</option>
                             <option value="custom">Custom Dimensions (mm)...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="pmRotation" class="block text-xs font-semibold text-slate-700">Print Orientation / Rotate</label>
+                        <select id="pmRotation" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
+                            <option value="0">Normal (0° - Upright)</option>
+                            <option value="90">Rotate 90° Clockwise</option>
+                            <option value="270">Rotate -90° Counter-Clockwise</option>
                         </select>
                     </div>
                 </div>
@@ -1004,28 +1003,40 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div id="pmRotationWrap">
-                        <label for="pmRotation" class="block text-xs font-semibold text-slate-700">Print Orientation / Rotate</label>
-                        <select id="pmRotation" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
-                            <option value="0">Normal (0° - Upright)</option>
-                            <option value="90">Rotate 90° Clockwise</option>
-                            <option value="270">Rotate -90° Counter-Clockwise</option>
+                    <div>
+                        <label for="pmFontFamily" class="block text-xs font-semibold text-slate-700">Font Style</label>
+                        <select id="pmFontFamily" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
+                            <option value="Inter, Arial, sans-serif">Inter (Modern Clean)</option>
+                            <option value="Arial, Helvetica, sans-serif">Arial / Helvetica</option>
+                            <option value="'Arial Narrow', 'Roboto Condensed', sans-serif">Narrow / Condensed</option>
+                            <option value="'Courier New', Courier, monospace">Courier (Receipt Monospace)</option>
+                            <option value="Georgia, 'Times New Roman', serif">Georgia (Boutique Serif)</option>
+                            <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                            <option value="Verdana, sans-serif">Verdana (Wide)</option>
                         </select>
                     </div>
-                    <div id="pmFontSizeWrap">
-                        <label for="pmFontSize" class="block text-xs font-semibold text-slate-700">Text Font Size (px)</label>
+                    <div>
+                        <label for="pmBarcodeSize" class="block text-xs font-semibold text-slate-700">Barcode Size</label>
+                        <select id="pmBarcodeSize" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
+                            <option value="sm">Small (Compact)</option>
+                            <option value="md" selected>Medium (Default)</option>
+                            <option value="lg">Large</option>
+                            <option value="xl">Extra Large</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="pmHeaderFontSize" class="block text-xs font-semibold text-slate-700">Header Font Size (px)</label>
+                        <input type="number" id="pmHeaderFontSize" min="8" max="28" step="0.5" value="13" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
+                    </div>
+                    <div>
+                        <label for="pmFontSize" class="block text-xs font-semibold text-slate-700">Detail Text Size (px)</label>
                         <input type="number" id="pmFontSize" min="7" max="22" step="0.5" value="10" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
                     </div>
                 </div>
-                <div>
-                 <label for="pmBarcodeSize" class="block text-xs font-semibold text-slate-700">Barcode Size</label>
-                 <select id="pmBarcodeSize" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
-                     <option value="sm">Small (Compact)</option>
-                     <option value="md" selected>Medium (Default)</option>
-                     <option value="lg">Large</option>
-                     <option value="xl">Extra Large</option>
-                 </select>
-             </div>
+
                 <label class="inline-flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
                     <input type="checkbox" id="pmShowSkuText" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" checked>
                     <span>Show SKU number underneath barcode bars</span>
@@ -1033,7 +1044,7 @@
 
                 <div class="p-3 rounded-xl bg-slate-100 border border-slate-200 flex flex-col items-center">
                     <span id="pmPreviewCaption" class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-2">Label Preview (First Item)</span>
-                    <div id="pmPreviewBox" class="bg-white border border-slate-300 rounded-lg px-4 py-3 shadow-sm flex flex-col items-center justify-center min-w-[200px] max-w-full"></div>
+                    <div id="pmPreviewBox" class="bg-white border border-slate-300 rounded-lg p-3 shadow-sm flex flex-col justify-between items-stretch w-[190px] min-h-[260px] max-w-full"></div>
                 </div>
 
                 <div class="space-y-2">
@@ -1056,7 +1067,7 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- Scanned Item Quick Action Modal -->
         <div id="scanActionModal" class="bg-white rounded-2xl shadow-xl w-full max-w-md hidden flex-col overflow-hidden my-auto max-h-[92vh]">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
@@ -1172,7 +1183,7 @@
         </div>
 
         <!-- Scanner Modal -->
-        <div id="scannerModal" class="bg-white rounded-2xl shadow-xl w-full max-w-md hidden flex-col overflow-hidden my-auto">
+        <div id="scannerModal" class="bg-white rounded-2xl shadow-xl w-full max-w-md hidden flex-col overflow-y-auto max-h-[92vh] my-auto">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <h3 id="scannerModalTitle" class="text-lg font-bold text-slate-900">Scan Barcode / QR Code</h3>
                 <button type="button" onclick="cancelScannerModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
@@ -1188,8 +1199,23 @@
                 <div id="reader" class="w-full rounded-lg overflow-hidden border-2 border-indigo-100 bg-slate-900 min-h-[240px] flex items-center justify-center relative">
                     <p class="text-slate-300 text-sm absolute z-0 text-center px-4" id="scannerPlaceholderText">Starting camera...</p>
                 </div>
+                <div id="qr-file-reader" class="hidden"></div>
+                
 
                 <p class="text-xs text-slate-500 text-center">Supports QR codes and 1D barcodes (Code 128, EAN, UPC).</p>
+                <label id="batchToggleWrap" class="w-full flex items-center gap-2.5 cursor-pointer bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-2">
+                    <input type="checkbox" id="batchScanToggle" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" checked>
+                    <span class="text-xs font-semibold text-indigo-900">Add multiple pieces (camera stays open)</span>
+                </label>
+
+                <div id="batchPanel" class="w-full hidden">
+                    <div class="flex justify-between items-center mb-1">
+                        <p class="text-xs font-semibold text-slate-700">Scanned this round: <span id="batchTotal">0</span> piece(s)</p>
+                        <button type="button" onclick="clearBatch()" class="text-[11px] text-slate-500 hover:text-red-600">Clear</button>
+                    </div>
+                    <div id="batchList" class="max-h-40 overflow-y-auto border border-slate-200 rounded-lg divide-y divide-slate-100 text-xs"></div>
+                    <button type="button" id="batchFinishBtn" onclick="finishBatchScan()" class="mt-2 w-full px-3 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-semibold rounded-lg">Finish &amp; Add to Stock</button>
+                </div>
 
                 <div class="w-full pt-2 border-t border-slate-100 space-y-2.5">
                     <form id="manualScanForm" class="flex gap-2">
@@ -1243,7 +1269,7 @@
         // Google Apps Script (Inventory + Looks + Sales + Settings)
         // ==========================================
         const APPS_SCRIPT_CODE = `const INV_SHEET = "Inventory";
-const SALES_SHEET = "Sales";
+         const SALES_SHEET = "Sales";
 const SETTINGS_SHEET = "Settings";
 
 const INV_HEADERS = [
@@ -1506,14 +1532,15 @@ function doPost(e) {
             defaultQty: 1,
             barcodeFormat: 'CODE128',
             defaultPrintMode: 'thermal',
-            thermalBrandText: 'Rikai',
-            thermalPaperSize: 'auto',
+           thermalBrandText: 'Rikai',
+            thermalPaperSize: '50x75',
             customPaperWidth: 50,
             customPaperHeight: 75,
             defaultPrintRotation: '0',
+            defaultFontFamily: 'Inter, Arial, sans-serif',
+            headerFontSize: 13,
             portraitFontSize: 10,
-            showStoreOnLabel: true,
-            defaultScanAction: 'ask',
+            barcodeSize: 'md',
             beepOnScan: true,
             customTypes: ['Shirt', 'Pant', 'Dress', 'Tops', 'Accessories'],
             customSizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'N/A'],
@@ -1791,15 +1818,14 @@ function toggleSettingsCustomDim() {
             document.getElementById('setCustomLooks').value = (settings.customLooks || []).join(', ');
             document.getElementById('setDefaultScanAction').value = settings.defaultScanAction || 'ask';
             document.getElementById('setBarcodeFormat').value = settings.barcodeFormat || 'CODE128';
-            document.getElementById('setDefaultPrintMode').value = settings.defaultPrintMode || 'thermal';
             document.getElementById('setThermalBrandText').value = settings.thermalBrandText ?? 'Rikai';
-            document.getElementById('setThermalPaperSize').value = settings.thermalPaperSize || 'auto';
+            if (document.getElementById('setDefaultFontFamily')) document.getElementById('setDefaultFontFamily').value = settings.defaultFontFamily || 'Inter, Arial, sans-serif';
+            document.getElementById('setThermalPaperSize').value = settings.thermalPaperSize || '50x75';
             if (document.getElementById('setDefaultPrintRotation')) document.getElementById('setDefaultPrintRotation').value = settings.defaultPrintRotation || '0';
             if (document.getElementById('setCustomWidthMm')) document.getElementById('setCustomWidthMm').value = settings.customPaperWidth || 50;
             if (document.getElementById('setCustomHeightMm')) document.getElementById('setCustomHeightMm').value = settings.customPaperHeight || 75;
             toggleSettingsCustomDim();
             document.getElementById('setBeepOnScan').checked = Boolean(settings.beepOnScan);
-            document.getElementById('setShowStoreOnLabel').checked = Boolean(settings.showStoreOnLabel);
             document.getElementById('gsUrlInput').value = gsUrl;
             document.getElementById('gsAutoSyncCheckbox').checked = gsAutoSync;
         }
@@ -1837,13 +1863,13 @@ function toggleSettingsCustomDim() {
                 defaultScanAction: document.getElementById('setDefaultScanAction').value || 'ask',
                 barcodeFormat: document.getElementById('setBarcodeFormat').value || 'CODE128',
                 defaultPrintMode: document.getElementById('setDefaultPrintMode').value || 'thermal',
-                thermalBrandText: document.getElementById('setThermalBrandText').value.trim() || 'Rikai',
-                thermalPaperSize: document.getElementById('setThermalPaperSize').value || 'auto',
+               thermalBrandText: document.getElementById('setThermalBrandText').value.trim() || 'Rikai',
+                defaultFontFamily: document.getElementById('setDefaultFontFamily')?.value || 'Inter, Arial, sans-serif',
+                thermalPaperSize: document.getElementById('setThermalPaperSize').value || '50x75',
                 defaultPrintRotation: document.getElementById('setDefaultPrintRotation')?.value || '0',
                 customPaperWidth: Math.max(15, Math.min(300, parseFloat(document.getElementById('setCustomWidthMm')?.value) || 50)),
                 customPaperHeight: Math.max(15, Math.min(300, parseFloat(document.getElementById('setCustomHeightMm')?.value) || 75)),
-                beepOnScan: document.getElementById('setBeepOnScan').checked,
-                showStoreOnLabel: document.getElementById('setShowStoreOnLabel').checked
+                beepOnScan: document.getElementById('setBeepOnScan').checked
             };
 
             saveSettingsLocal();
@@ -2239,7 +2265,7 @@ function toggleSettingsCustomDim() {
         // ==========================================
         // Multi-Product & Thermal ("Rikai") Barcode Printing
         // ==========================================
-       window.openPrintModalForSelected = () => {
+      window.openPrintModalForSelected = () => {
             const items = inventoryData.filter(i => selectedIds.has(i.docId));
             if (items.length === 0) {
                 showToast("Select at least one product to print.", "error");
@@ -2248,27 +2274,19 @@ function toggleSettingsCustomDim() {
             openPrintModal(items);
         };
 
-        window.openPrintModal = (items) => {
+        window.openPrintModal = async (items) => {
             printQueue = items.map(item => ({ item, copies: 1 }));
 
-            const mode = settings.defaultPrintMode || 'thermal';
-            document.getElementById('pmMode').value = mode;
-            if (mode === 'thermal-portrait') {
-                document.getElementById('pmLayout').value = 'thermal-page';
-                document.getElementById('pmPaperSize').value = settings.thermalPaperSize || '50x75';
-            } else if (mode === 'thermal') {
-                document.getElementById('pmLayout').value = 'thermal-page';
-                document.getElementById('pmPaperSize').value = settings.thermalPaperSize || 'auto';
-            } else {
-                document.getElementById('pmLayout').value = 'standard-grid';
-                document.getElementById('pmPaperSize').value = settings.thermalPaperSize || 'auto';
-            }
-
+            document.getElementById('pmLayout').value = settings.defaultPrintLayout || 'thermal-roll';
+            document.getElementById('pmPaperSize').value = settings.thermalPaperSize || '50x75';
             document.getElementById('pmBrandText').value = settings.thermalBrandText ?? 'Rikai';
-            if (document.getElementById('pmCustomWidth')) document.getElementById('pmCustomWidth').value = settings.customPaperWidth || 50;
-            if (document.getElementById('pmCustomHeight')) document.getElementById('pmCustomHeight').value = settings.customPaperHeight || 75;
-            if (document.getElementById('pmRotation')) document.getElementById('pmRotation').value = settings.defaultPrintRotation || '0';
-            if (document.getElementById('pmFontSize')) document.getElementById('pmFontSize').value = settings.portraitFontSize || 10;
+            document.getElementById('pmFontFamily').value = settings.defaultFontFamily || 'Inter, Arial, sans-serif';
+            document.getElementById('pmHeaderFontSize').value = settings.headerFontSize || 13;
+            document.getElementById('pmFontSize').value = settings.portraitFontSize || 10;
+            document.getElementById('pmBarcodeSize').value = settings.barcodeSize || 'md';
+            document.getElementById('pmCustomWidth').value = settings.customPaperWidth || 50;
+            document.getElementById('pmCustomHeight').value = settings.customPaperHeight || 75;
+            document.getElementById('pmRotation').value = settings.defaultPrintRotation || '0';
             document.getElementById('pmShowSkuText').checked = true;
             document.getElementById('pmSubtitle').innerText = `${items.length} product(s) ready to print`;
 
@@ -2276,7 +2294,7 @@ function toggleSettingsCustomDim() {
             syncPrintModalFields();
             renderPrintPreview();
 
-            stopScanner();
+            await stopScanner();
             hideAllModalPanels();
             modalOverlay.classList.remove('hidden');
             modalOverlay.classList.add('flex');
@@ -2285,15 +2303,8 @@ function toggleSettingsCustomDim() {
         };
 
         function syncPrintModalFields() {
-            const mode = document.getElementById('pmMode').value;
-            const layout = document.getElementById('pmLayout').value;
             const paperSize = document.getElementById('pmPaperSize').value;
-            const isCustom = layout !== 'standard-grid' && paperSize === 'custom';
-
-            document.getElementById('pmBrandWrap')?.classList.toggle('hidden', mode !== 'thermal' && mode !== 'thermal-portrait');
-            document.getElementById('pmPaperWrap')?.classList.toggle('hidden', layout === 'standard-grid');
-            document.getElementById('pmRotationWrap')?.classList.toggle('hidden', layout === 'standard-grid');
-
+            const isCustom = paperSize === 'custom';
             const customWrap = document.getElementById('pmCustomDimWrap');
             if (customWrap) {
                 customWrap.classList.toggle('hidden', !isCustom);
@@ -2301,28 +2312,7 @@ function toggleSettingsCustomDim() {
             }
         }
 
-        document.getElementById('pmMode')?.addEventListener('change', (e) => {
-            const val = e.target.value;
-            if (val === 'thermal-portrait') {
-                document.getElementById('pmLayout').value = 'thermal-page';
-                if (document.getElementById('pmPaperSize').value === 'auto') {
-                    document.getElementById('pmPaperSize').value = '50x75';
-                }
-            } else if (val === 'thermal') {
-                document.getElementById('pmLayout').value = 'thermal-page';
-                if (document.getElementById('pmPaperSize').value === '50x75') {
-                    document.getElementById('pmPaperSize').value = settings.thermalPaperSize !== '50x75'
-                        ? (settings.thermalPaperSize || 'auto')
-                        : 'auto';
-                }
-            } else {
-                document.getElementById('pmLayout').value = 'standard-grid';
-            }
-            syncPrintModalFields();
-            renderPrintPreview();
-        });
-
-        ['pmLayout', 'pmBrandText', 'pmPaperSize', 'pmBarcodeSize', 'pmCustomWidth', 'pmCustomHeight', 'pmRotation', 'pmFontSize', 'pmShowSkuText'].forEach(id => {
+        ['pmLayout', 'pmBrandText', 'pmPaperSize', 'pmFontFamily', 'pmHeaderFontSize', 'pmFontSize', 'pmBarcodeSize', 'pmCustomWidth', 'pmCustomHeight', 'pmRotation', 'pmShowSkuText'].forEach(id => {
             const el = document.getElementById(id);
             if (!el) return;
             el.addEventListener('input', () => { syncPrintModalFields(); renderPrintPreview(); });
@@ -2380,15 +2370,16 @@ function toggleSettingsCustomDim() {
 
         function getPrintConfig() {
             return {
-                mode: document.getElementById('pmMode').value,
                 layout: document.getElementById('pmLayout').value,
                 brandText: document.getElementById('pmBrandText').value.trim() || 'Rikai',
                 paperSize: document.getElementById('pmPaperSize').value,
-                barcodeSize: document.getElementById('pmBarcodeSize')?.value || 'md',
-                customWidth: Math.max(15, Math.min(300, parseFloat(document.getElementById('pmCustomWidth')?.value) || 50)),
-                customHeight: Math.max(15, Math.min(300, parseFloat(document.getElementById('pmCustomHeight')?.value) || 75)),
-                rotation: document.getElementById('pmRotation')?.value || '0',
-                fontSize: Math.max(7, Math.min(22, parseFloat(document.getElementById('pmFontSize')?.value) || 10)),
+                fontFamily: document.getElementById('pmFontFamily').value || 'Inter, Arial, sans-serif',
+                headerFontSize: Math.max(8, Math.min(28, parseFloat(document.getElementById('pmHeaderFontSize').value) || 13)),
+                fontSize: Math.max(7, Math.min(22, parseFloat(document.getElementById('pmFontSize').value) || 10)),
+                barcodeSize: document.getElementById('pmBarcodeSize').value || 'md',
+                customWidth: Math.max(15, Math.min(300, parseFloat(document.getElementById('pmCustomWidth').value) || 50)),
+                customHeight: Math.max(15, Math.min(300, parseFloat(document.getElementById('pmCustomHeight').value) || 75)),
+                rotation: document.getElementById('pmRotation').value || '0',
                 showSkuText: document.getElementById('pmShowSkuText').checked
             };
         }
@@ -2406,6 +2397,34 @@ function toggleSettingsCustomDim() {
             }
         }
 
+        // ============================================================
+        //  THERMAL PORTRAIT LABEL — EDIT ROW TEXTS OR VISIBILITY HERE
+        //  (Fonts, header text, sizes & barcode size can also be
+        //   changed live right inside the Print window!)
+        // ============================================================
+        const PORTRAIT_LABEL = {
+            headerWeight: 800,             // 400 normal ... 800 extra bold
+            headerLetterSpacing: '0.04em',
+            headerUnderline: true,         // line under the header
+            detailLineHeight: 1.28,
+            detailRowGap: 2,               // px between lines
+            labelWeight: 700,              // bold weight of "Product:", "Size:", etc.
+            barcodeFontFamily: 'monospace',
+            barcodeMargin: 1,
+            rows: {
+                product: { show: true, label: 'Product' },
+                style:   { show: true, label: 'Style' },
+                type:    { show: true, label: 'Type' },
+                length:  { show: true, label: 'Length' },
+                sleeves: { show: true, label: 'Sleeves' },
+                gender:  { show: true, label: 'Gender' },
+                color:   { show: true, label: 'Color' },
+                size:    { show: true, label: 'Size' },
+                price:   { show: true, label: 'Price' },
+                notes:   { show: true, label: 'Notes' }
+            }
+        };
+
         function buildPortraitDetailRows(item) {
             const typeVal = formatItemType(item);
             const cleanType = typeVal && typeVal !== 'N/A' ? typeVal : '';
@@ -2413,200 +2432,115 @@ function toggleSettingsCustomDim() {
             const lengthVal = formatOptionDisplay(item.length, item.customLength);
             const sleevesVal = formatOptionDisplay(item.sleeves, item.customSleeves);
 
-            const rows = [
-                { label: 'Product', value: item.name || '—' },
-                { label: 'Style', value: styleVal || cleanType || '—' }
-            ];
+            const rows = [];
+            const add = (key, value) => {
+                const cfgRow = PORTRAIT_LABEL.rows[key];
+                if (cfgRow && cfgRow.show && value) rows.push({ label: cfgRow.label, value });
+            };
 
-            if (styleVal && cleanType && styleVal.toLowerCase() !== cleanType.toLowerCase()) {
-                rows.push({ label: 'Type', value: cleanType });
-            }
-            if (lengthVal) rows.push({ label: 'Length', value: lengthVal });
-            if (sleevesVal) rows.push({ label: 'Sleeves', value: sleevesVal });
-            if (item.gender && item.gender !== 'N/A') rows.push({ label: 'Gender', value: item.gender });
-            if (item.color) rows.push({ label: 'Color', value: item.color });
-
-            rows.push({ label: 'Size', value: item.size || 'N/A' });
-            rows.push({ label: 'Price', value: formatMoney(item.price || 0) });
-
-            if (item.lookNotes) rows.push({ label: 'Notes', value: item.lookNotes });
+            add('product', item.name || '—');
+            add('style', styleVal || cleanType || '—');
+            if (styleVal && cleanType && styleVal.toLowerCase() !== cleanType.toLowerCase()) add('type', cleanType);
+            add('length', lengthVal);
+            add('sleeves', sleevesVal);
+            if (item.gender && item.gender !== 'N/A') add('gender', item.gender);
+            add('color', item.color);
+            add('size', item.size || 'N/A');
+            add('price', formatMoney(item.price || 0));
+            add('notes', item.lookNotes);
             return rows;
         }
 
         function createLabelElement(item, cfg, forPrint = false) {
             const el = document.createElement('div');
-            const isThermalLayout = cfg.layout !== 'standard-grid';
             const dims = resolvePaperDimensionsMm(cfg);
-            const isRotated = forPrint && isThermalLayout && (cfg.rotation === '90' || cfg.rotation === '270');
-            const fontSize = cfg.fontSize || 10;
-
-            if (cfg.mode === 'thermal-portrait') {
-                if (isRotated) {
-                    el.className = `print-label-thermal-portrait-inner ${cfg.rotation === '90' ? 'print-label-rotated-90' : 'print-label-rotated-270'}`;
-                } else if (cfg.layout === 'thermal-page') {
-                    el.className = 'print-label-thermal-portrait-page';
-                } else if (cfg.layout === 'thermal-roll') {
-                    el.className = 'print-label-thermal-portrait-roll';
-                } else {
-                    el.className = 'print-label-standard';
-                }
-
-                const baseW = dims.widthMm || 50;
-                const baseH = dims.heightMm || 75;
-                const pageW = isRotated ? Math.max(baseW, baseH) : baseW;
-                const pageH = isRotated ? Math.min(baseW, baseH) : baseH;
-
-                if (forPrint && isThermalLayout) {
-                    if (isRotated) {
-                        el.style.width = `${Math.max(15, pageH - 4)}mm`;
-                        el.style.height = `${Math.max(15, pageW - 4)}mm`;
-                    } else if (dims.widthMm) {
-                        el.style.width = `${Math.max(15, dims.widthMm - 3)}mm`;
-                        if (dims.heightMm) {
-                            el.style.minHeight = `${Math.max(15, dims.heightMm - 5)}mm`;
-                            el.style.maxHeight = `${Math.max(15, dims.heightMm - 3)}mm`;
-                        }
-                    }
-                }
-
-                const brand = document.createElement('div');
-                brand.style.cssText = `font-weight:800;font-size:${fontSize + 3}px;color:#000000;text-align:center;letter-spacing:0.04em;border-bottom:1px solid #000000;padding-bottom:2px;margin-bottom:4px;font-family:Plus Jakarta Sans,sans-serif;`;
-                brand.innerText = cfg.brandText;
-                el.appendChild(brand);
-
-                const detailsWrap = document.createElement('div');
-                detailsWrap.style.cssText = `width:100%;text-align:left;display:flex;flex-direction:column;gap:2px;font-size:${fontSize}px;line-height:1.28;color:#000000;font-family:Inter,sans-serif;`;
-
-                buildPortraitDetailRows(item).forEach(({ label, value }) => {
-                    const row = document.createElement('div');
-                    row.style.cssText = 'word-break:break-word;';
-                    const keySpan = document.createElement('span');
-                    keySpan.style.fontWeight = '700';
-                    keySpan.innerText = `${label}: `;
-                    const valSpan = document.createElement('span');
-                    valSpan.innerText = value;
-                    row.appendChild(keySpan);
-                    row.appendChild(valSpan);
-                    detailsWrap.appendChild(row);
-                });
-                el.appendChild(detailsWrap);
-
-                const barcodeWrap = document.createElement('div');
-                barcodeWrap.style.cssText = 'margin-top:auto;padding-top:4px;width:100%;display:flex;justify-content:center;align-items:center;';
-                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                svg.style.maxWidth = '100%';
-                svg.style.height = 'auto';
-                barcodeWrap.appendChild(svg);
-                el.appendChild(barcodeWrap);
-
-                const opts = {
-                    format: settings.barcodeFormat || 'CODE128',
-                    width: 1.3,
-                    height: 34,
-                    displayValue: cfg.showSkuText,
-                    fontSize: Math.max(8, Math.round(fontSize)),
-                    margin: 1,
-                    background: '#ffffff',
-                    lineColor: '#000000'
-                };
-                try { JsBarcode(svg, item.sku, opts); }
-                catch { JsBarcode(svg, item.sku, { ...opts, format: 'CODE128' }); }
-
-                if (isRotated) {
-                    const wrapper = document.createElement('div');
-                    wrapper.className = cfg.layout === 'thermal-roll' ? 'print-page-rotated-roll' : 'print-page-rotated';
-                    wrapper.style.width = `${Math.max(15, pageW - 3)}mm`;
-                    wrapper.style.height = `${Math.max(15, pageH - 3)}mm`;
-                    wrapper.appendChild(el);
-                    return wrapper;
-                }
-
-                return el;
-            }
+            const isRotated = forPrint && (cfg.rotation === '90' || cfg.rotation === '270');
+            const P = PORTRAIT_LABEL;
 
             if (isRotated) {
-                el.className = `print-label-thermal-min-inner ${cfg.rotation === '90' ? 'print-label-rotated-90' : 'print-label-rotated-270'}`;
+                el.className = `print-label-thermal-portrait-inner ${cfg.rotation === '90' ? 'print-label-rotated-90' : 'print-label-rotated-270'}`;
             } else if (cfg.layout === 'thermal-page') {
-                el.className = 'print-label-thermal-page';
-            } else if (cfg.layout === 'thermal-roll') {
-                el.className = 'print-label-thermal-roll';
+                el.className = 'print-label-thermal-portrait-page';
             } else {
-                el.className = 'print-label-standard';
+                el.className = 'print-label-thermal-portrait-roll';
             }
 
-            if (forPrint && isThermalLayout && isRotated) {
-                const baseW = dims.widthMm || 50;
-                const baseH = dims.heightMm || 30;
-                el.style.width = `${Math.max(15, Math.min(baseW, baseH) - 4)}mm`;
-                el.style.height = `${Math.max(15, Math.max(baseW, baseH) - 4)}mm`;
-            } else if (forPrint && isThermalLayout && dims.widthMm) {
-                el.style.width = `${Math.max(15, dims.widthMm - 3)}mm`;
-                if (dims.heightMm) el.style.minHeight = `${Math.max(15, dims.heightMm - 4)}mm`;
-            }
+            const baseW = dims.widthMm || 50;
+            const baseH = dims.heightMm || 75;
+            const pageW = isRotated ? Math.max(baseW, baseH) : baseW;
+            const pageH = isRotated ? Math.min(baseW, baseH) : baseH;
 
-            if (cfg.mode === 'thermal') {
-                const brand = document.createElement('p');
-                brand.className = 'font-bold text-black tracking-wide leading-tight mb-0.5 font-sans';
-                brand.style.fontSize = `${fontSize + 2}px`;
-                brand.innerText = cfg.brandText;
-                el.appendChild(brand);
-            } else {
-                if (settings.showStoreOnLabel && settings.storeName) {
-                    const st = document.createElement('p');
-                    st.className = 'font-semibold uppercase tracking-widest text-slate-600 font-sans';
-                    st.style.fontSize = `${Math.max(8, fontSize - 1)}px`;
-                    st.innerText = settings.storeName;
-                    el.appendChild(st);
+            if (forPrint) {
+                if (isRotated) {
+                    el.style.width = `${Math.max(15, pageH - 4)}mm`;
+                    el.style.height = `${Math.max(15, pageW - 4)}mm`;
+                } else if (dims.widthMm) {
+                    el.style.width = `${Math.max(15, dims.widthMm - 3)}mm`;
+                    if (dims.heightMm) {
+                        el.style.minHeight = `${Math.max(15, dims.heightMm - 5)}mm`;
+                        el.style.maxHeight = `${Math.max(15, dims.heightMm - 3)}mm`;
+                    }
                 }
-                const title = document.createElement('p');
-                title.className = 'font-bold text-black leading-tight font-sans';
-                title.style.fontSize = `${fontSize + 1}px`;
-                title.innerText = item.name || '';
-                el.appendChild(title);
-
-                const metaParts = [formatItemType(item), item.gender, item.size, item.color, ...getItemLookTags(item)];
-                if (settings.showStoreOnLabel && item.price) metaParts.push(formatMoney(item.price));
-                const meta = document.createElement('p');
-                meta.className = 'text-slate-700 mb-1 font-sans';
-                meta.style.fontSize = `${fontSize - 0.5}px`;
-                meta.innerText = metaParts.filter(Boolean).join(' • ');
-                el.appendChild(meta);
             }
 
+            const brand = document.createElement('div');
+            brand.style.cssText = `font-weight:${P.headerWeight};font-size:${cfg.headerFontSize}px;color:#000000;text-align:center;letter-spacing:${P.headerLetterSpacing};${P.headerUnderline ? 'border-bottom:1px solid #000000;' : ''}padding-bottom:2px;margin-bottom:4px;font-family:${cfg.fontFamily};`;
+            brand.innerText = cfg.brandText;
+            el.appendChild(brand);
+
+            const detailsWrap = document.createElement('div');
+            detailsWrap.style.cssText = `width:100%;text-align:left;display:flex;flex-direction:column;gap:${P.detailRowGap}px;font-size:${cfg.fontSize}px;line-height:${P.detailLineHeight};color:#000000;font-family:${cfg.fontFamily};`;
+
+            buildPortraitDetailRows(item).forEach(({ label, value }) => {
+                const row = document.createElement('div');
+                row.style.cssText = 'word-break:break-word;';
+                if (label) {
+                    const keySpan = document.createElement('span');
+                    keySpan.style.fontWeight = String(P.labelWeight);
+                    keySpan.innerText = `${label}: `;
+                    row.appendChild(keySpan);
+                }
+                const valSpan = document.createElement('span');
+                valSpan.innerText = value;
+                row.appendChild(valSpan);
+                detailsWrap.appendChild(row);
+            });
+            el.appendChild(detailsWrap);
+
+            const barcodeWrap = document.createElement('div');
+            barcodeWrap.style.cssText = 'margin-top:auto;padding-top:4px;width:100%;display:flex;justify-content:center;align-items:center;';
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             svg.style.maxWidth = '100%';
-            el.appendChild(svg);
+            svg.style.height = 'auto';
+            barcodeWrap.appendChild(svg);
+            el.appendChild(barcodeWrap);
 
-            const isSmallHeight = dims.heightMm && dims.heightMm <= 26;
             const sizeScale = {
-             sm: { w: 1.1, h: 28 },
-             md: { w: 1.5, h: 42 },
-             lg: { w: 2.1, h: 68 },
-             xl: { w: 5, h: 76 }
-         }[cfg.barcodeSize || 'md'];
-         const barWidth = sizeScale.w;
-         const barHeight = sizeScale.h;
+                sm: { w: 1.0, h: 24 },
+                md: { w: 1.3, h: 34 },
+                lg: { w: 1.7, h: 46 },
+                xl: { w: 2.1, h: 58 }
+            }[cfg.barcodeSize || 'md'];
 
-            const barOpts = {
+            const opts = {
                 format: settings.barcodeFormat || 'CODE128',
-                width: barWidth,
-                height: barHeight,
+                width: sizeScale.w,
+                height: sizeScale.h,
                 displayValue: cfg.showSkuText,
-                fontSize: isThermalLayout ? Math.max(8, Math.round(fontSize)) : 12,
-                margin: isThermalLayout ? 2 : 6,
+                fontSize: Math.max(8, Math.round(cfg.fontSize)),
+                font: P.barcodeFontFamily || 'monospace',
+                margin: P.barcodeMargin,
                 background: '#ffffff',
                 lineColor: '#000000'
             };
-            try { JsBarcode(svg, item.sku, barOpts); }
-            catch { JsBarcode(svg, item.sku, { ...barOpts, format: 'CODE128' }); }
+            try { JsBarcode(svg, item.sku, opts); }
+            catch { JsBarcode(svg, item.sku, { ...opts, format: 'CODE128' }); }
 
             if (isRotated) {
-                const baseW = dims.widthMm || 50;
-                const baseH = dims.heightMm || 30;
                 const wrapper = document.createElement('div');
                 wrapper.className = cfg.layout === 'thermal-roll' ? 'print-page-rotated-roll' : 'print-page-rotated';
-                wrapper.style.width = `${Math.max(15, Math.max(baseW, baseH) - 3)}mm`;
-                wrapper.style.height = `${Math.max(15, Math.min(baseW, baseH) - 3)}mm`;
+                wrapper.style.width = `${Math.max(15, pageW - 3)}mm`;
+                wrapper.style.height = `${Math.max(15, pageH - 3)}mm`;
                 wrapper.appendChild(el);
                 return wrapper;
             }
@@ -2623,7 +2557,7 @@ function toggleSettingsCustomDim() {
             const cfg = getPrintConfig();
             const dims = resolvePaperDimensionsMm(cfg);
             if (caption) {
-                const rotNote = (cfg.layout !== 'standard-grid' && cfg.rotation !== '0')
+                const rotNote = cfg.rotation !== '0'
                     ? ` • Prints rotated ${cfg.rotation === '90' ? '90° CW' : '-90° CCW'}`
                     : '';
                 const dimNote = dims.widthMm && dims.heightMm ? ` (${dims.widthMm}×${dims.heightMm}mm)` : '';
@@ -2631,33 +2565,21 @@ function toggleSettingsCustomDim() {
             }
 
             const previewEl = createLabelElement(printQueue[0].item, cfg, false);
-
-            if (cfg.mode === 'thermal-portrait') {
-                const pw = dims.widthMm || 50;
-                const ph = dims.heightMm || 75;
-                const scale = 3.2;
-                const boxW = Math.max(155, Math.min(260, Math.round(Math.min(pw, ph) * scale)));
-                const boxH = Math.max(180, Math.min(340, Math.round(Math.max(pw, ph) * scale)));
-                box.className = 'bg-white border border-slate-300 rounded-lg p-3 shadow-sm flex flex-col justify-between items-stretch max-w-full';
-                box.style.width = `${boxW}px`;
-                box.style.minHeight = `${boxH}px`;
-                previewEl.className = 'flex flex-col justify-between items-stretch text-left flex-1';
-            } else {
-                box.style.width = '';
-                box.style.minHeight = '';
-                box.className = 'bg-white border border-slate-300 rounded-lg px-4 py-3 shadow-sm flex flex-col items-center justify-center min-w-[200px] max-w-full';
-                previewEl.className = 'flex flex-col items-center justify-center text-center';
-            }
+            const pw = dims.widthMm || 50;
+            const ph = dims.heightMm || 75;
+            const scale = 3.2;
+            const boxW = Math.max(155, Math.min(260, Math.round(Math.min(pw, ph) * scale)));
+            const boxH = Math.max(180, Math.min(340, Math.round(Math.max(pw, ph) * scale)));
+            box.className = 'bg-white border border-slate-300 rounded-lg p-3 shadow-sm flex flex-col justify-between items-stretch max-w-full';
+            box.style.width = `${boxW}px`;
+            box.style.minHeight = `${boxH}px`;
+            previewEl.className = 'flex flex-col justify-between items-stretch text-left flex-1';
 
             box.appendChild(previewEl);
         }
 
         function applyDynamicPageCss(cfg) {
             const styleEl = document.getElementById('dynamicPrintStyle');
-            if (cfg.layout === 'standard-grid') {
-                styleEl.textContent = `@media print { @page { size: A4; margin: 6mm; } }`;
-                return;
-            }
             const dims = resolvePaperDimensionsMm(cfg);
             const isRotated = cfg.rotation === '90' || cfg.rotation === '270';
 
@@ -2678,13 +2600,17 @@ function toggleSettingsCustomDim() {
         window.executeBatchPrint = () => {
             if (printQueue.length === 0) return;
             const cfg = getPrintConfig();
+            settings.defaultPrintLayout = cfg.layout;
+            settings.defaultFontFamily = cfg.fontFamily;
+            settings.headerFontSize = cfg.headerFontSize;
             settings.portraitFontSize = cfg.fontSize;
+            settings.barcodeSize = cfg.barcodeSize;
             saveSettingsLocal();
             applyDynamicPageCss(cfg);
 
             const container = document.getElementById('print-container');
             container.innerHTML = '';
-            container.className = cfg.layout === 'standard-grid' ? 'hidden print-grid-standard' : 'hidden';
+            container.className = 'hidden';
 
             try {
                 printQueue.forEach(entry => {
@@ -3434,6 +3360,12 @@ function toggleSettingsCustomDim() {
                 ? 'Scan Barcode for SKU'
                 : (scannerLookupIntent === 'sell' ? 'Scan Barcode to Sell' : 'Scan Barcode / QR Code');
             document.getElementById('manualScanInput').value = '';
+            batchItems.clear();
+            lastBatchCode = '';
+            try {
+                document.getElementById('batchScanToggle').checked = localStorage.getItem(BATCH_PREF_KEY) !== '0';
+            } catch {}
+            syncBatchUi();
 
             hideAllModalPanels();
             modalOverlay.classList.remove('hidden');
@@ -3445,6 +3377,7 @@ function toggleSettingsCustomDim() {
         };
 
         window.cancelScannerModal = async () => {
+            if (!confirmDiscardBatch()) return;
             await stopScanner();
             if (isScanningForInput) {
                 hideAllModalPanels();
@@ -3456,6 +3389,7 @@ function toggleSettingsCustomDim() {
         };
 
         window.closeModals = () => {
+            if (!confirmDiscardBatch()) return;
             modalOverlay.classList.add('hidden');
             modalOverlay.classList.remove('flex');
             hideAllModalPanels();
@@ -3519,24 +3453,44 @@ function toggleSettingsCustomDim() {
             };
         }
 
+        let scanHandled = false;
+        let scannerToken = 0;
+        let stopPromise = null;
+
+        // html5-qrcode wipes the contents of #reader when it stops, which removes the
+        // "Starting camera..." text node. Re-create it whenever it is missing.
+        function setScannerMessage(text) {
+            const reader = document.getElementById('reader');
+            let p = document.getElementById('scannerPlaceholderText');
+            if (!p && reader) {
+                p = document.createElement('p');
+                p.id = 'scannerPlaceholderText';
+                p.className = 'text-slate-300 text-sm absolute z-0 text-center px-4';
+                reader.appendChild(p);
+            }
+            if (p) p.innerText = text;
+        }
+
         async function startScanner(preferredCameraId = null) {
             if (typeof Html5Qrcode === 'undefined') {
-                document.getElementById('scannerPlaceholderText').innerText = "Scanner library unavailable.";
+                setScannerMessage("Scanner library unavailable.");
                 return;
             }
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                document.getElementById('scannerPlaceholderText').innerText =
-                    "Camera requires HTTPS or localhost. Use Image Scan or Manual/USB input below.";
+                setScannerMessage("Camera requires HTTPS or localhost. Use Image Scan or Manual/USB input below.");
                 return;
             }
 
             await stopScanner();
-            document.getElementById('scannerPlaceholderText').innerText = "Requesting camera...";
+            scanHandled = false;
+            const token = ++scannerToken;
+            setScannerMessage("Requesting camera...");
 
-            html5QrCode = new Html5Qrcode(
+            const scanner = new Html5Qrcode(
                 "reader",
                 SUPPORTED_FORMATS ? { formatsToSupport: SUPPORTED_FORMATS, verbose: false } : false
             );
+            html5QrCode = scanner;
 
             try {
                 const cameras = await Html5Qrcode.getCameras().catch(() => []);
@@ -3560,40 +3514,229 @@ function toggleSettingsCustomDim() {
                     cameraSelectWrap.classList.toggle('hidden', cameras.length <= 1);
                     cameraSelect.onchange = () => startScanner(cameraSelect.value);
 
-                    await html5QrCode.start(preferredCameraId, getScannerConfig(), handleDecodedCode, () => {});
+                    await scanner.start(preferredCameraId, getScannerConfig(), handleDecodedCode, () => {});
                 } else {
                     cameraSelectWrap.classList.add('hidden');
                     try {
-                        await html5QrCode.start({ facingMode: "environment" }, getScannerConfig(), handleDecodedCode, () => {});
+                        await scanner.start({ facingMode: "environment" }, getScannerConfig(), handleDecodedCode, () => {});
                     } catch {
-                        await html5QrCode.start({ facingMode: "user" }, getScannerConfig(), handleDecodedCode, () => {});
+                        await scanner.start({ facingMode: "user" }, getScannerConfig(), handleDecodedCode, () => {});
                     }
+                }
+
+                // The modal was closed (or restarted) while the camera was still starting
+                if (token !== scannerToken || html5QrCode !== scanner) {
+                    try { await scanner.stop(); scanner.clear(); } catch {}
                 }
             } catch (err) {
                 console.error("Camera error:", err);
-                document.getElementById('scannerPlaceholderText').innerText =
-                    "Camera unavailable or denied. Use Image Scan or Manual/USB entry below.";
-                html5QrCode = null;
+                if (token === scannerToken) {
+                    setScannerMessage("Camera unavailable or denied. Use Image Scan or Manual/USB entry below.");
+                    if (html5QrCode === scanner) html5QrCode = null;
+                }
             }
         }
 
-        async function stopScanner() {
-            if (!html5QrCode || isScannerStopping) return;
-            isScannerStopping = true;
-            try {
-                if (html5QrCode.isScanning) await html5QrCode.stop();
-                html5QrCode.clear();
-            } catch (err) {
-                console.warn(err);
-            } finally {
-                html5QrCode = null;
-                isScannerStopping = false;
-            }
+        function stopScanner() {
+            scannerToken++;
+            if (stopPromise) return stopPromise;
+            const scanner = html5QrCode;
+            if (!scanner) return Promise.resolve();
+            html5QrCode = null;
+            stopPromise = (async () => {
+                try {
+                    if (scanner.isScanning) await scanner.stop();
+                    scanner.clear();
+                } catch (err) {
+                    console.warn(err);
+                } finally {
+                    stopPromise = null;
+                }
+            })();
+            return stopPromise;
         }
 
-        async function handleDecodedCode(decodedText) {
+        // ==========================================
+        // Batch (multi-piece) scanning
+        // ==========================================
+        const BATCH_PREF_KEY = 'scanBatchMode';
+        const batchItems = new Map(); // sku(lowercase) -> { sku, count }
+        let lastBatchCode = '';
+        let lastBatchAt = 0;
+
+        function isBatchMode() {
+            const t = document.getElementById('batchScanToggle');
+            return Boolean(t && t.checked && !isScanningForInput && scannerLookupIntent !== 'sell');
+        }
+
+        function findItemBySku(sku) {
+            return inventoryData.find(i => i.sku && i.sku.toLowerCase() === String(sku).toLowerCase());
+        }
+
+        function addToBatch(sku, force = false) {
+            const now = Date.now();
+            // Same code still in front of the camera: ignore (unless typed on purpose)
+            if (!force && sku === lastBatchCode && now - lastBatchAt < 1800) {
+                lastBatchAt = now;
+                return;
+            }
+            lastBatchCode = sku;
+            lastBatchAt = now;
+
+            const key = sku.toLowerCase();
+            const entry = batchItems.get(key) || { sku, count: 0 };
+            entry.count += 1;
+            batchItems.set(key, entry);
+
+            playScanBeep();
+            renderBatchList();
+        }
+
+        window.changeBatchCount = (key, delta) => {
+            const entry = batchItems.get(key);
+            if (!entry) return;
+            entry.count += delta;
+            if (entry.count <= 0) batchItems.delete(key);
+            renderBatchList();
+        };
+
+        window.clearBatch = () => {
+            batchItems.clear();
+            lastBatchCode = '';
+            renderBatchList();
+        };
+
+        function batchTotalPieces() {
+            let n = 0;
+            batchItems.forEach(e => { n += e.count; });
+            return n;
+        }
+
+        function renderBatchList() {
+            const panel = document.getElementById('batchPanel');
+            const list = document.getElementById('batchList');
+            const active = isBatchMode();
+            panel.classList.toggle('hidden', !active);
+            if (!active) return;
+
+            list.innerHTML = '';
+            if (batchItems.size === 0) {
+                list.innerHTML = '<p class="px-3 py-3 text-slate-500 text-center">Scan a garment barcode — it will appear here.</p>';
+            }
+            batchItems.forEach((entry, key) => {
+                const item = findItemBySku(entry.sku);
+                const row = document.createElement('div');
+                row.className = 'px-3 py-2 flex items-center justify-between gap-2';
+                row.innerHTML = `
+                    <div class="min-w-0">
+                        <p class="font-semibold text-slate-900 truncate">${escapeHtml(item ? item.name : 'New item (not in stock yet)')}</p>
+                        <p class="text-[11px] font-mono ${item ? 'text-slate-500' : 'text-amber-700'}">${escapeHtml(entry.sku)}${item ? ` • In stock: ${escapeHtml(item.qty ?? 0)}` : ''}</p>
+                    </div>
+                    <div class="flex items-center gap-1 shrink-0">
+                        <button type="button" data-key="${escapeHtml(key)}" data-d="-1" class="batch-step w-7 h-7 rounded-md border border-slate-300 bg-white font-bold">−</button>
+                        <span class="w-7 text-center font-bold">${entry.count}</span>
+                        <button type="button" data-key="${escapeHtml(key)}" data-d="1" class="batch-step w-7 h-7 rounded-md border border-slate-300 bg-white font-bold">+</button>
+                    </div>`;
+                list.appendChild(row);
+            });
+            list.querySelectorAll('.batch-step').forEach(b => {
+                b.addEventListener('click', () => changeBatchCount(b.dataset.key, parseInt(b.dataset.d, 10)));
+            });
+
+            document.getElementById('batchTotal').innerText = batchTotalPieces();
+            document.getElementById('batchFinishBtn').disabled = batchItems.size === 0;
+        }
+
+        function syncBatchUi() {
+            const wrap = document.getElementById('batchToggleWrap');
+            const canBatch = !isScanningForInput && scannerLookupIntent !== 'sell';
+            wrap.classList.toggle('hidden', !canBatch);
+            renderBatchList();
+        }
+
+        // Returns true if it is OK to leave the scanner (nothing pending, or user agreed to discard)
+        function confirmDiscardBatch() {
+            if (scannerModal.classList.contains('hidden') || batchItems.size === 0) return true;
+            if (!window.confirm(`Discard ${batchTotalPieces()} scanned piece(s) that were not added yet?`)) return false;
+            batchItems.clear();
+            return true;
+        }
+
+        document.getElementById('batchScanToggle').addEventListener('change', (e) => {
+            try { localStorage.setItem(BATCH_PREF_KEY, e.target.checked ? '1' : '0'); } catch {}
+            scanHandled = false;
+            syncBatchUi();
+        });
+
+        window.finishBatchScan = async () => {
+            if (batchItems.size === 0) return;
+            const unknown = [];
+            const updatedItems = [];
+            let pieces = 0;
+            const now = Date.now();
+
+            batchItems.forEach(entry => {
+                const idx = inventoryData.findIndex(i => i.sku && i.sku.toLowerCase() === entry.sku.toLowerCase());
+                if (idx < 0) { unknown.push(entry); return; }
+                const cur = Math.max(0, parseInt(inventoryData[idx].qty, 10) || 0);
+                inventoryData[idx] = { ...inventoryData[idx], qty: cur + entry.count, updatedAt: now };
+                updatedItems.push(inventoryData[idx]);
+                pieces += entry.count;
+            });
+
+            batchItems.clear();
+            lastBatchCode = '';
+            await stopScanner();
+
+            if (updatedItems.length) {
+                saveInventoryLocal();
+                refreshAllViews();
+            }
+            closeModals();
+
+            if (updatedItems.length) {
+                showToast(`Added ${pieces} piece(s) across ${updatedItems.length} item(s).`, "success");
+            }
+            if (unknown.length) {
+                const first = unknown[0];
+                const extra = unknown.slice(1).map(u => u.sku);
+                openAddModal(first.sku);
+                showToast(
+                    extra.length
+                        ? `New SKU ${first.sku} — fill details. Still to add: ${extra.join(', ')}`
+                        : "New SKU scanned. Fill details to add.",
+                    "success"
+                );
+            }
+
+            for (const updated of updatedItems) {
+                if (fb && userId) {
+                    try {
+                        await fb.updateDoc(fb.doc(fb.db, 'artifacts', fb.appId, 'users', userId, 'inventory', updated.docId), {
+                            qty: updated.qty,
+                            updatedAt: updated.updatedAt
+                        });
+                    } catch (err) { console.error(err); }
+                }
+                if (gsUrl && gsAutoSync) {
+                    syncToGoogleSheets({ action: 'upsert', item: updated });
+                }
+            }
+        };
+
+        async function handleDecodedCode(decodedText, fromManual = false) {
             const scannedId = (decodedText || '').trim();
             if (!scannedId) return;
+
+            // Batch mode: keep the camera running and just collect pieces
+            if (isBatchMode()) {
+                addToBatch(scannedId, fromManual);
+                return;
+            }
+
+            // The camera can fire the callback several times before it stops
+            if (scanHandled) return;
+            scanHandled = true;
 
             playScanBeep();
             await stopScanner();
@@ -3632,7 +3775,10 @@ function toggleSettingsCustomDim() {
         document.getElementById('manualScanForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const val = document.getElementById('manualScanInput').value.trim();
-            if (val) handleDecodedCode(val);
+            if (val) {
+                handleDecodedCode(val, true);
+                document.getElementById('manualScanInput').value = '';
+            }
         });
 
         document.getElementById('qrFileInput').addEventListener('change', async (e) => {
@@ -3646,7 +3792,12 @@ function toggleSettingsCustomDim() {
                 );
                 const result = await fileScanner.scanFile(file, true);
                 fileScanner.clear();
-                handleDecodedCode(result);
+                if (isBatchMode()) {
+                    addToBatch(result, true);
+                    startScanner();
+                } else {
+                    handleDecodedCode(result);
+                }
             } catch {
                 showToast("No barcode or QR code found in image.", "error");
                 startScanner();
@@ -4073,6 +4224,6 @@ function toggleSettingsCustomDim() {
         }
 
         window.addEventListener('DOMContentLoaded', init);
-    </script>
-</body>
+        </script>
+    </body> 
 </html>
