@@ -2764,6 +2764,9 @@ function toggleSettingsCustomDim() {
         // ==========================================
         // Add / Edit / Duplicate Item Modal
         // ==========================================
+
+        let pendingBatchNewSkus = [];
+
         const itemTypeSelect = document.getElementById('itemType');
         const itemLengthSelect = document.getElementById('itemLength');
         const itemSleevesSelect = document.getElementById('itemSleeves');
@@ -2828,7 +2831,7 @@ function toggleSettingsCustomDim() {
             document.getElementById('itemSku').value = `${prefix}-${rand}`;
         };
 
-        window.openAddModal = (scannedSku = "") => {
+        window.openAddModal = async (scannedSku = "") => {
             applySettingsToUI();
             itemForm.reset();
             document.getElementById('docId').value = "";
@@ -2846,7 +2849,7 @@ function toggleSettingsCustomDim() {
             document.getElementById('duplicateFromEditBtn').classList.add('hidden');
             handleAllOtherVisibility();
 
-            stopScanner();
+            await stopScanner();
             hideAllModalPanels();
             modalOverlay.classList.remove('hidden');
             modalOverlay.classList.add('flex');
@@ -2854,7 +2857,7 @@ function toggleSettingsCustomDim() {
             itemModal.classList.add('flex');
         };
 
-        window.openEditModal = (item) => {
+        window.openEditModal = async (item) => {
             applySettingsToUI();
             document.getElementById('docId').value = item.docId;
             document.getElementById('itemSku').value = item.sku || '';
@@ -2880,7 +2883,7 @@ function toggleSettingsCustomDim() {
             document.getElementById('duplicateBanner').classList.add('hidden');
             document.getElementById('duplicateFromEditBtn').classList.remove('hidden');
 
-            stopScanner();
+            await stopScanner();
             hideAllModalPanels();
             modalOverlay.classList.remove('hidden');
             modalOverlay.classList.add('flex');
@@ -2888,8 +2891,8 @@ function toggleSettingsCustomDim() {
             itemModal.classList.add('flex');
         };
 
-        window.openDuplicateModal = (item) => {
-            openEditModal(item);
+        window.openDuplicateModal = async (item) => {
+            await openEditModal(item);
             document.getElementById('docId').value = "";
             const skuEl = document.getElementById('itemSku');
             skuEl.value = suggestUniqueSku(item.sku);
@@ -2995,7 +2998,13 @@ function toggleSettingsCustomDim() {
                 sortInventory();
                 saveInventoryLocal();
                 refreshAllViews();
-                closeModals();
+
+                const nextNewSku = pendingBatchNewSkus.shift();
+                await closeModals();
+                if (nextNewSku) {
+                    await openAddModal(nextNewSku);
+                    showToast(`Next new SKU: ${nextNewSku}`, "success");
+                }
 
                 if (gsUrl && gsAutoSync) {
                     syncToGoogleSheets({ action: 'upsert', item: savedItem });
@@ -3060,7 +3069,7 @@ function toggleSettingsCustomDim() {
         document.getElementById('confirmActionBtn').addEventListener('click', async () => {
             const handler = activeConfirmHandler;
             activeConfirmHandler = null;
-            closeModals();
+            await closeModals();
             if (handler) await handler();
         });
 
@@ -3133,7 +3142,7 @@ function toggleSettingsCustomDim() {
             return [formatItemType(item), item.gender, item.size, item.color, ...getItemLookTags(item)].filter(Boolean).join(' • ');
         }
 
-        window.openQuickActionModal = (item, preferredMode = null) => {
+        window.openQuickActionModal = async (item, preferredMode = null) => {
             currentQuickActionItemId = item.docId;
             const currentQty = Math.max(0, parseInt(item.qty, 10) || 0);
             const badge = getStockBadge(currentQty);
@@ -3163,7 +3172,7 @@ function toggleSettingsCustomDim() {
             switchQuickActionMode(mode);
             updateQuickActionPreviews();
 
-            stopScanner();
+            await stopScanner();
             hideAllModalPanels();
             modalOverlay.classList.remove('hidden');
             modalOverlay.classList.add('flex');
@@ -3247,7 +3256,7 @@ function toggleSettingsCustomDim() {
             inventoryData[idx] = { ...inventoryData[idx], qty: next, updatedAt: Date.now() };
             saveInventoryLocal();
             refreshAllViews();
-            closeModals();
+            await closeModals();
             showToast(`${msg} Stock in hand: ${next}`, "success");
 
             const updated = inventoryData[idx];
@@ -3311,7 +3320,7 @@ function toggleSettingsCustomDim() {
             saveInventoryLocal();
             saveSalesLocal();
             refreshAllViews();
-            closeModals();
+            await closeModals();
             showToast(`Sold ${qtySold}x "${item.name}" to ${customerName}. Left: ${stockAfter}`, "success");
 
             const updatedItem = inventoryData[idx];
@@ -3352,7 +3361,8 @@ function toggleSettingsCustomDim() {
             });
         }
 
-        window.openScannerModal = (forInputFill = false, intent = 'ask') => {
+        window.openScannerModal = async (forInputFill = false, intent = 'ask') => {
+            await stopScanner();
             isScanningForInput = Boolean(forInputFill);
             scannerLookupIntent = intent || 'ask';
 
@@ -3373,6 +3383,7 @@ function toggleSettingsCustomDim() {
             scannerModal.classList.remove('hidden');
             scannerModal.classList.add('flex');
 
+            await new Promise(r => requestAnimationFrame(() => setTimeout(r, 60)));
             startScanner();
         };
 
@@ -3384,17 +3395,18 @@ function toggleSettingsCustomDim() {
                 itemModal.classList.remove('hidden');
                 itemModal.classList.add('flex');
             } else {
-                closeModals();
+                await closeModals();
             }
         };
 
-        window.closeModals = () => {
+        window.closeModals = async () => {
             if (!confirmDiscardBatch()) return;
+            pendingBatchNewSkus = [];
+            await stopScanner();
             modalOverlay.classList.add('hidden');
             modalOverlay.classList.remove('flex');
             hideAllModalPanels();
             activeConfirmHandler = null;
-            stopScanner();
         };
 
         modalOverlay.addEventListener('click', (e) => {
@@ -3457,8 +3469,6 @@ function toggleSettingsCustomDim() {
         let scannerToken = 0;
         let stopPromise = null;
 
-        // html5-qrcode wipes the contents of #reader when it stops, which removes the
-        // "Starting camera..." text node. Re-create it whenever it is missing.
         function setScannerMessage(text) {
             const reader = document.getElementById('reader');
             let p = document.getElementById('scannerPlaceholderText');
@@ -3484,6 +3494,8 @@ function toggleSettingsCustomDim() {
             await stopScanner();
             scanHandled = false;
             const token = ++scannerToken;
+            const readerEl = document.getElementById('reader');
+            if (readerEl) readerEl.innerHTML = '';
             setScannerMessage("Requesting camera...");
 
             const scanner = new Html5Qrcode(
@@ -3496,6 +3508,8 @@ function toggleSettingsCustomDim() {
                 const cameras = await Html5Qrcode.getCameras().catch(() => []);
                 const cameraSelect = document.getElementById('cameraSelect');
                 const cameraSelectWrap = document.getElementById('cameraSelectWrap');
+
+                if (token !== scannerToken) return;
 
                 if (cameras && cameras.length > 0) {
                     cameraSelect.innerHTML = '';
@@ -3524,9 +3538,8 @@ function toggleSettingsCustomDim() {
                     }
                 }
 
-                // The modal was closed (or restarted) while the camera was still starting
                 if (token !== scannerToken || html5QrCode !== scanner) {
-                    try { await scanner.stop(); scanner.clear(); } catch {}
+                    await forceStopScannerInstance(scanner);
                 }
             } catch (err) {
                 console.error("Camera error:", err);
@@ -3537,21 +3550,37 @@ function toggleSettingsCustomDim() {
             }
         }
 
+        async function forceStopScannerInstance(scanner) {
+            try {
+                const st = typeof scanner.getState === 'function' ? scanner.getState() : (scanner.isScanning ? 2 : 1);
+                if (st === 2 || st === 3) await scanner.stop();
+            } catch (err) {
+                console.warn(err);
+            }
+            const vid = document.querySelector('#reader video');
+            if (vid && vid.srcObject) {
+                try { vid.srcObject.getTracks().forEach(t => t.stop()); } catch {}
+                vid.srcObject = null;
+            }
+            try { scanner.clear(); } catch {}
+        }
+
         function stopScanner() {
             scannerToken++;
             if (stopPromise) return stopPromise;
             const scanner = html5QrCode;
-            if (!scanner) return Promise.resolve();
             html5QrCode = null;
             stopPromise = (async () => {
-                try {
-                    if (scanner.isScanning) await scanner.stop();
-                    scanner.clear();
-                } catch (err) {
-                    console.warn(err);
-                } finally {
-                    stopPromise = null;
+                if (scanner) {
+                    await forceStopScannerInstance(scanner);
+                } else {
+                    const vid = document.querySelector('#reader video');
+                    if (vid && vid.srcObject) {
+                        try { vid.srcObject.getTracks().forEach(t => t.stop()); } catch {}
+                        vid.srcObject = null;
+                    }
                 }
+                stopPromise = null;
             })();
             return stopPromise;
         }
@@ -3560,7 +3589,7 @@ function toggleSettingsCustomDim() {
         // Batch (multi-piece) scanning
         // ==========================================
         const BATCH_PREF_KEY = 'scanBatchMode';
-        const batchItems = new Map(); // sku(lowercase) -> { sku, count }
+        const batchItems = new Map();
         let lastBatchCode = '';
         let lastBatchAt = 0;
 
@@ -3575,8 +3604,7 @@ function toggleSettingsCustomDim() {
 
         function addToBatch(sku, force = false) {
             const now = Date.now();
-            // Same code still in front of the camera: ignore (unless typed on purpose)
-            if (!force && sku === lastBatchCode && now - lastBatchAt < 1800) {
+            if (!force && sku === lastBatchCode && now - lastBatchAt < 1600) {
                 lastBatchAt = now;
                 return;
             }
@@ -3590,6 +3618,8 @@ function toggleSettingsCustomDim() {
 
             playScanBeep();
             renderBatchList();
+            const item = findItemBySku(sku);
+            showToast(`Added: ${item ? item.name : sku} (×${entry.count})`, "success");
         }
 
         window.changeBatchCount = (key, delta) => {
@@ -3654,7 +3684,6 @@ function toggleSettingsCustomDim() {
             renderBatchList();
         }
 
-        // Returns true if it is OK to leave the scanner (nothing pending, or user agreed to discard)
         function confirmDiscardBatch() {
             if (scannerModal.classList.contains('hidden') || batchItems.size === 0) return true;
             if (!window.confirm(`Discard ${batchTotalPieces()} scanned piece(s) that were not added yet?`)) return false;
@@ -3686,24 +3715,23 @@ function toggleSettingsCustomDim() {
 
             batchItems.clear();
             lastBatchCode = '';
-            await stopScanner();
 
             if (updatedItems.length) {
                 saveInventoryLocal();
                 refreshAllViews();
             }
-            closeModals();
+            await closeModals();
 
             if (updatedItems.length) {
                 showToast(`Added ${pieces} piece(s) across ${updatedItems.length} item(s).`, "success");
             }
             if (unknown.length) {
+                pendingBatchNewSkus = unknown.slice(1).map(u => u.sku);
                 const first = unknown[0];
-                const extra = unknown.slice(1).map(u => u.sku);
-                openAddModal(first.sku);
+                await openAddModal(first.sku);
                 showToast(
-                    extra.length
-                        ? `New SKU ${first.sku} — fill details. Still to add: ${extra.join(', ')}`
+                    pendingBatchNewSkus.length
+                        ? `New SKU ${first.sku} — fill details (${unknown.length} new items queued).`
                         : "New SKU scanned. Fill details to add.",
                     "success"
                 );
@@ -3728,13 +3756,11 @@ function toggleSettingsCustomDim() {
             const scannedId = (decodedText || '').trim();
             if (!scannedId) return;
 
-            // Batch mode: keep the camera running and just collect pieces
             if (isBatchMode()) {
                 addToBatch(scannedId, fromManual);
                 return;
             }
 
-            // The camera can fire the callback several times before it stops
             if (scanHandled) return;
             scanHandled = true;
 
@@ -3755,20 +3781,20 @@ function toggleSettingsCustomDim() {
             );
 
             if (!existingItem) {
-                openAddModal(scannedId);
+                await openAddModal(scannedId);
                 showToast("New SKU scanned. Fill details to add.", "success");
                 return;
             }
 
             if (scannerLookupIntent === 'sell') {
-                openQuickActionModal(existingItem, 'sell');
+                await openQuickActionModal(existingItem, 'sell');
             } else if (settings.defaultScanAction === 'edit') {
-                openEditModal(existingItem);
+                await openEditModal(existingItem);
             } else {
                 const mode = ['add', 'remove', 'sell'].includes(settings.defaultScanAction)
                     ? settings.defaultScanAction
                     : 'add';
-                openQuickActionModal(existingItem, mode);
+                await openQuickActionModal(existingItem, mode);
             }
         }
 
@@ -3785,22 +3811,19 @@ function toggleSettingsCustomDim() {
             const file = e.target.files && e.target.files[0];
             if (!file || typeof Html5Qrcode === 'undefined') return;
             try {
-                await stopScanner();
                 const fileScanner = new Html5Qrcode(
-                    "reader",
+                    "qr-file-reader",
                     SUPPORTED_FORMATS ? { formatsToSupport: SUPPORTED_FORMATS, verbose: false } : false
                 );
-                const result = await fileScanner.scanFile(file, true);
-                fileScanner.clear();
+                const result = await fileScanner.scanFile(file, false);
+                try { fileScanner.clear(); } catch {}
                 if (isBatchMode()) {
                     addToBatch(result, true);
-                    startScanner();
                 } else {
-                    handleDecodedCode(result);
+                    handleDecodedCode(result, true);
                 }
             } catch {
                 showToast("No barcode or QR code found in image.", "error");
-                startScanner();
             } finally {
                 e.target.value = '';
             }
@@ -4224,6 +4247,6 @@ function toggleSettingsCustomDim() {
         }
 
         window.addEventListener('DOMContentLoaded', init);
-        </script>
-    </body> 
-</html>
+    </script> 
+                
+</body></html>
