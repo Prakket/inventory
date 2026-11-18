@@ -2430,11 +2430,11 @@ function toggleSettingsCustomDim() {
             headerText: null,              // null = use the "Label Header Title" box (default "Rikai"); or force e.g. 'RIKAI'
             headerFontSize: null,          // px; null = Text Font Size + 3
             headerWeight: 800,             // 400 normal ... 800 extra bold
-            headerLetterSpacing: '0.04em',
+            headerLetterSpacing: '0.06em',
             headerUnderline: true,         // line under the header
 
             // ---- Font ----
-            fontFamily: 'Inter, Arial, sans-serif',   // e.g. 'Arial, sans-serif', 'Courier New, monospace', 'Georgia, serif'
+            fontFamily: 'Inter, Arial, Courier New',   // e.g. 'Arial, sans-serif', 'Courier New, monospace', 'Georgia, serif'
 
             // ---- Detail lines (Product / Size / Price ...) ----
             detailFontSize: null,          // px; null = "Text Font Size (px)" box in the print window
@@ -2444,7 +2444,7 @@ function toggleSettingsCustomDim() {
 
             // ---- Barcode ----
             barcode: {
-                width: 1.3,                // bar thickness (bigger = wider barcode)
+                width: 1.6,                // bar thickness (bigger = wider barcode)
                 height: 34,                // bar height in px
                 fontSize: null,            // number under the bars; null = same as detail font
                 fontFamily: 'monospace',
@@ -2462,7 +2462,7 @@ function toggleSettingsCustomDim() {
                 gender:  { show: true, label: 'Gender' },
                 color:   { show: true, label: 'Color' },
                 size:    { show: true, label: 'Size' },
-                price:   { show: true, label: 'Price' },
+                price:   { show: false, label: 'Price' },
                 notes:   { show: true, label: 'Notes' }
             }
         };
