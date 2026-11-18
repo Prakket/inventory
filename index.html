@@ -1326,7 +1326,12 @@ const INV_HEADERS = [
   "price", "qty", "updatedAt", "createdAt",
   "length", "customLength", "sleeves", "customSleeves", "look", "customLook", "lookNotes"
 ];
-const SALES_HEADERS = ["saleId", "docId", "sku", "itemName", "specs", "qtySold", "stockAfter", "unitPrice", "totalAmount", "customerName", "customerPhone", "customerNotes", "soldAt"];
+const SALES_HEADERS = [
+  "saleId", "docId", "sku", "itemName", "specs",
+  "qtySold", "stockAfter", "unitPrice", "totalAmount",
+  "customerName", "customerPhone", "customerNotes", "soldAt",
+  "length", "sleeves", "look", "lookNotes"
+];
 const SETTINGS_HEADERS = ["key", "value"];
 
 function getOrCreateSheet(name, headers) {
@@ -1337,8 +1342,11 @@ function getOrCreateSheet(name, headers) {
     sheet.appendRow(headers);
     sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#f1f5f9");
     sheet.setFrozenRows(1);
-  } else if (sheet.getLastColumn() < headers.length) {
-    sheet.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight("bold").setBackground("#f1f5f9");
+  } else {
+    const lastHeader = String(sheet.getRange(1, headers.length).getValue() || "").trim();
+    if (sheet.getLastColumn() < headers.length || lastHeader !== headers[headers.length - 1]) {
+      sheet.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight("bold").setBackground("#f1f5f9");
+    }
   }
   return sheet;
 }
@@ -1384,7 +1392,8 @@ function readInventory(sheet) {
 function readSales(sheet) {
   const lastRow = sheet.getLastRow();
   if (lastRow <= 1) return [];
-  const data = sheet.getRange(2, 1, lastRow - 1, SALES_HEADERS.length).getValues();
+  const cols = Math.max(sheet.getLastColumn(), SALES_HEADERS.length);
+  const data = sheet.getRange(2, 1, lastRow - 1, cols).getValues();
   const sales = [];
   for (let i = 0; i < data.length; i++) {
     const r = data[i];
@@ -1402,7 +1411,11 @@ function readSales(sheet) {
       customerName: String(r[9] || ""),
       customerPhone: String(r[10] || ""),
       customerNotes: String(r[11] || ""),
-      soldAt: Number(r[12]) || Date.now()
+      soldAt: Number(r[12]) || Date.now(),
+      length: String(r[13] || ""),
+      sleeves: String(r[14] || ""),
+      look: String(r[15] || ""),
+      lookNotes: String(r[16] || "")
     });
   }
   return sales;
@@ -1426,6 +1439,18 @@ function itemToRow(item) {
     String(item.sleeves || "N/A"), String(item.customSleeves || ""),
     String(item.look || "N/A"), String(item.customLook || ""),
     String(item.lookNotes || "")
+  ];
+}
+
+function saleToRow(s) {
+  return [
+    String(s.saleId), String(s.docId), String(s.sku), String(s.itemName),
+    String(s.specs || ""), Number(s.qtySold) || 1, Number(s.stockAfter) || 0,
+    Number(s.unitPrice) || 0, Number(s.totalAmount) || 0,
+    String(s.customerName || ""), String(s.customerPhone || ""),
+    String(s.customerNotes || ""), Number(s.soldAt) || Date.now(),
+    String(s.length || "N/A"), String(s.sleeves || "N/A"),
+    String(s.look || "N/A"), String(s.lookNotes || "")
   ];
 }
 
@@ -1494,14 +1519,7 @@ function doPost(e) {
     }
 
     if (action === "recordSale" && payload.sale) {
-      const s = payload.sale;
-      salesSheet.appendRow([
-        String(s.saleId), String(s.docId), String(s.sku), String(s.itemName),
-        String(s.specs || ""), Number(s.qtySold) || 1, Number(s.stockAfter) || 0,
-        Number(s.unitPrice) || 0, Number(s.totalAmount) || 0,
-        String(s.customerName || ""), String(s.customerPhone || ""),
-        String(s.customerNotes || ""), Number(s.soldAt) || Date.now()
-      ]);
+      salesSheet.appendRow(saleToRow(payload.sale));
       if (payload.item) upsertInventoryRow(invSheet, payload.item);
       return jsonOutput({ ok: true });
     }
@@ -1528,22 +1546,16 @@ function doPost(e) {
 
     if (action === "syncAll") {
       if (Array.isArray(payload.items)) {
-        if (invSheet.getLastRow() > 1) invSheet.getRange(2, 1, invSheet.getLastRow() - 1, INV_HEADERS.length).clearContent();
+        if (invSheet.getLastRow() > 1) invSheet.getRange(2, 1, invSheet.getLastRow() - 1, Math.max(invSheet.getLastColumn(), INV_HEADERS.length)).clearContent();
         if (payload.items.length > 0) {
           const rows = payload.items.map(itemToRow);
           invSheet.getRange(2, 1, rows.length, INV_HEADERS.length).setValues(rows);
         }
       }
       if (Array.isArray(payload.sales)) {
-        if (salesSheet.getLastRow() > 1) salesSheet.getRange(2, 1, salesSheet.getLastRow() - 1, SALES_HEADERS.length).clearContent();
+        if (salesSheet.getLastRow() > 1) salesSheet.getRange(2, 1, salesSheet.getLastRow() - 1, Math.max(salesSheet.getLastColumn(), SALES_HEADERS.length)).clearContent();
         if (payload.sales.length > 0) {
-          const sRows = payload.sales.map(s => [
-            String(s.saleId), String(s.docId), String(s.sku), String(s.itemName),
-            String(s.specs || ""), Number(s.qtySold) || 1, Number(s.stockAfter) || 0,
-            Number(s.unitPrice) || 0, Number(s.totalAmount) || 0,
-            String(s.customerName || ""), String(s.customerPhone || ""),
-            String(s.customerNotes || ""), Number(s.soldAt) || Date.now()
-          ]);
+          const sRows = payload.sales.map(saleToRow);
           salesSheet.getRange(2, 1, sRows.length, SALES_HEADERS.length).setValues(sRows);
         }
       }
@@ -3416,6 +3428,10 @@ function doPost(e) {
                 sku: item.sku,
                 itemName: item.name,
                 specs: buildSpecsString(item),
+                 length: formatOptionDisplay(item.length, item.customLength) || 'N/A',
+                 sleeves: formatOptionDisplay(item.sleeves, item.customSleeves) || 'N/A',
+                 look: formatOptionDisplay(item.look, item.customLook) || 'N/A',
+                 lookNotes: item.lookNotes || '',
                 qtySold,
                 stockAfter,
                 unitPrice,
@@ -3878,7 +3894,11 @@ function doPost(e) {
                     docId: item.docId,
                     sku: item.sku,
                     itemName: item.name,
-                    specs: buildSpecsString(item),
+                   specs: buildSpecsString(item),
+                 length: formatOptionDisplay(item.length, item.customLength) || 'N/A',
+                 sleeves: formatOptionDisplay(item.sleeves, item.customSleeves) || 'N/A',
+                 look: formatOptionDisplay(item.look, item.customLook) || 'N/A',
+                 lookNotes: item.lookNotes || '',
                     qtySold,
                     stockAfter,
                     unitPrice,
@@ -4149,6 +4169,10 @@ function doPost(e) {
                         sku: String(s.sku || ''),
                         itemName: String(s.itemName || ''),
                         specs: String(s.specs || ''),
+                     length: String(s.length || ''),
+                     sleeves: String(s.sleeves || ''),
+                     look: String(s.look || ''),
+                     lookNotes: String(s.lookNotes || ''),,
                         qtySold: Math.max(1, parseInt(s.qtySold, 10) || 1),
                         stockAfter: Math.max(0, parseInt(s.stockAfter, 10) || 0),
                         unitPrice: Math.max(0, Number(s.unitPrice) || 0),
