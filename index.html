@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -87,7 +88,7 @@
                 break-inside: avoid !important;
                 page-break-inside: avoid !important;
             }
-.print-label-thermal-roll:last-child {
+            .print-label-thermal-roll:last-child {
                 border-bottom: none !important;
             }
             .print-label-thermal-portrait-page {
@@ -643,15 +644,15 @@
                         </div>
                     </div>
 
-                    <!-- Card 4: Scanner & Thermal / Standard Printer Settings -->
+                    <!-- Card 4: Scanner & Thermal Printer Settings -->
                     <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-4">
                         <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
                             <span class="p-2 rounded-lg bg-cyan-100 text-cyan-700">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
                             </span>
                             <div>
-                                <h2 class="text-base font-bold text-slate-900">Scanner &amp; Thermal / Barcode Printing Defaults</h2>
-                                <p class="text-xs text-slate-500">Configure default thermal label text ("Rikai"), paper size, barcode format, and scan behavior</p>
+                                <h2 class="text-base font-bold text-slate-900">Scanner &amp; Thermal Barcode Printing Defaults</h2>
+                                <p class="text-xs text-slate-500">Configure default thermal label text ("Rikai"), font, paper size, custom dimensions, and scan behavior</p>
                             </div>
                         </div>
 
@@ -675,7 +676,6 @@
                                 </select>
                             </div>
                             <div>
-                               <div>
                                 <label for="setThermalBrandText" class="block text-sm font-medium text-slate-700">Thermal Header Title Text</label>
                                 <input type="text" id="setThermalBrandText" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="Rikai">
                             </div>
@@ -731,7 +731,8 @@
                                 <span class="text-sm text-slate-800">Play beep when barcode scans</span>
                             </label>
                         </div>
-                            
+                    </div>
+
                     <!-- Card 5: Google Sheets Master Data Connection -->
                     <div id="sheetsSettingsCard" class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-5">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
@@ -815,6 +816,45 @@
     <!-- MODALS OVERLAY                             -->
     <!-- ========================================== -->
     <div id="modalOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto">
+
+        <!-- Edit Sale Customer Details Modal -->
+        <div id="editSaleModal" class="bg-white rounded-2xl shadow-xl w-full max-w-md hidden flex-col overflow-hidden my-auto">
+            <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">Edit Customer Details</h3>
+                    <p id="esItemSummary" class="text-xs text-slate-500 truncate">--</p>
+                </div>
+                <button type="button" onclick="closeModals()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <form id="editSaleForm" class="p-5 space-y-3.5">
+                <input type="hidden" id="esSaleId">
+                <div>
+                    <div class="flex items-center justify-between">
+                        <label for="esCustomerName" class="block text-xs font-semibold text-slate-700">Customer Name *</label>
+                        <button type="button" onclick="document.getElementById('esCustomerName').value='Walk-in Customer'" class="text-[11px] text-indigo-600 hover:underline font-medium">Fill "Walk-in"</button>
+                    </div>
+                    <input type="text" id="esCustomerName" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label for="esCustomerPhone" class="block text-xs font-semibold text-slate-700">Phone / WhatsApp</label>
+                    <input type="tel" id="esCustomerPhone" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label for="esCustomerNotes" class="block text-xs font-semibold text-slate-700">Notes / Payment / Address</label>
+                    <input type="text" id="esCustomerNotes" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                </div>
+                <label id="esApplyGroupWrap" class="hidden items-center gap-2 text-xs text-indigo-900 bg-indigo-50 border border-indigo-200 rounded-lg px-3 py-2 cursor-pointer">
+                    <input type="checkbox" id="esApplyGroup" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" checked>
+                    <span id="esApplyGroupLabel">Update all items from this same order</span>
+                </label>
+                <div class="pt-2 flex justify-end gap-3">
+                    <button type="button" onclick="closeModals()" class="px-4 py-2 border border-slate-300 text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50">Cancel</button>
+                    <button type="submit" class="px-5 py-2 text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700">Save Customer</button>
+                </div>
+            </form>
+        </div>
 
         <!-- Add / Edit / Duplicate Item Modal -->
         <div id="itemModal" class="bg-white rounded-2xl shadow-xl w-full max-w-lg hidden flex-col overflow-hidden my-auto max-h-[92vh]">
@@ -940,7 +980,6 @@
             </div>
         </div>
 
-<!-- Print Barcodes Modal -->
         <!-- Print Barcodes Modal (Thermal Portrait Roll) -->
         <div id="printModal" class="bg-white rounded-2xl shadow-xl w-full max-w-xl hidden flex-col overflow-hidden my-auto max-h-[92vh]">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
@@ -1067,7 +1106,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Scanned Item Quick Action Modal -->
         <div id="scanActionModal" class="bg-white rounded-2xl shadow-xl w-full max-w-md hidden flex-col overflow-hidden my-auto max-h-[92vh]">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
@@ -1200,21 +1239,33 @@
                     <p class="text-slate-300 text-sm absolute z-0 text-center px-4" id="scannerPlaceholderText">Starting camera...</p>
                 </div>
                 <div id="qr-file-reader" class="hidden"></div>
-                
 
                 <p class="text-xs text-slate-500 text-center">Supports QR codes and 1D barcodes (Code 128, EAN, UPC).</p>
-                <label id="batchToggleWrap" class="w-full flex items-center gap-2.5 cursor-pointer bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-2">
-                    <input type="checkbox" id="batchScanToggle" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" checked>
-                    <span class="text-xs font-semibold text-indigo-900">Add multiple pieces (camera stays open)</span>
+                <label id="batchToggleWrap" class="w-full hidden items-center gap-2.5 cursor-pointer bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                    <input type="checkbox" id="batchScanToggle" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" checked>
+                    <span class="text-xs font-semibold text-emerald-900">Sell multiple pieces (camera stays open)</span>
                 </label>
 
-                <div id="batchPanel" class="w-full hidden">
-                    <div class="flex justify-between items-center mb-1">
-                        <p class="text-xs font-semibold text-slate-700">Scanned this round: <span id="batchTotal">0</span> piece(s)</p>
+                <div id="batchPanel" class="w-full hidden space-y-2.5">
+                    <div class="flex justify-between items-center">
+                        <p class="text-xs font-semibold text-slate-700">
+                            Items to sell: <span id="batchTotal">0</span> piece(s) • <span id="batchGrandTotal" class="text-emerald-700 font-bold">₹0</span>
+                        </p>
                         <button type="button" onclick="clearBatch()" class="text-[11px] text-slate-500 hover:text-red-600">Clear</button>
                     </div>
-                    <div id="batchList" class="max-h-40 overflow-y-auto border border-slate-200 rounded-lg divide-y divide-slate-100 text-xs"></div>
-                    <button type="button" id="batchFinishBtn" onclick="finishBatchScan()" class="mt-2 w-full px-3 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-semibold rounded-lg">Finish &amp; Add to Stock</button>
+                    <div id="batchList" class="max-h-36 overflow-y-auto border border-slate-200 rounded-lg divide-y divide-slate-100 text-xs"></div>
+                    <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-semibold text-slate-700 uppercase tracking-wide">Customer Details (Optional — Enter 1 Time at End)</span>
+                            <button type="button" onclick="document.getElementById('batchCustomerName').value='Walk-in Customer'" class="text-[11px] text-indigo-600 hover:underline font-medium">Fill "Walk-in"</button>
+                        </div>
+                        <input type="text" id="batchCustomerName" placeholder="Customer Name (defaults to Walk-in)" class="block w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="tel" id="batchCustomerPhone" placeholder="Phone / WhatsApp" class="block w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
+                            <input type="text" id="batchCustomerNotes" placeholder="Notes / Payment" class="block w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
+                        </div>
+                    </div>
+                    <button type="button" id="batchFinishBtn" onclick="finishBatchScan()" class="w-full px-3 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-semibold rounded-lg">Confirm Sale &amp; Update Stock</button>
                 </div>
 
                 <div class="w-full pt-2 border-t border-slate-100 space-y-2.5">
@@ -1260,16 +1311,14 @@
         <div id="toastIcon" class="shrink-0"></div>
         <p id="toastMessage" class="text-sm font-medium"></p>
     </div>
-
-    <!-- Print Container (Populated dynamically for single or multi-product printing) -->
+ <!-- Print Container (Populated dynamically for single or multi-product printing) -->
     <div id="print-container" class="hidden"></div>
-
     <script type="module">
         // ==========================================
         // Google Apps Script (Inventory + Looks + Sales + Settings)
         // ==========================================
         const APPS_SCRIPT_CODE = `const INV_SHEET = "Inventory";
-         const SALES_SHEET = "Sales";
+const SALES_SHEET = "Sales";
 const SETTINGS_SHEET = "Settings";
 
 const INV_HEADERS = [
@@ -1531,8 +1580,8 @@ function doPost(e) {
             defaultGender: 'Unisex',
             defaultQty: 1,
             barcodeFormat: 'CODE128',
-            defaultPrintMode: 'thermal',
-           thermalBrandText: 'Rikai',
+            defaultPrintLayout: 'thermal-roll',
+            thermalBrandText: 'Rikai',
             thermalPaperSize: '50x75',
             customPaperWidth: 50,
             customPaperHeight: 75,
@@ -1541,6 +1590,7 @@ function doPost(e) {
             headerFontSize: 13,
             portraitFontSize: 10,
             barcodeSize: 'md',
+            defaultScanAction: 'ask',
             beepOnScan: true,
             customTypes: ['Shirt', 'Pant', 'Dress', 'Tops', 'Accessories'],
             customSizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'N/A'],
@@ -1569,14 +1619,11 @@ function doPost(e) {
         let currentQuickActionMode = 'add';
         let scannerLookupIntent = 'ask';
 
-        // Print Queue: array of { item, copies }
         let printQueue = [];
-
         let fb = null;
         let userId = null;
 
         let html5QrCode = null;
-        let isScannerStopping = false;
         let isScanningForInput = false;
 
         let gsUrl = localStorage.getItem(GS_URL_KEY) || '';
@@ -1606,6 +1653,7 @@ function doPost(e) {
         const resetSalesFilterBtn = document.getElementById('resetSalesFilterBtn');
 
         const modalOverlay = document.getElementById('modalOverlay');
+        const editSaleModal = document.getElementById('editSaleModal');
         const itemModal = document.getElementById('itemModal');
         const printModal = document.getElementById('printModal');
         const scanActionModal = document.getElementById('scanActionModal');
@@ -1793,7 +1841,8 @@ function doPost(e) {
             itemSizeEl.innerHTML = sizes.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
             if (prevItemSize) itemSizeEl.value = prevItemSize;
         }
-function toggleSettingsCustomDim() {
+
+        function toggleSettingsCustomDim() {
             const sizeEl = document.getElementById('setThermalPaperSize');
             const wrap = document.getElementById('setCustomPaperWrap');
             if (!sizeEl || !wrap) return;
@@ -1802,6 +1851,7 @@ function toggleSettingsCustomDim() {
             wrap.classList.toggle('grid', isCustom);
         }
         document.getElementById('setThermalPaperSize')?.addEventListener('change', toggleSettingsCustomDim);
+
         function populateSettingsForm() {
             document.getElementById('setLowStock').value = settings.lowStockThreshold;
             document.getElementById('setOutStock').value = settings.outOfStockThreshold;
@@ -1862,8 +1912,7 @@ function toggleSettingsCustomDim() {
                 customLooks: parseCsvList(document.getElementById('setCustomLooks').value, DEFAULT_SETTINGS.customLooks),
                 defaultScanAction: document.getElementById('setDefaultScanAction').value || 'ask',
                 barcodeFormat: document.getElementById('setBarcodeFormat').value || 'CODE128',
-                defaultPrintMode: document.getElementById('setDefaultPrintMode').value || 'thermal',
-               thermalBrandText: document.getElementById('setThermalBrandText').value.trim() || 'Rikai',
+                thermalBrandText: document.getElementById('setThermalBrandText').value.trim() || 'Rikai',
                 defaultFontFamily: document.getElementById('setDefaultFontFamily')?.value || 'Inter, Arial, sans-serif',
                 thermalPaperSize: document.getElementById('setThermalPaperSize').value || '50x75',
                 defaultPrintRotation: document.getElementById('setDefaultPrintRotation')?.value || '0',
@@ -1957,7 +2006,6 @@ function toggleSettingsCustomDim() {
                 mobilePrintBtn.innerText = `Print Selected (${count})`;
             }
 
-            // Update Select All checkboxes based on currently visible items
             const visCount = visibleInventory.length;
             const selectedVisible = visibleInventory.filter(i => selectedIds.has(i.docId)).length;
             const allChecked = visCount > 0 && selectedVisible === visCount;
@@ -2097,7 +2145,6 @@ function toggleSettingsCustomDim() {
                     `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200 text-[11px] font-medium">${escapeHtml(tag)}</span>`
                 ).join('');
 
-                // Desktop Row
                 const tr = document.createElement('tr');
                 tr.className = `hover:bg-slate-50 transition-colors group ${isChecked ? 'bg-indigo-50/40' : ''}`;
                 tr.innerHTML = `
@@ -2167,7 +2214,6 @@ function toggleSettingsCustomDim() {
                 tr.querySelector('.swatch-dot').style.backgroundColor = swatchColor;
                 inventoryTableBody.appendChild(tr);
 
-                // Mobile Card
                 const card = document.createElement('div');
                 card.className = `bg-white rounded-xl shadow-sm border p-4 space-y-2.5 ${isChecked ? 'border-indigo-400 bg-indigo-50/30' : 'border-slate-200'}`;
                 card.innerHTML = `
@@ -2263,9 +2309,9 @@ function toggleSettingsCustomDim() {
         }
 
         // ==========================================
-        // Multi-Product & Thermal ("Rikai") Barcode Printing
+        // Multi-Product Thermal Portrait Barcode Printing
         // ==========================================
-      window.openPrintModalForSelected = () => {
+        window.openPrintModalForSelected = () => {
             const items = inventoryData.filter(i => selectedIds.has(i.docId));
             if (items.length === 0) {
                 showToast("Select at least one product to print.", "error");
@@ -2399,16 +2445,14 @@ function toggleSettingsCustomDim() {
 
         // ============================================================
         //  THERMAL PORTRAIT LABEL — EDIT ROW TEXTS OR VISIBILITY HERE
-        //  (Fonts, header text, sizes & barcode size can also be
-        //   changed live right inside the Print window!)
         // ============================================================
         const PORTRAIT_LABEL = {
-            headerWeight: 800,             // 400 normal ... 800 extra bold
+            headerWeight: 800,
             headerLetterSpacing: '0.04em',
-            headerUnderline: true,         // line under the header
+            headerUnderline: true,
             detailLineHeight: 1.28,
-            detailRowGap: 2,               // px between lines
-            labelWeight: 700,              // bold weight of "Product:", "Size:", etc.
+            detailRowGap: 2,
+            labelWeight: 700,
             barcodeFontFamily: 'monospace',
             barcodeMargin: 1,
             rows: {
@@ -2625,6 +2669,7 @@ function toggleSettingsCustomDim() {
                 showToast("Could not generate barcodes for one or more items.", "error");
             }
         };
+
         // ==========================================
         // Render Products Sold Tab
         // ==========================================
@@ -2720,9 +2765,14 @@ function toggleSettingsCustomDim() {
                         <div class="text-[11px] font-normal text-slate-500">${escapeHtml(formatMoney(s.unitPrice))} / unit</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-xs">
-                        <button type="button" class="return-sale-btn px-2.5 py-1.5 rounded-lg border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 font-semibold" data-saleid="${escapeHtml(s.saleId)}">
-                            Return / Undo
-                        </button>
+                        <div class="inline-flex items-center gap-1.5">
+                            <button type="button" class="edit-sale-btn px-2.5 py-1.5 rounded-lg border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold" data-saleid="${escapeHtml(s.saleId)}">
+                                Edit
+                            </button>
+                            <button type="button" class="return-sale-btn px-2.5 py-1.5 rounded-lg border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 font-semibold" data-saleid="${escapeHtml(s.saleId)}">
+                                Return / Undo
+                            </button>
+                        </div>
                     </td>
                 `;
                 salesTableBody.appendChild(tr);
@@ -2748,14 +2798,22 @@ function toggleSettingsCustomDim() {
                             <span class="font-bold text-sm text-slate-900">${escapeHtml(formatMoney(s.totalAmount))}</span>
                             <span class="ml-2">Stock now: <strong>${escapeHtml(stockLeftLabel)}</strong></span>
                         </div>
-                        <button type="button" class="return-sale-btn px-2.5 py-1.5 rounded-lg border border-amber-300 bg-amber-50 text-amber-800 text-xs font-semibold" data-saleid="${escapeHtml(s.saleId)}">
-                            Return
-                        </button>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" class="edit-sale-btn px-2.5 py-1.5 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 text-xs font-semibold" data-saleid="${escapeHtml(s.saleId)}">
+                                Edit
+                            </button>
+                            <button type="button" class="return-sale-btn px-2.5 py-1.5 rounded-lg border border-amber-300 bg-amber-50 text-amber-800 text-xs font-semibold" data-saleid="${escapeHtml(s.saleId)}">
+                                Return
+                            </button>
+                        </div>
                     </div>
                 `;
                 salesMobileList.appendChild(card);
             });
 
+            document.querySelectorAll('.edit-sale-btn').forEach(btn => {
+                btn.onclick = () => openEditSaleModal(btn.dataset.saleid);
+            });
             document.querySelectorAll('.return-sale-btn').forEach(btn => {
                 btn.onclick = () => requestReturnSale(btn.dataset.saleid);
             });
@@ -2764,9 +2822,6 @@ function toggleSettingsCustomDim() {
         // ==========================================
         // Add / Edit / Duplicate Item Modal
         // ==========================================
-
-        let pendingBatchNewSkus = [];
-
         const itemTypeSelect = document.getElementById('itemType');
         const itemLengthSelect = document.getElementById('itemLength');
         const itemSleevesSelect = document.getElementById('itemSleeves');
@@ -2998,13 +3053,7 @@ function toggleSettingsCustomDim() {
                 sortInventory();
                 saveInventoryLocal();
                 refreshAllViews();
-
-                const nextNewSku = pendingBatchNewSkus.shift();
                 await closeModals();
-                if (nextNewSku) {
-                    await openAddModal(nextNewSku);
-                    showToast(`Next new SKU: ${nextNewSku}`, "success");
-                }
 
                 if (gsUrl && gsAutoSync) {
                     syncToGoogleSheets({ action: 'upsert', item: savedItem });
@@ -3019,7 +3068,7 @@ function toggleSettingsCustomDim() {
         });
 
         // ==========================================
-        // Quick Qty (+/-) & Confirmations
+        // Quick Qty (+/-), Confirmations & Edit Sold Customer
         // ==========================================
         function adjustQty(docId, delta) {
             const idx = inventoryData.findIndex(i => i.docId === docId);
@@ -3134,6 +3183,68 @@ function toggleSettingsCustomDim() {
                 }
             });
         }
+
+        window.openEditSaleModal = (saleId) => {
+            const sale = salesData.find(s => s.saleId === saleId);
+            if (!sale) return;
+
+            document.getElementById('esSaleId').value = sale.saleId;
+            document.getElementById('esItemSummary').innerText = `${sale.qtySold}× ${sale.itemName} (${formatMoney(sale.totalAmount)})`;
+            document.getElementById('esCustomerName').value = sale.customerName || '';
+            document.getElementById('esCustomerPhone').value = sale.customerPhone || '';
+            document.getElementById('esCustomerNotes').value = sale.customerNotes || '';
+
+            const sameOrderCount = salesData.filter(s => s.soldAt === sale.soldAt).length;
+            const groupWrap = document.getElementById('esApplyGroupWrap');
+            const groupCb = document.getElementById('esApplyGroup');
+            const groupLabel = document.getElementById('esApplyGroupLabel');
+            if (sameOrderCount > 1) {
+                groupWrap.classList.remove('hidden');
+                groupWrap.classList.add('flex');
+                groupCb.checked = true;
+                groupLabel.innerText = `Update all ${sameOrderCount} items from this same multi-piece order`;
+            } else {
+                groupWrap.classList.add('hidden');
+                groupWrap.classList.remove('flex');
+                groupCb.checked = false;
+            }
+
+            hideAllModalPanels();
+            modalOverlay.classList.remove('hidden');
+            modalOverlay.classList.add('flex');
+            editSaleModal.classList.remove('hidden');
+            editSaleModal.classList.add('flex');
+        };
+
+        document.getElementById('editSaleForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const saleId = document.getElementById('esSaleId').value;
+            const sale = salesData.find(s => s.saleId === saleId);
+            if (!sale) return;
+
+            const customerName = document.getElementById('esCustomerName').value.trim() || 'Walk-in Customer';
+            const customerPhone = document.getElementById('esCustomerPhone').value.trim();
+            const customerNotes = document.getElementById('esCustomerNotes').value.trim();
+            const applyAll = document.getElementById('esApplyGroup')?.checked;
+
+            let updatedCount = 0;
+            salesData = salesData.map(s => {
+                if (s.saleId === saleId || (applyAll && s.soldAt === sale.soldAt)) {
+                    updatedCount++;
+                    return { ...s, customerName, customerPhone, customerNotes };
+                }
+                return s;
+            });
+
+            saveSalesLocal();
+            refreshAllViews();
+            await closeModals();
+            showToast(`Updated customer details${updatedCount > 1 ? ` for ${updatedCount} items` : ''}.`, "success");
+
+            if (gsUrl && gsAutoSync) {
+                syncToGoogleSheets({ action: 'syncAll', items: inventoryData, sales: salesData, settings });
+            }
+        });
 
         // ==========================================
         // Scanned Item Quick Action Modal
@@ -3355,7 +3466,8 @@ function toggleSettingsCustomDim() {
         // Modals & Scanner Controls
         // ==========================================
         function hideAllModalPanels() {
-            [itemModal, printModal, scanActionModal, scannerModal, confirmModal].forEach(el => {
+            [itemModal, printModal, scanActionModal, scannerModal, confirmModal, editSaleModal].forEach(el => {
+                if (!el) return;
                 el.classList.add('hidden');
                 el.classList.remove('flex');
             });
@@ -3401,7 +3513,6 @@ function toggleSettingsCustomDim() {
 
         window.closeModals = async () => {
             if (!confirmDiscardBatch()) return;
-            pendingBatchNewSkus = [];
             await stopScanner();
             modalOverlay.classList.add('hidden');
             modalOverlay.classList.remove('flex');
@@ -3586,16 +3697,16 @@ function toggleSettingsCustomDim() {
         }
 
         // ==========================================
-        // Batch (multi-piece) scanning
+        // Batch (multi-piece) selling
         // ==========================================
-        const BATCH_PREF_KEY = 'scanBatchMode';
+        const BATCH_PREF_KEY = 'scanBatchSellMode';
         const batchItems = new Map();
         let lastBatchCode = '';
         let lastBatchAt = 0;
 
         function isBatchMode() {
             const t = document.getElementById('batchScanToggle');
-            return Boolean(t && t.checked && !isScanningForInput && scannerLookupIntent !== 'sell');
+            return Boolean(t && t.checked && !isScanningForInput && scannerLookupIntent === 'sell');
         }
 
         function findItemBySku(sku) {
@@ -3611,20 +3722,40 @@ function toggleSettingsCustomDim() {
             lastBatchCode = sku;
             lastBatchAt = now;
 
+            const item = findItemBySku(sku);
+            if (!item) {
+                showToast(`SKU "${sku}" not found in inventory!`, "error");
+                return;
+            }
+
             const key = sku.toLowerCase();
-            const entry = batchItems.get(key) || { sku, count: 0 };
+            const entry = batchItems.get(key) || { sku: item.sku, count: 0 };
+            const currentQty = Math.max(0, parseInt(item.qty, 10) || 0);
+
+            if (settings.preventOversell && entry.count + 1 > currentQty) {
+                showToast(`Only ${currentQty} in stock for "${item.name}"!`, "error");
+                return;
+            }
+
             entry.count += 1;
             batchItems.set(key, entry);
 
             playScanBeep();
             renderBatchList();
-            const item = findItemBySku(sku);
-            showToast(`Added: ${item ? item.name : sku} (×${entry.count})`, "success");
+            showToast(`Added to sale: ${item.name} (×${entry.count})`, "success");
         }
 
         window.changeBatchCount = (key, delta) => {
             const entry = batchItems.get(key);
             if (!entry) return;
+            if (delta > 0 && settings.preventOversell) {
+                const item = findItemBySku(entry.sku);
+                const currentQty = item ? Math.max(0, parseInt(item.qty, 10) || 0) : 0;
+                if (entry.count + delta > currentQty) {
+                    showToast(`Only ${currentQty} in stock for "${item ? item.name : entry.sku}"!`, "error");
+                    return;
+                }
+            }
             entry.count += delta;
             if (entry.count <= 0) batchItems.delete(key);
             renderBatchList();
@@ -3650,17 +3781,23 @@ function toggleSettingsCustomDim() {
             if (!active) return;
 
             list.innerHTML = '';
+            let grandTotal = 0;
+
             if (batchItems.size === 0) {
-                list.innerHTML = '<p class="px-3 py-3 text-slate-500 text-center">Scan a garment barcode — it will appear here.</p>';
+                list.innerHTML = '<p class="px-3 py-3 text-slate-500 text-center">Scan garment barcodes to sell — they will appear here.</p>';
             }
             batchItems.forEach((entry, key) => {
                 const item = findItemBySku(entry.sku);
+                const unitPrice = item ? (Number(item.price) || 0) : 0;
+                const lineTotal = unitPrice * entry.count;
+                grandTotal += lineTotal;
+
                 const row = document.createElement('div');
                 row.className = 'px-3 py-2 flex items-center justify-between gap-2';
                 row.innerHTML = `
                     <div class="min-w-0">
-                        <p class="font-semibold text-slate-900 truncate">${escapeHtml(item ? item.name : 'New item (not in stock yet)')}</p>
-                        <p class="text-[11px] font-mono ${item ? 'text-slate-500' : 'text-amber-700'}">${escapeHtml(entry.sku)}${item ? ` • In stock: ${escapeHtml(item.qty ?? 0)}` : ''}</p>
+                        <p class="font-semibold text-slate-900 truncate">${escapeHtml(item ? item.name : entry.sku)}</p>
+                        <p class="text-[11px] font-mono text-slate-500">${escapeHtml(entry.sku)} • Stock: ${escapeHtml(item ? (item.qty ?? 0) : 0)} • ${escapeHtml(formatMoney(lineTotal))}</p>
                     </div>
                     <div class="flex items-center gap-1 shrink-0">
                         <button type="button" data-key="${escapeHtml(key)}" data-d="-1" class="batch-step w-7 h-7 rounded-md border border-slate-300 bg-white font-bold">−</button>
@@ -3674,19 +3811,22 @@ function toggleSettingsCustomDim() {
             });
 
             document.getElementById('batchTotal').innerText = batchTotalPieces();
+            const gtEl = document.getElementById('batchGrandTotal');
+            if (gtEl) gtEl.innerText = formatMoney(grandTotal);
             document.getElementById('batchFinishBtn').disabled = batchItems.size === 0;
         }
 
         function syncBatchUi() {
             const wrap = document.getElementById('batchToggleWrap');
-            const canBatch = !isScanningForInput && scannerLookupIntent !== 'sell';
+            const canBatch = !isScanningForInput && scannerLookupIntent === 'sell';
             wrap.classList.toggle('hidden', !canBatch);
+            wrap.classList.toggle('flex', canBatch);
             renderBatchList();
         }
 
         function confirmDiscardBatch() {
             if (scannerModal.classList.contains('hidden') || batchItems.size === 0) return true;
-            if (!window.confirm(`Discard ${batchTotalPieces()} scanned piece(s) that were not added yet?`)) return false;
+            if (!window.confirm(`Discard ${batchTotalPieces()} scanned piece(s) from this sale?`)) return false;
             batchItems.clear();
             return true;
         }
@@ -3699,55 +3839,87 @@ function toggleSettingsCustomDim() {
 
         window.finishBatchScan = async () => {
             if (batchItems.size === 0) return;
-            const unknown = [];
-            const updatedItems = [];
-            let pieces = 0;
+
+            const customerName = document.getElementById('batchCustomerName')?.value.trim() || 'Walk-in Customer';
+            const customerPhone = document.getElementById('batchCustomerPhone')?.value.trim() || '';
+            const customerNotes = document.getElementById('batchCustomerNotes')?.value.trim() || '';
+
+            if (settings.preventOversell) {
+                for (const entry of batchItems.values()) {
+                    const item = findItemBySku(entry.sku);
+                    const cur = item ? Math.max(0, parseInt(item.qty, 10) || 0) : 0;
+                    if (!item || entry.count > cur) {
+                        showToast(`Cannot sell ${entry.count}× "${item ? item.name : entry.sku}". Only ${cur} in stock!`, "error");
+                        return;
+                    }
+                }
+            }
+
             const now = Date.now();
+            const soldPairs = [];
+            let pieces = 0;
+            let totalRevenue = 0;
 
             batchItems.forEach(entry => {
                 const idx = inventoryData.findIndex(i => i.sku && i.sku.toLowerCase() === entry.sku.toLowerCase());
-                if (idx < 0) { unknown.push(entry); return; }
-                const cur = Math.max(0, parseInt(inventoryData[idx].qty, 10) || 0);
-                inventoryData[idx] = { ...inventoryData[idx], qty: cur + entry.count, updatedAt: now };
-                updatedItems.push(inventoryData[idx]);
-                pieces += entry.count;
+                if (idx < 0) return;
+
+                const item = inventoryData[idx];
+                const cur = Math.max(0, parseInt(item.qty, 10) || 0);
+                const qtySold = entry.count;
+                const stockAfter = Math.max(0, cur - qtySold);
+                const unitPrice = Math.max(0, Number(item.price) || 0);
+                const totalAmount = Number((qtySold * unitPrice).toFixed(2));
+
+                inventoryData[idx] = { ...item, qty: stockAfter, updatedAt: now };
+
+                const saleRecord = {
+                    saleId: createId('sale'),
+                    docId: item.docId,
+                    sku: item.sku,
+                    itemName: item.name,
+                    specs: buildSpecsString(item),
+                    qtySold,
+                    stockAfter,
+                    unitPrice,
+                    totalAmount,
+                    customerName,
+                    customerPhone,
+                    customerNotes,
+                    soldAt: now
+                };
+
+                salesData.unshift(saleRecord);
+                soldPairs.push({ saleRecord, updatedItem: inventoryData[idx] });
+                pieces += qtySold;
+                totalRevenue += totalAmount;
             });
 
             batchItems.clear();
             lastBatchCode = '';
+            if (document.getElementById('batchCustomerName')) document.getElementById('batchCustomerName').value = '';
+            if (document.getElementById('batchCustomerPhone')) document.getElementById('batchCustomerPhone').value = '';
+            if (document.getElementById('batchCustomerNotes')) document.getElementById('batchCustomerNotes').value = '';
 
-            if (updatedItems.length) {
-                saveInventoryLocal();
-                refreshAllViews();
-            }
+            sortSales();
+            saveInventoryLocal();
+            saveSalesLocal();
+            refreshAllViews();
             await closeModals();
 
-            if (updatedItems.length) {
-                showToast(`Added ${pieces} piece(s) across ${updatedItems.length} item(s).`, "success");
-            }
-            if (unknown.length) {
-                pendingBatchNewSkus = unknown.slice(1).map(u => u.sku);
-                const first = unknown[0];
-                await openAddModal(first.sku);
-                showToast(
-                    pendingBatchNewSkus.length
-                        ? `New SKU ${first.sku} — fill details (${unknown.length} new items queued).`
-                        : "New SKU scanned. Fill details to add.",
-                    "success"
-                );
-            }
+            showToast(`Sold ${pieces} piece(s) (${formatMoney(totalRevenue)}) to ${customerName}!`, "success");
 
-            for (const updated of updatedItems) {
+            for (const { saleRecord, updatedItem } of soldPairs) {
                 if (fb && userId) {
                     try {
-                        await fb.updateDoc(fb.doc(fb.db, 'artifacts', fb.appId, 'users', userId, 'inventory', updated.docId), {
-                            qty: updated.qty,
-                            updatedAt: updated.updatedAt
+                        await fb.updateDoc(fb.doc(fb.db, 'artifacts', fb.appId, 'users', userId, 'inventory', updatedItem.docId), {
+                            qty: updatedItem.qty,
+                            updatedAt: updatedItem.updatedAt
                         });
                     } catch (err) { console.error(err); }
                 }
                 if (gsUrl && gsAutoSync) {
-                    syncToGoogleSheets({ action: 'upsert', item: updated });
+                    syncToGoogleSheets({ action: 'recordSale', sale: saleRecord, item: updatedItem });
                 }
             }
         };
@@ -4247,6 +4419,6 @@ function toggleSettingsCustomDim() {
         }
 
         window.addEventListener('DOMContentLoaded', init);
-    </script> 
-                
-</body></html>
+    </script>
+</body>
+</html>
