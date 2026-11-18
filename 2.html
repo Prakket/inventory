@@ -676,16 +676,20 @@
                             </div>
                             <div>
                                <div>
-                                <label for="setDefaultPrintMode" class="block text-sm font-medium text-slate-700">Default Label Mode</label>
-                                <select id="setDefaultPrintMode" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
-                                    <option value="thermal">Thermal (Barcode + Rikai Only)</option>
-                                    <option value="thermal-portrait">Thermal Portrait (Detailed Tag)</option>
-                                    <option value="standard">Standard (Full Item Details)</option>
-                                </select>
+                                <label for="setThermalBrandText" class="block text-sm font-medium text-slate-700">Thermal Header Title Text</label>
+                                <input type="text" id="setThermalBrandText" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="Rikai">
                             </div>
                             <div>
-                                <label for="setThermalBrandText" class="block text-sm font-medium text-slate-700">Thermal Label Title Text</label>
-                                <input type="text" id="setThermalBrandText" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="Rikai">
+                                <label for="setDefaultFontFamily" class="block text-sm font-medium text-slate-700">Default Label Font</label>
+                                <select id="setDefaultFontFamily" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
+                                    <option value="Inter, Arial, sans-serif">Inter (Modern Clean)</option>
+                                    <option value="Arial, Helvetica, sans-serif">Arial / Helvetica</option>
+                                    <option value="'Arial Narrow', 'Roboto Condensed', sans-serif">Narrow / Condensed</option>
+                                    <option value="'Courier New', Courier, monospace">Courier (Receipt Monospace)</option>
+                                    <option value="Georgia, 'Times New Roman', serif">Georgia (Boutique Serif)</option>
+                                    <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                                    <option value="Verdana, sans-serif">Verdana (Wide)</option>
+                                </select>
                             </div>
                             <div>
                                 <label for="setThermalPaperSize" class="block text-sm font-medium text-slate-700">Default Thermal Paper Size</label>
@@ -726,13 +730,8 @@
                                 <input type="checkbox" id="setBeepOnScan" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
                                 <span class="text-sm text-slate-800">Play beep when barcode scans</span>
                             </label>
-                            <label class="flex items-center gap-2.5 cursor-pointer">
-                                <input type="checkbox" id="setShowStoreOnLabel" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
-                                <span class="text-sm text-slate-800">Show Store Name &amp; Price on Standard (Full) labels</span>
-                            </label>
                         </div>
-                    </div>
-
+                            
                     <!-- Card 5: Google Sheets Master Data Connection -->
                     <div id="sheetsSettingsCard" class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-5">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
@@ -942,11 +941,12 @@
         </div>
 
 <!-- Print Barcodes Modal -->
+        <!-- Print Barcodes Modal (Thermal Portrait Roll) -->
         <div id="printModal" class="bg-white rounded-2xl shadow-xl w-full max-w-xl hidden flex-col overflow-hidden my-auto max-h-[92vh]">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <div>
-                    <h3 class="text-lg font-bold text-slate-900">Print Barcodes</h3>
-                    <p id="pmSubtitle" class="text-xs text-slate-500">Thermal &amp; standard printer options</p>
+                    <h3 class="text-lg font-bold text-slate-900">Print Thermal Labels</h3>
+                    <p id="pmSubtitle" class="text-xs text-slate-500">Thermal portrait roll printing</p>
                 </div>
                 <button type="button" onclick="closeModals()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -955,29 +955,20 @@
             <div class="p-5 sm:p-6 overflow-y-auto space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label for="pmMode" class="block text-xs font-semibold text-slate-700">Label Style</label>
-                        <select id="pmMode" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
-                            <option value="thermal">Thermal (Barcode + Rikai Only)</option>
-                            <option value="thermal-portrait">Thermal Portrait (Detailed Tag)</option>
-                            <option value="standard">Standard (Full Item Details)</option>
-                        </select>
+                        <label for="pmBrandText" class="block text-xs font-semibold text-slate-700">Header Title Text</label>
+                        <input type="text" id="pmBrandText" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" value="Rikai" placeholder="Rikai">
                     </div>
                     <div>
-                        <label for="pmLayout" class="block text-xs font-semibold text-slate-700">Printer Paper Layout</label>
+                        <label for="pmLayout" class="block text-xs font-semibold text-slate-700">Thermal Feed Layout</label>
                         <select id="pmLayout" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
+                            <option value="thermal-roll" selected>Thermal Roll (Continuous)</option>
                             <option value="thermal-page">Thermal Sticker (1 per label)</option>
-                            <option value="thermal-roll">Thermal Roll (Continuous)</option>
-                            <option value="standard-grid">Standard A4 / Sheet Grid (3 cols)</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div id="pmBrandWrap">
-                        <label for="pmBrandText" class="block text-xs font-semibold text-slate-700">Label Header Title (Thermal)</label>
-                        <input type="text" id="pmBrandText" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" value="Rikai" placeholder="Rikai">
-                    </div>
-                    <div id="pmPaperWrap">
+                    <div>
                         <label for="pmPaperSize" class="block text-xs font-semibold text-slate-700">Thermal Sticker / Roll Size</label>
                         <select id="pmPaperSize" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
                             <option value="auto">Auto (Printer Driver Size)</option>
@@ -988,6 +979,14 @@
                             <option value="58mm">58 mm Roll</option>
                             <option value="80mm">80 mm Roll</option>
                             <option value="custom">Custom Dimensions (mm)...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="pmRotation" class="block text-xs font-semibold text-slate-700">Print Orientation / Rotate</label>
+                        <select id="pmRotation" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
+                            <option value="0">Normal (0° - Upright)</option>
+                            <option value="90">Rotate 90° Clockwise</option>
+                            <option value="270">Rotate -90° Counter-Clockwise</option>
                         </select>
                     </div>
                 </div>
@@ -1004,28 +1003,40 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div id="pmRotationWrap">
-                        <label for="pmRotation" class="block text-xs font-semibold text-slate-700">Print Orientation / Rotate</label>
-                        <select id="pmRotation" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
-                            <option value="0">Normal (0° - Upright)</option>
-                            <option value="90">Rotate 90° Clockwise</option>
-                            <option value="270">Rotate -90° Counter-Clockwise</option>
+                    <div>
+                        <label for="pmFontFamily" class="block text-xs font-semibold text-slate-700">Font Style</label>
+                        <select id="pmFontFamily" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
+                            <option value="Inter, Arial, sans-serif">Inter (Modern Clean)</option>
+                            <option value="Arial, Helvetica, sans-serif">Arial / Helvetica</option>
+                            <option value="'Arial Narrow', 'Roboto Condensed', sans-serif">Narrow / Condensed</option>
+                            <option value="'Courier New', Courier, monospace">Courier (Receipt Monospace)</option>
+                            <option value="Georgia, 'Times New Roman', serif">Georgia (Boutique Serif)</option>
+                            <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                            <option value="Verdana, sans-serif">Verdana (Wide)</option>
                         </select>
                     </div>
-                    <div id="pmFontSizeWrap">
-                        <label for="pmFontSize" class="block text-xs font-semibold text-slate-700">Text Font Size (px)</label>
+                    <div>
+                        <label for="pmBarcodeSize" class="block text-xs font-semibold text-slate-700">Barcode Size</label>
+                        <select id="pmBarcodeSize" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
+                            <option value="sm">Small (Compact)</option>
+                            <option value="md" selected>Medium (Default)</option>
+                            <option value="lg">Large</option>
+                            <option value="xl">Extra Large</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="pmHeaderFontSize" class="block text-xs font-semibold text-slate-700">Header Font Size (px)</label>
+                        <input type="number" id="pmHeaderFontSize" min="8" max="28" step="0.5" value="13" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
+                    </div>
+                    <div>
+                        <label for="pmFontSize" class="block text-xs font-semibold text-slate-700">Detail Text Size (px)</label>
                         <input type="number" id="pmFontSize" min="7" max="22" step="0.5" value="10" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
                     </div>
                 </div>
-                <div>
-                 <label for="pmBarcodeSize" class="block text-xs font-semibold text-slate-700">Barcode Size</label>
-                 <select id="pmBarcodeSize" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
-                     <option value="sm">Small (Compact)</option>
-                     <option value="md" selected>Medium (Default)</option>
-                     <option value="lg">Large</option>
-                     <option value="xl">Extra Large</option>
-                 </select>
-             </div>
+
                 <label class="inline-flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
                     <input type="checkbox" id="pmShowSkuText" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" checked>
                     <span>Show SKU number underneath barcode bars</span>
@@ -1033,7 +1044,7 @@
 
                 <div class="p-3 rounded-xl bg-slate-100 border border-slate-200 flex flex-col items-center">
                     <span id="pmPreviewCaption" class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-2">Label Preview (First Item)</span>
-                    <div id="pmPreviewBox" class="bg-white border border-slate-300 rounded-lg px-4 py-3 shadow-sm flex flex-col items-center justify-center min-w-[200px] max-w-full"></div>
+                    <div id="pmPreviewBox" class="bg-white border border-slate-300 rounded-lg p-3 shadow-sm flex flex-col justify-between items-stretch w-[190px] min-h-[260px] max-w-full"></div>
                 </div>
 
                 <div class="space-y-2">
@@ -1056,7 +1067,7 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- Scanned Item Quick Action Modal -->
         <div id="scanActionModal" class="bg-white rounded-2xl shadow-xl w-full max-w-md hidden flex-col overflow-hidden my-auto max-h-[92vh]">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
@@ -1188,6 +1199,8 @@
                 <div id="reader" class="w-full rounded-lg overflow-hidden border-2 border-indigo-100 bg-slate-900 min-h-[240px] flex items-center justify-center relative">
                     <p class="text-slate-300 text-sm absolute z-0 text-center px-4" id="scannerPlaceholderText">Starting camera...</p>
                 </div>
+                <div id="qr-file-reader" class="hidden"></div>
+                
 
                 <p class="text-xs text-slate-500 text-center">Supports QR codes and 1D barcodes (Code 128, EAN, UPC).</p>
                 <label id="batchToggleWrap" class="w-full flex items-center gap-2.5 cursor-pointer bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-2">
@@ -1519,14 +1532,15 @@ function doPost(e) {
             defaultQty: 1,
             barcodeFormat: 'CODE128',
             defaultPrintMode: 'thermal',
-            thermalBrandText: 'Rikai',
-            thermalPaperSize: 'auto',
+           thermalBrandText: 'Rikai',
+            thermalPaperSize: '50x75',
             customPaperWidth: 50,
             customPaperHeight: 75,
             defaultPrintRotation: '0',
+            defaultFontFamily: 'Inter, Arial, sans-serif',
+            headerFontSize: 13,
             portraitFontSize: 10,
-            showStoreOnLabel: true,
-            defaultScanAction: 'ask',
+            barcodeSize: 'md',
             beepOnScan: true,
             customTypes: ['Shirt', 'Pant', 'Dress', 'Tops', 'Accessories'],
             customSizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'N/A'],
@@ -1804,15 +1818,14 @@ function toggleSettingsCustomDim() {
             document.getElementById('setCustomLooks').value = (settings.customLooks || []).join(', ');
             document.getElementById('setDefaultScanAction').value = settings.defaultScanAction || 'ask';
             document.getElementById('setBarcodeFormat').value = settings.barcodeFormat || 'CODE128';
-            document.getElementById('setDefaultPrintMode').value = settings.defaultPrintMode || 'thermal';
             document.getElementById('setThermalBrandText').value = settings.thermalBrandText ?? 'Rikai';
-            document.getElementById('setThermalPaperSize').value = settings.thermalPaperSize || 'auto';
+            if (document.getElementById('setDefaultFontFamily')) document.getElementById('setDefaultFontFamily').value = settings.defaultFontFamily || 'Inter, Arial, sans-serif';
+            document.getElementById('setThermalPaperSize').value = settings.thermalPaperSize || '50x75';
             if (document.getElementById('setDefaultPrintRotation')) document.getElementById('setDefaultPrintRotation').value = settings.defaultPrintRotation || '0';
             if (document.getElementById('setCustomWidthMm')) document.getElementById('setCustomWidthMm').value = settings.customPaperWidth || 50;
             if (document.getElementById('setCustomHeightMm')) document.getElementById('setCustomHeightMm').value = settings.customPaperHeight || 75;
             toggleSettingsCustomDim();
             document.getElementById('setBeepOnScan').checked = Boolean(settings.beepOnScan);
-            document.getElementById('setShowStoreOnLabel').checked = Boolean(settings.showStoreOnLabel);
             document.getElementById('gsUrlInput').value = gsUrl;
             document.getElementById('gsAutoSyncCheckbox').checked = gsAutoSync;
         }
@@ -1850,13 +1863,13 @@ function toggleSettingsCustomDim() {
                 defaultScanAction: document.getElementById('setDefaultScanAction').value || 'ask',
                 barcodeFormat: document.getElementById('setBarcodeFormat').value || 'CODE128',
                 defaultPrintMode: document.getElementById('setDefaultPrintMode').value || 'thermal',
-                thermalBrandText: document.getElementById('setThermalBrandText').value.trim() || 'Rikai',
-                thermalPaperSize: document.getElementById('setThermalPaperSize').value || 'auto',
+               thermalBrandText: document.getElementById('setThermalBrandText').value.trim() || 'Rikai',
+                defaultFontFamily: document.getElementById('setDefaultFontFamily')?.value || 'Inter, Arial, sans-serif',
+                thermalPaperSize: document.getElementById('setThermalPaperSize').value || '50x75',
                 defaultPrintRotation: document.getElementById('setDefaultPrintRotation')?.value || '0',
                 customPaperWidth: Math.max(15, Math.min(300, parseFloat(document.getElementById('setCustomWidthMm')?.value) || 50)),
                 customPaperHeight: Math.max(15, Math.min(300, parseFloat(document.getElementById('setCustomHeightMm')?.value) || 75)),
-                beepOnScan: document.getElementById('setBeepOnScan').checked,
-                showStoreOnLabel: document.getElementById('setShowStoreOnLabel').checked
+                beepOnScan: document.getElementById('setBeepOnScan').checked
             };
 
             saveSettingsLocal();
@@ -2252,7 +2265,7 @@ function toggleSettingsCustomDim() {
         // ==========================================
         // Multi-Product & Thermal ("Rikai") Barcode Printing
         // ==========================================
-       window.openPrintModalForSelected = () => {
+      window.openPrintModalForSelected = () => {
             const items = inventoryData.filter(i => selectedIds.has(i.docId));
             if (items.length === 0) {
                 showToast("Select at least one product to print.", "error");
@@ -2261,27 +2274,19 @@ function toggleSettingsCustomDim() {
             openPrintModal(items);
         };
 
-        window.openPrintModal = (items) => {
+        window.openPrintModal = async (items) => {
             printQueue = items.map(item => ({ item, copies: 1 }));
 
-            const mode = settings.defaultPrintMode || 'thermal';
-            document.getElementById('pmMode').value = mode;
-            if (mode === 'thermal-portrait') {
-                document.getElementById('pmLayout').value = 'thermal-page';
-                document.getElementById('pmPaperSize').value = settings.thermalPaperSize || '50x75';
-            } else if (mode === 'thermal') {
-                document.getElementById('pmLayout').value = 'thermal-page';
-                document.getElementById('pmPaperSize').value = settings.thermalPaperSize || 'auto';
-            } else {
-                document.getElementById('pmLayout').value = 'standard-grid';
-                document.getElementById('pmPaperSize').value = settings.thermalPaperSize || 'auto';
-            }
-
+            document.getElementById('pmLayout').value = settings.defaultPrintLayout || 'thermal-roll';
+            document.getElementById('pmPaperSize').value = settings.thermalPaperSize || '50x75';
             document.getElementById('pmBrandText').value = settings.thermalBrandText ?? 'Rikai';
-            if (document.getElementById('pmCustomWidth')) document.getElementById('pmCustomWidth').value = settings.customPaperWidth || 50;
-            if (document.getElementById('pmCustomHeight')) document.getElementById('pmCustomHeight').value = settings.customPaperHeight || 75;
-            if (document.getElementById('pmRotation')) document.getElementById('pmRotation').value = settings.defaultPrintRotation || '0';
-            if (document.getElementById('pmFontSize')) document.getElementById('pmFontSize').value = settings.portraitFontSize || 10;
+            document.getElementById('pmFontFamily').value = settings.defaultFontFamily || 'Inter, Arial, sans-serif';
+            document.getElementById('pmHeaderFontSize').value = settings.headerFontSize || 13;
+            document.getElementById('pmFontSize').value = settings.portraitFontSize || 10;
+            document.getElementById('pmBarcodeSize').value = settings.barcodeSize || 'md';
+            document.getElementById('pmCustomWidth').value = settings.customPaperWidth || 50;
+            document.getElementById('pmCustomHeight').value = settings.customPaperHeight || 75;
+            document.getElementById('pmRotation').value = settings.defaultPrintRotation || '0';
             document.getElementById('pmShowSkuText').checked = true;
             document.getElementById('pmSubtitle').innerText = `${items.length} product(s) ready to print`;
 
@@ -2289,7 +2294,7 @@ function toggleSettingsCustomDim() {
             syncPrintModalFields();
             renderPrintPreview();
 
-            stopScanner();
+            await stopScanner();
             hideAllModalPanels();
             modalOverlay.classList.remove('hidden');
             modalOverlay.classList.add('flex');
@@ -2298,15 +2303,8 @@ function toggleSettingsCustomDim() {
         };
 
         function syncPrintModalFields() {
-            const mode = document.getElementById('pmMode').value;
-            const layout = document.getElementById('pmLayout').value;
             const paperSize = document.getElementById('pmPaperSize').value;
-            const isCustom = layout !== 'standard-grid' && paperSize === 'custom';
-
-            document.getElementById('pmBrandWrap')?.classList.toggle('hidden', mode !== 'thermal' && mode !== 'thermal-portrait');
-            document.getElementById('pmPaperWrap')?.classList.toggle('hidden', layout === 'standard-grid');
-            document.getElementById('pmRotationWrap')?.classList.toggle('hidden', layout === 'standard-grid');
-
+            const isCustom = paperSize === 'custom';
             const customWrap = document.getElementById('pmCustomDimWrap');
             if (customWrap) {
                 customWrap.classList.toggle('hidden', !isCustom);
@@ -2314,28 +2312,7 @@ function toggleSettingsCustomDim() {
             }
         }
 
-        document.getElementById('pmMode')?.addEventListener('change', (e) => {
-            const val = e.target.value;
-            if (val === 'thermal-portrait') {
-                document.getElementById('pmLayout').value = 'thermal-page';
-                if (document.getElementById('pmPaperSize').value === 'auto') {
-                    document.getElementById('pmPaperSize').value = '50x75';
-                }
-            } else if (val === 'thermal') {
-                document.getElementById('pmLayout').value = 'thermal-page';
-                if (document.getElementById('pmPaperSize').value === '50x75') {
-                    document.getElementById('pmPaperSize').value = settings.thermalPaperSize !== '50x75'
-                        ? (settings.thermalPaperSize || 'auto')
-                        : 'auto';
-                }
-            } else {
-                document.getElementById('pmLayout').value = 'standard-grid';
-            }
-            syncPrintModalFields();
-            renderPrintPreview();
-        });
-
-        ['pmLayout', 'pmBrandText', 'pmPaperSize', 'pmBarcodeSize', 'pmCustomWidth', 'pmCustomHeight', 'pmRotation', 'pmFontSize', 'pmShowSkuText'].forEach(id => {
+        ['pmLayout', 'pmBrandText', 'pmPaperSize', 'pmFontFamily', 'pmHeaderFontSize', 'pmFontSize', 'pmBarcodeSize', 'pmCustomWidth', 'pmCustomHeight', 'pmRotation', 'pmShowSkuText'].forEach(id => {
             const el = document.getElementById(id);
             if (!el) return;
             el.addEventListener('input', () => { syncPrintModalFields(); renderPrintPreview(); });
@@ -2393,15 +2370,16 @@ function toggleSettingsCustomDim() {
 
         function getPrintConfig() {
             return {
-                mode: document.getElementById('pmMode').value,
                 layout: document.getElementById('pmLayout').value,
                 brandText: document.getElementById('pmBrandText').value.trim() || 'Rikai',
                 paperSize: document.getElementById('pmPaperSize').value,
-                barcodeSize: document.getElementById('pmBarcodeSize')?.value || 'md',
-                customWidth: Math.max(15, Math.min(300, parseFloat(document.getElementById('pmCustomWidth')?.value) || 50)),
-                customHeight: Math.max(15, Math.min(300, parseFloat(document.getElementById('pmCustomHeight')?.value) || 75)),
-                rotation: document.getElementById('pmRotation')?.value || '0',
-                fontSize: Math.max(7, Math.min(22, parseFloat(document.getElementById('pmFontSize')?.value) || 10)),
+                fontFamily: document.getElementById('pmFontFamily').value || 'Inter, Arial, sans-serif',
+                headerFontSize: Math.max(8, Math.min(28, parseFloat(document.getElementById('pmHeaderFontSize').value) || 13)),
+                fontSize: Math.max(7, Math.min(22, parseFloat(document.getElementById('pmFontSize').value) || 10)),
+                barcodeSize: document.getElementById('pmBarcodeSize').value || 'md',
+                customWidth: Math.max(15, Math.min(300, parseFloat(document.getElementById('pmCustomWidth').value) || 50)),
+                customHeight: Math.max(15, Math.min(300, parseFloat(document.getElementById('pmCustomHeight').value) || 75)),
+                rotation: document.getElementById('pmRotation').value || '0',
                 showSkuText: document.getElementById('pmShowSkuText').checked
             };
         }
@@ -2420,39 +2398,19 @@ function toggleSettingsCustomDim() {
         }
 
         // ============================================================
-        //  THERMAL PORTRAIT LABEL — EDIT THIS BLOCK TO CHANGE THE LOOK
-        //  (applies to Label Style: "Thermal Portrait (Detailed Tag)")
-        //  Sizes are in px (1 px ≈ 0.26 mm on the printed label).
-        //  Use null where noted to fall back to the print window's fields.
+        //  THERMAL PORTRAIT LABEL — EDIT ROW TEXTS OR VISIBILITY HERE
+        //  (Fonts, header text, sizes & barcode size can also be
+        //   changed live right inside the Print window!)
         // ============================================================
         const PORTRAIT_LABEL = {
-            // ---- Header text (top of the tag) ----
-            headerText: null,              // null = use the "Label Header Title" box (default "Rikai"); or force e.g. 'RIKAI'
-            headerFontSize: null,          // px; null = Text Font Size + 3
             headerWeight: 800,             // 400 normal ... 800 extra bold
-            headerLetterSpacing: '0.06em',
-            headerUnderline: false,         // line under the header
-
-            // ---- Font ----
-            fontFamily: 'Courier New, monospace',   // e.g. 'Arial, sans-serif', 'Courier New, monospace', 'Georgia, serif'
-
-            // ---- Detail lines (Product / Size / Price ...) ----
-            detailFontSize: null,          // px; null = "Text Font Size (px)" box in the print window
+            headerLetterSpacing: '0.04em',
+            headerUnderline: true,         // line under the header
             detailLineHeight: 1.28,
             detailRowGap: 2,               // px between lines
-            labelWeight: 700,              // weight of "Size:" part
-
-            // ---- Barcode ----
-            barcode: {
-                width: 1.8,                // bar thickness (bigger = wider barcode)
-                height: 34,                // bar height in px
-                fontSize: null,            // number under the bars; null = same as detail font
-                fontFamily: 'monospace',
-                margin: 1
-            },
-
-            // ---- Which lines to print and what each is called ----
-            // show:false hides a line; label:'' prints the value with no name in front.
+            labelWeight: 700,              // bold weight of "Product:", "Size:", etc.
+            barcodeFontFamily: 'monospace',
+            barcodeMargin: 1,
             rows: {
                 product: { show: true, label: 'Product' },
                 style:   { show: true, label: 'Style' },
@@ -2462,7 +2420,7 @@ function toggleSettingsCustomDim() {
                 gender:  { show: true, label: 'Gender' },
                 color:   { show: true, label: 'Color' },
                 size:    { show: true, label: 'Size' },
-                price:   { show: false, label: 'Price' },
+                price:   { show: true, label: 'Price' },
                 notes:   { show: true, label: 'Notes' }
             }
         };
@@ -2495,186 +2453,94 @@ function toggleSettingsCustomDim() {
 
         function createLabelElement(item, cfg, forPrint = false) {
             const el = document.createElement('div');
-            const isThermalLayout = cfg.layout !== 'standard-grid';
             const dims = resolvePaperDimensionsMm(cfg);
-            const isRotated = forPrint && isThermalLayout && (cfg.rotation === '90' || cfg.rotation === '270');
-            const fontSize = cfg.fontSize || 10;
-
-            if (cfg.mode === 'thermal-portrait') {
-                if (isRotated) {
-                    el.className = `print-label-thermal-portrait-inner ${cfg.rotation === '90' ? 'print-label-rotated-90' : 'print-label-rotated-270'}`;
-                } else if (cfg.layout === 'thermal-page') {
-                    el.className = 'print-label-thermal-portrait-page';
-                } else if (cfg.layout === 'thermal-roll') {
-                    el.className = 'print-label-thermal-portrait-roll';
-                } else {
-                    el.className = 'print-label-standard';
-                }
-
-                const baseW = dims.widthMm || 50;
-                const baseH = dims.heightMm || 75;
-                const pageW = isRotated ? Math.max(baseW, baseH) : baseW;
-                const pageH = isRotated ? Math.min(baseW, baseH) : baseH;
-
-                if (forPrint && isThermalLayout) {
-                    if (isRotated) {
-                        el.style.width = `${Math.max(15, pageH - 4)}mm`;
-                        el.style.height = `${Math.max(15, pageW - 4)}mm`;
-                    } else if (dims.widthMm) {
-                        el.style.width = `${Math.max(15, dims.widthMm - 3)}mm`;
-                        if (dims.heightMm) {
-                            el.style.minHeight = `${Math.max(15, dims.heightMm - 5)}mm`;
-                            el.style.maxHeight = `${Math.max(15, dims.heightMm - 3)}mm`;
-                        }
-                    }
-                }
-
-                const P = PORTRAIT_LABEL;
-                const headerText = P.headerText ?? cfg.brandText;
-                const headerSize = P.headerFontSize ?? (fontSize + 3);
-                const detailSize = P.detailFontSize ?? fontSize;
-
-                const brand = document.createElement('div');
-                brand.style.cssText = `font-weight:${P.headerWeight};font-size:${headerSize}px;color:#000000;text-align:center;letter-spacing:${P.headerLetterSpacing};${P.headerUnderline ? 'border-bottom:1px solid #000000;' : ''}padding-bottom:2px;margin-bottom:4px;font-family:${P.fontFamily};`;
-                brand.innerText = headerText;
-                el.appendChild(brand);
-
-                const detailsWrap = document.createElement('div');
-                detailsWrap.style.cssText = `width:100%;text-align:left;display:flex;flex-direction:column;gap:${P.detailRowGap}px;font-size:${detailSize}px;line-height:${P.detailLineHeight};color:#000000;font-family:${P.fontFamily};`;
-
-                buildPortraitDetailRows(item).forEach(({ label, value }) => {
-                    const row = document.createElement('div');
-                    row.style.cssText = 'word-break:break-word;';
-                    if (label) {
-                        const keySpan = document.createElement('span');
-                        keySpan.style.fontWeight = String(P.labelWeight);
-                        keySpan.innerText = `${label}: `;
-                        row.appendChild(keySpan);
-                    }
-                    const valSpan = document.createElement('span');
-                    valSpan.innerText = value;
-                    row.appendChild(valSpan);
-                    detailsWrap.appendChild(row);
-                });
-                el.appendChild(detailsWrap);
-
-                const barcodeWrap = document.createElement('div');
-                barcodeWrap.style.cssText = 'margin-top:auto;padding-top:4px;width:100%;display:flex;justify-content:center;align-items:center;';
-                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                svg.style.maxWidth = '100%';
-                svg.style.height = 'auto';
-                barcodeWrap.appendChild(svg);
-                el.appendChild(barcodeWrap);
-
-                const opts = {
-                    format: settings.barcodeFormat || 'CODE128',
-                    width: P.barcode.width,
-                    height: P.barcode.height,
-                    displayValue: cfg.showSkuText,
-                    fontSize: P.barcode.fontSize ?? Math.max(8, Math.round(detailSize)),
-                    font: P.barcode.fontFamily || 'monospace',
-                    margin: P.barcode.margin,
-                    background: '#ffffff',
-                    lineColor: '#000000'
-                };
-                try { JsBarcode(svg, item.sku, opts); }
-                catch { JsBarcode(svg, item.sku, { ...opts, format: 'CODE128' }); }
-
-                if (isRotated) {
-                    const wrapper = document.createElement('div');
-                    wrapper.className = cfg.layout === 'thermal-roll' ? 'print-page-rotated-roll' : 'print-page-rotated';
-                    wrapper.style.width = `${Math.max(15, pageW - 3)}mm`;
-                    wrapper.style.height = `${Math.max(15, pageH - 3)}mm`;
-                    wrapper.appendChild(el);
-                    return wrapper;
-                }
-
-                return el;
-            }
+            const isRotated = forPrint && (cfg.rotation === '90' || cfg.rotation === '270');
+            const P = PORTRAIT_LABEL;
 
             if (isRotated) {
-                el.className = `print-label-thermal-min-inner ${cfg.rotation === '90' ? 'print-label-rotated-90' : 'print-label-rotated-270'}`;
+                el.className = `print-label-thermal-portrait-inner ${cfg.rotation === '90' ? 'print-label-rotated-90' : 'print-label-rotated-270'}`;
             } else if (cfg.layout === 'thermal-page') {
-                el.className = 'print-label-thermal-page';
-            } else if (cfg.layout === 'thermal-roll') {
-                el.className = 'print-label-thermal-roll';
+                el.className = 'print-label-thermal-portrait-page';
             } else {
-                el.className = 'print-label-standard';
+                el.className = 'print-label-thermal-portrait-roll';
             }
 
-            if (forPrint && isThermalLayout && isRotated) {
-                const baseW = dims.widthMm || 50;
-                const baseH = dims.heightMm || 30;
-                el.style.width = `${Math.max(15, Math.min(baseW, baseH) - 4)}mm`;
-                el.style.height = `${Math.max(15, Math.max(baseW, baseH) - 4)}mm`;
-            } else if (forPrint && isThermalLayout && dims.widthMm) {
-                el.style.width = `${Math.max(15, dims.widthMm - 3)}mm`;
-                if (dims.heightMm) el.style.minHeight = `${Math.max(15, dims.heightMm - 4)}mm`;
-            }
+            const baseW = dims.widthMm || 50;
+            const baseH = dims.heightMm || 75;
+            const pageW = isRotated ? Math.max(baseW, baseH) : baseW;
+            const pageH = isRotated ? Math.min(baseW, baseH) : baseH;
 
-            if (cfg.mode === 'thermal') {
-                const brand = document.createElement('p');
-                brand.className = 'font-bold text-black tracking-wide leading-tight mb-0.5 font-sans';
-                brand.style.fontSize = `${fontSize + 2}px`;
-                brand.innerText = cfg.brandText;
-                el.appendChild(brand);
-            } else {
-                if (settings.showStoreOnLabel && settings.storeName) {
-                    const st = document.createElement('p');
-                    st.className = 'font-semibold uppercase tracking-widest text-slate-600 font-sans';
-                    st.style.fontSize = `${Math.max(8, fontSize - 1)}px`;
-                    st.innerText = settings.storeName;
-                    el.appendChild(st);
+            if (forPrint) {
+                if (isRotated) {
+                    el.style.width = `${Math.max(15, pageH - 4)}mm`;
+                    el.style.height = `${Math.max(15, pageW - 4)}mm`;
+                } else if (dims.widthMm) {
+                    el.style.width = `${Math.max(15, dims.widthMm - 3)}mm`;
+                    if (dims.heightMm) {
+                        el.style.minHeight = `${Math.max(15, dims.heightMm - 5)}mm`;
+                        el.style.maxHeight = `${Math.max(15, dims.heightMm - 3)}mm`;
+                    }
                 }
-                const title = document.createElement('p');
-                title.className = 'font-bold text-black leading-tight font-sans';
-                title.style.fontSize = `${fontSize + 1}px`;
-                title.innerText = item.name || '';
-                el.appendChild(title);
-
-                const metaParts = [formatItemType(item), item.gender, item.size, item.color, ...getItemLookTags(item)];
-                if (settings.showStoreOnLabel && item.price) metaParts.push(formatMoney(item.price));
-                const meta = document.createElement('p');
-                meta.className = 'text-slate-700 mb-1 font-sans';
-                meta.style.fontSize = `${fontSize - 0.5}px`;
-                meta.innerText = metaParts.filter(Boolean).join(' • ');
-                el.appendChild(meta);
             }
 
+            const brand = document.createElement('div');
+            brand.style.cssText = `font-weight:${P.headerWeight};font-size:${cfg.headerFontSize}px;color:#000000;text-align:center;letter-spacing:${P.headerLetterSpacing};${P.headerUnderline ? 'border-bottom:1px solid #000000;' : ''}padding-bottom:2px;margin-bottom:4px;font-family:${cfg.fontFamily};`;
+            brand.innerText = cfg.brandText;
+            el.appendChild(brand);
+
+            const detailsWrap = document.createElement('div');
+            detailsWrap.style.cssText = `width:100%;text-align:left;display:flex;flex-direction:column;gap:${P.detailRowGap}px;font-size:${cfg.fontSize}px;line-height:${P.detailLineHeight};color:#000000;font-family:${cfg.fontFamily};`;
+
+            buildPortraitDetailRows(item).forEach(({ label, value }) => {
+                const row = document.createElement('div');
+                row.style.cssText = 'word-break:break-word;';
+                if (label) {
+                    const keySpan = document.createElement('span');
+                    keySpan.style.fontWeight = String(P.labelWeight);
+                    keySpan.innerText = `${label}: `;
+                    row.appendChild(keySpan);
+                }
+                const valSpan = document.createElement('span');
+                valSpan.innerText = value;
+                row.appendChild(valSpan);
+                detailsWrap.appendChild(row);
+            });
+            el.appendChild(detailsWrap);
+
+            const barcodeWrap = document.createElement('div');
+            barcodeWrap.style.cssText = 'margin-top:auto;padding-top:4px;width:100%;display:flex;justify-content:center;align-items:center;';
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             svg.style.maxWidth = '100%';
-            el.appendChild(svg);
+            svg.style.height = 'auto';
+            barcodeWrap.appendChild(svg);
+            el.appendChild(barcodeWrap);
 
-            const isSmallHeight = dims.heightMm && dims.heightMm <= 26;
             const sizeScale = {
-             sm: { w: 1.1, h: 28 },
-             md: { w: 1.5, h: 42 },
-             lg: { w: 2.1, h: 68 },
-             xl: { w: 5, h: 76 }
-         }[cfg.barcodeSize || 'md'];
-         const barWidth = sizeScale.w;
-         const barHeight = sizeScale.h;
+                sm: { w: 1.0, h: 24 },
+                md: { w: 1.3, h: 34 },
+                lg: { w: 1.7, h: 46 },
+                xl: { w: 2.1, h: 58 }
+            }[cfg.barcodeSize || 'md'];
 
-            const barOpts = {
+            const opts = {
                 format: settings.barcodeFormat || 'CODE128',
-                width: barWidth,
-                height: barHeight,
+                width: sizeScale.w,
+                height: sizeScale.h,
                 displayValue: cfg.showSkuText,
-                fontSize: isThermalLayout ? Math.max(8, Math.round(fontSize)) : 12,
-                margin: isThermalLayout ? 2 : 6,
+                fontSize: Math.max(8, Math.round(cfg.fontSize)),
+                font: P.barcodeFontFamily || 'monospace',
+                margin: P.barcodeMargin,
                 background: '#ffffff',
                 lineColor: '#000000'
             };
-            try { JsBarcode(svg, item.sku, barOpts); }
-            catch { JsBarcode(svg, item.sku, { ...barOpts, format: 'CODE128' }); }
+            try { JsBarcode(svg, item.sku, opts); }
+            catch { JsBarcode(svg, item.sku, { ...opts, format: 'CODE128' }); }
 
             if (isRotated) {
-                const baseW = dims.widthMm || 50;
-                const baseH = dims.heightMm || 30;
                 const wrapper = document.createElement('div');
                 wrapper.className = cfg.layout === 'thermal-roll' ? 'print-page-rotated-roll' : 'print-page-rotated';
-                wrapper.style.width = `${Math.max(15, Math.max(baseW, baseH) - 3)}mm`;
-                wrapper.style.height = `${Math.max(15, Math.min(baseW, baseH) - 3)}mm`;
+                wrapper.style.width = `${Math.max(15, pageW - 3)}mm`;
+                wrapper.style.height = `${Math.max(15, pageH - 3)}mm`;
                 wrapper.appendChild(el);
                 return wrapper;
             }
@@ -2691,7 +2557,7 @@ function toggleSettingsCustomDim() {
             const cfg = getPrintConfig();
             const dims = resolvePaperDimensionsMm(cfg);
             if (caption) {
-                const rotNote = (cfg.layout !== 'standard-grid' && cfg.rotation !== '0')
+                const rotNote = cfg.rotation !== '0'
                     ? ` • Prints rotated ${cfg.rotation === '90' ? '90° CW' : '-90° CCW'}`
                     : '';
                 const dimNote = dims.widthMm && dims.heightMm ? ` (${dims.widthMm}×${dims.heightMm}mm)` : '';
@@ -2699,33 +2565,21 @@ function toggleSettingsCustomDim() {
             }
 
             const previewEl = createLabelElement(printQueue[0].item, cfg, false);
-
-            if (cfg.mode === 'thermal-portrait') {
-                const pw = dims.widthMm || 50;
-                const ph = dims.heightMm || 75;
-                const scale = 3.2;
-                const boxW = Math.max(155, Math.min(260, Math.round(Math.min(pw, ph) * scale)));
-                const boxH = Math.max(180, Math.min(340, Math.round(Math.max(pw, ph) * scale)));
-                box.className = 'bg-white border border-slate-300 rounded-lg p-3 shadow-sm flex flex-col justify-between items-stretch max-w-full';
-                box.style.width = `${boxW}px`;
-                box.style.minHeight = `${boxH}px`;
-                previewEl.className = 'flex flex-col justify-between items-stretch text-left flex-1';
-            } else {
-                box.style.width = '';
-                box.style.minHeight = '';
-                box.className = 'bg-white border border-slate-300 rounded-lg px-4 py-3 shadow-sm flex flex-col items-center justify-center min-w-[200px] max-w-full';
-                previewEl.className = 'flex flex-col items-center justify-center text-center';
-            }
+            const pw = dims.widthMm || 50;
+            const ph = dims.heightMm || 75;
+            const scale = 3.2;
+            const boxW = Math.max(155, Math.min(260, Math.round(Math.min(pw, ph) * scale)));
+            const boxH = Math.max(180, Math.min(340, Math.round(Math.max(pw, ph) * scale)));
+            box.className = 'bg-white border border-slate-300 rounded-lg p-3 shadow-sm flex flex-col justify-between items-stretch max-w-full';
+            box.style.width = `${boxW}px`;
+            box.style.minHeight = `${boxH}px`;
+            previewEl.className = 'flex flex-col justify-between items-stretch text-left flex-1';
 
             box.appendChild(previewEl);
         }
 
         function applyDynamicPageCss(cfg) {
             const styleEl = document.getElementById('dynamicPrintStyle');
-            if (cfg.layout === 'standard-grid') {
-                styleEl.textContent = `@media print { @page { size: A4; margin: 6mm; } }`;
-                return;
-            }
             const dims = resolvePaperDimensionsMm(cfg);
             const isRotated = cfg.rotation === '90' || cfg.rotation === '270';
 
@@ -2746,13 +2600,17 @@ function toggleSettingsCustomDim() {
         window.executeBatchPrint = () => {
             if (printQueue.length === 0) return;
             const cfg = getPrintConfig();
+            settings.defaultPrintLayout = cfg.layout;
+            settings.defaultFontFamily = cfg.fontFamily;
+            settings.headerFontSize = cfg.headerFontSize;
             settings.portraitFontSize = cfg.fontSize;
+            settings.barcodeSize = cfg.barcodeSize;
             saveSettingsLocal();
             applyDynamicPageCss(cfg);
 
             const container = document.getElementById('print-container');
             container.innerHTML = '';
-            container.className = cfg.layout === 'standard-grid' ? 'hidden print-grid-standard' : 'hidden';
+            container.className = 'hidden';
 
             try {
                 printQueue.forEach(entry => {
