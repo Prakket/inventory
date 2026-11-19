@@ -1892,10 +1892,7 @@ function doPost(e) {
             barcodeFormat: 'CODE128',
             defaultPrintLayout: 'thermal-roll',
             thermalBrandText: 'Rikai',
-            shopAddress: 'Contact Us- 7021246251/9619295228
-Mail Us - care@riaki.in
-Visit us at - Shop No.4, Vini Garden 1, D wing
-Santoshi Mata Rd. Borivali West, Mumbai 400103',
+            shopAddress:'Contact Us- 7021246251/9619295228 Mail Us - care@riaki.in Visit us at - Shop No.4, Vini Garden 1, D-wing Santoshi Mata Rd. Borivali West, Mumbai-400103',
             thermalPaperSize: '50x75',
             customPaperWidth: 50,
             customPaperHeight: 75,
@@ -2994,11 +2991,11 @@ Santoshi Mata Rd. Borivali West, Mumbai 400103',
 
             if (cfg.shopAddress) {
     const addrEl = document.createElement('div');
-    // Address Size Below
-    addrEl.style.cssText = `margin-top:2px;text-align:center;font-size:7.5px;line-height:1.15;color:#000000;font-family:${cfg.fontFamily};white-space:pre-line;word-break:break-word;`;
-    addrEl.innerText = cfg.shopAddress;
-    el.appendChild(addrEl);
-}
+                // Address Size Below
+                addrEl.style.cssText = `margin-top:2px;text-align:center;font-size:7.5px;line-height:1.15;color:#000000;font-family:${cfg.fontFamily};white-space:pre-line;word-break:break-word;`;
+                addrEl.innerText = cfg.shopAddress;
+                el.appendChild(addrEl);
+                }
 
             if (isRotated) {
                 const wrapper = document.createElement('div');
