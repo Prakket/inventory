@@ -3139,15 +3139,15 @@ function doPost(e) {
             };
             try { JsBarcode(svg, item.sku, opts); }
             catch { JsBarcode(svg, item.sku, { ...opts, format: 'CODE128' }); }
-
+            
             if (cfg.shopAddress) {
-    const addrEl = document.createElement('div');
+   const addrEl = document.createElement('div');
                 // Address Size Below
-                addrEl.style.cssText = `margin-top:2px;text-align:center;font-size:10px;line-height:1.15;color:#000000;font-family:${cfg.fontFamily};white-space:pre-line;word-break:break-word;`;
+                addrEl.style.cssText = `margin-top:0px;text-align:center;font-size:8px;line-height:1.05;color:#000000;font-family:${cfg.fontFamily};white-space:pre-line;word-break:break-word;`;
                 addrEl.innerText = cfg.shopAddress;
                 el.appendChild(addrEl);
                 }
-
+       
             if (isRotated) {
                 const wrapper = document.createElement('div');
                 wrapper.className = cfg.layout === 'thermal-roll' ? 'print-page-rotated-roll' : 'print-page-rotated';
