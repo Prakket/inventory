@@ -3141,27 +3141,27 @@ function doPost(e) {
             catch { JsBarcode(svg, item.sku, { ...opts, format: 'CODE128' }); }
             
  if (cfg.shopAddress) {
-                const addrEl = document.createElement('div');
-                // Address Size Below
-                addrEl.style.cssText = `margin-top:4px;width:100%;text-align:center;font-size:9.5px;line-height:1.05;color:#000000;font-family:${cfg.fontFamily};white-space:pre-line;word-break:break-word;`;
-                addrEl.innerText = cfg.shopAddress;
-                el.appendChild(addrEl);
-           }
+          const addrEl = document.createElement('div');
+          // Address Size Below (margin-top:auto pushes this and the footer to the bottom of the sticker)
+          addrEl.style.cssText = `margin-top:auto;padding-top:6px;width:100%;text-align:center;font-size:10.5px;line-height:1.15;color:#000000;font-family:${cfg.fontFamily};white-space:pre-line;word-break:break-word;`;
+          addrEl.innerText = cfg.shopAddress;
+          el.appendChild(addrEl);
+     }
 
-           // Bottom Footer: Made in India + 100% Pure Linen
-           const footerEl = document.createElement('div');
-           footerEl.style.cssText = `margin-top:3px;padding-top:2px;border-top:0.5px solid #000000;display:flex;align-items:center;justify-content:space-between;width:100%;font-family:${cfg.fontFamily};color:#000000;`;
-           footerEl.innerHTML = `
-               <div style="display:flex;align-items:center;gap:3px;">
-                    <svg width="24" height="12" viewBox="0 0 120 60" style="flex-shrink:0;" fill="#000000">
-                        <!-- Striding Make in India Lion Silhouette + Gear Accent -->
-                        <path d="M98,12 C104,12 109,16 111,21 L116,23 L114,28 L109,29 L106,36 L109,52 L103,52 L99,38 L92,38 L89,52 L83,52 L86,36 L58,36 L53,52 L47,52 L51,37 L42,37 L35,52 L29,52 L37,34 C31,32 25,28 19,21 C14,15 8,16 6,21 C4,25 8,28 11,26 C9,30 3,29 2,23 C1,16 9,10 17,15 C24,19 29,25 36,26 L44,21 C43,15 48,10 56,11 C64,12 72,15 82,15 C88,15 92,12 98,12 Z"/>
-                    </svg>
-                    <span style="font-size:8px;font-weight:700;letter-spacing:0.2px;text-transform:uppercase;">Made in India</span>
-                </div>
-                <span style="font-size:8px;font-weight:700;">100% Pure Linen</span>
-           `;
-           el.appendChild(footerEl);
+     // Bottom Footer: 100% Pure Linen stacked above Made in India, centered beneath the line
+     const footerEl = document.createElement('div');
+     footerEl.style.cssText = `${cfg.shopAddress ? 'margin-top:5px;' : 'margin-top:auto;'}padding-top:4px;border-top:0.8px solid #000000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:100%;font-family:${cfg.fontFamily};color:#000000;`;
+     footerEl.innerHTML = `
+          <span style="font-size:11px;font-weight:700;letter-spacing:0.3px;">100% PURE LINEN</span>
+          <div style="display:flex;align-items:center;justify-content:center;gap:4px;">
+               <svg width="30" height="15" viewBox="0 0 120 60" style="flex-shrink:0;" fill="#000000">
+                    <!-- Striding Make in India Lion Silhouette -->
+                    <path d="M98,12 C104,12 109,16 111,21 L116,23 L114,28 L109,29 L106,36 L109,52 L103,52 L99,38 L92,38 L89,52 L83,52 L86,36 L58,36 L53,52 L47,52 L51,37 L42,37 L35,52 L29,52 L37,34 C31,32 25,28 19,21 C14,15 8,16 6,21 C4,25 8,28 11,26 C9,30 3,29 2,23 C1,16 9,10 17,15 C24,19 29,25 36,26 L44,21 C43,15 48,10 56,11 C64,12 72,15 82,15 C88,15 92,12 98,12 Z"/>
+               </svg>
+               <span style="font-size:9.5px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;">Made in India</span>
+          </div>
+     `;
+     el.appendChild(footerEl);
        
             if (isRotated) {
                 const wrapper = document.createElement('div');
