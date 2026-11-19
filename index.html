@@ -210,7 +210,7 @@
     </style>
     <style id="dynamicPrintStyle"></style>
 </head>
-<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+<body id="appBody" class="text-slate-800 antialiased min-h-screen flex flex-col" style="background-color: #f8fafc;">
 
     <!-- Top Navigation -->
     <nav id="mainNavbar" class="bg-indigo-600 text-white shadow-md sticky top-0 z-30 transition-colors">
@@ -228,6 +228,10 @@
                     <div class="hidden md:flex items-center space-x-1">
                         <button type="button" onclick="switchTab('inventory')" data-tab="inventory" class="nav-tab px-3.5 py-2 rounded-lg text-sm font-medium transition-colors bg-black/20 text-white">
                             Inventory
+                        </button>
+                        <button type="button" onclick="switchTab('custom')" data-tab="custom" class="nav-tab px-3.5 py-2 rounded-lg text-sm font-medium transition-colors text-white/85 hover:bg-white/15 flex items-center gap-1.5">
+                            <span>Custom &amp; Fittings</span>
+                            <span id="navCustomBadge" class="px-1.5 py-0.5 text-[10px] rounded-full bg-black/25 text-white font-semibold">0</span>
                         </button>
                         <button type="button" onclick="switchTab('sales')" data-tab="sales" class="nav-tab px-3.5 py-2 rounded-lg text-sm font-medium transition-colors text-white/85 hover:bg-white/15 flex items-center gap-1.5">
                             <span>Products Sold</span>
@@ -255,21 +259,24 @@
         </div>
 
         <!-- Mobile Tabs Bar -->
-        <div class="md:hidden border-t border-white/15 bg-black/15 px-2 py-1.5 grid grid-cols-3 gap-1">
-            <button type="button" onclick="switchTab('inventory')" data-tab="inventory" class="nav-tab-mobile py-1.5 px-2 rounded-md text-xs font-semibold text-center bg-white text-slate-900">
+        <div class="md:hidden border-t border-white/15 bg-black/15 px-2 py-1.5 grid grid-cols-4 gap-1">
+            <button type="button" onclick="switchTab('inventory')" data-tab="inventory" class="nav-tab-mobile py-1.5 px-1.5 rounded-md text-xs font-semibold text-center bg-white text-slate-900">
                 Inventory
             </button>
-            <button type="button" onclick="switchTab('sales')" data-tab="sales" class="nav-tab-mobile py-1.5 px-2 rounded-md text-xs font-semibold text-center text-white/90">
+            <button type="button" onclick="switchTab('custom')" data-tab="custom" class="nav-tab-mobile py-1.5 px-1.5 rounded-md text-xs font-semibold text-center text-white/90">
+                Custom (<span id="mobileCustomBadge">0</span>)
+            </button>
+            <button type="button" onclick="switchTab('sales')" data-tab="sales" class="nav-tab-mobile py-1.5 px-1.5 rounded-md text-xs font-semibold text-center text-white/90">
                 Sold (<span id="mobileSalesBadge">0</span>)
             </button>
-            <button type="button" onclick="switchTab('settings')" data-tab="settings" class="nav-tab-mobile py-1.5 px-2 rounded-md text-xs font-semibold text-center text-white/90">
+            <button type="button" onclick="switchTab('settings')" data-tab="settings" class="nav-tab-mobile py-1.5 px-1.5 rounded-md text-xs font-semibold text-center text-white/90">
                 Settings
             </button>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-1 p-4 sm:p-6 lg:p-8 bg-slate-50">
+    <main id="appMain" class="flex-1 p-4 sm:p-6 lg:p-8 transition-colors">
         <div class="max-w-7xl mx-auto">
 
             <!-- ========================================== -->
@@ -311,13 +318,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center">
-                        <div class="p-3 rounded-full bg-amber-100 text-amber-600 mr-4 shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    <div onclick="switchTab('custom')" class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center cursor-pointer hover:border-purple-300 transition-colors" title="View Custom Orders &amp; Fittings">
+                        <div class="p-3 rounded-full bg-purple-100 text-purple-600 mr-4 shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"></path></svg>
                         </div>
                         <div>
-                            <p id="statLowLabel" class="text-sm font-medium text-slate-500">Low Stock (&le;10)</p>
-                            <p id="statLow" class="text-2xl font-bold text-slate-900">0</p>
+                            <p class="text-sm font-medium text-slate-500">Active Custom / Fittings</p>
+                            <p id="statCustomActive" class="text-2xl font-bold text-slate-900">0</p>
                         </div>
                     </div>
                     <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center">
@@ -418,6 +425,94 @@
             </section>
 
             <!-- ========================================== -->
+            <!-- TAB: CUSTOM ORDERS & FITTINGS              -->
+            <!-- ========================================== -->
+            <section id="tab-custom" class="hidden space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-bold text-slate-900">Custom Orders &amp; Fittings</h1>
+                        <p class="mt-1 text-sm text-slate-500">Manage bespoke orders and alterations/fittings linked to existing stock or brand-new custom pieces.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2.5">
+                        <button type="button" onclick="openCustomOrderModal()" class="inline-flex items-center justify-center px-4 py-2.5 rounded-lg shadow-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors">
+                            <svg class="w-5 h-5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                            New Custom Order / Fitting
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Custom Orders Stats -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                        <p class="text-xs font-medium text-slate-500">Total Requests</p>
+                        <p id="statCustomTotal" class="text-2xl font-bold text-slate-900 mt-1">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                        <p class="text-xs font-medium text-amber-700">Pending / In Progress</p>
+                        <p id="statCustomPending" class="text-2xl font-bold text-amber-700 mt-1">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                        <p class="text-xs font-medium text-blue-700">Ready for Trial / Pickup</p>
+                        <p id="statCustomReady" class="text-2xl font-bold text-blue-700 mt-1">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                        <p class="text-xs font-medium text-emerald-700">Completed / Delivered</p>
+                        <p id="statCustomDone" class="text-2xl font-bold text-emerald-700 mt-1">0</p>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                    <div class="relative lg:col-span-2">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <input type="text" id="customSearchInput" placeholder="Search customer, piece, SKU, measurements..." class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-indigo-500">
+                    </div>
+                    <select id="customSourceFilter" class="border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm focus:ring-indigo-500">
+                        <option value="">All Order Types</option>
+                        <option value="existing">Fitting on Existing Stock</option>
+                        <option value="new">New Custom Piece</option>
+                    </select>
+                    <select id="customStatusFilter" class="border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm focus:ring-indigo-500">
+                        <option value="">All Statuses</option>
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Ready for Trial">Ready for Trial</option>
+                        <option value="Ready for Pickup">Ready for Pickup</option>
+                        <option value="Delivered">Delivered</option>
+                    </select>
+                    <div class="flex items-center justify-end">
+                        <button type="button" onclick="resetCustomFilters()" id="resetCustomFilterBtn" class="hidden w-full sm:w-auto px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg">
+                            Clear Filters
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Desktop Custom Orders Table -->
+                <div class="hidden md:block bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="table-container overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-200">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Customer &amp; Due Date</th>
+                                    <th class="px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Order Type &amp; Piece</th>
+                                    <th class="px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Measurements &amp; Fitting Notes</th>
+                                    <th class="px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Price / Advance</th>
+                                    <th class="px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-5 py-3.5 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customOrdersTableBody" class="bg-white divide-y divide-slate-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Mobile Custom Orders List -->
+                <div id="customOrdersMobileList" class="md:hidden space-y-3"></div>
+            </section>
+
+            <!-- ========================================== -->
             <!-- TAB 2: PRODUCTS SOLD                       -->
             <!-- ========================================== -->
             <section id="tab-sales" class="hidden space-y-5">
@@ -515,29 +610,22 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                    <!-- Card 1: Stock Thresholds & Alerts -->
+                    <!-- Card 1: Stock Thresholds & Rules -->
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-4">
                         <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
                             <span class="p-2 rounded-lg bg-amber-100 text-amber-700">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                             </span>
                             <div>
-                                <h2 class="text-base font-bold text-slate-900">Stock Thresholds &amp; Rules</h2>
-                                <p class="text-xs text-slate-500">Control Low Stock, Out of Stock, and Oversell protection</p>
+                                <h2 class="text-base font-bold text-slate-900">Stock Rules &amp; Oversell Protection</h2>
+                                <p class="text-xs text-slate-500">Control Out of Stock status and Oversell protection</p>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label for="setLowStock" class="block text-sm font-medium text-slate-700">Low Stock Threshold (&le;)</label>
-                                <input type="number" id="setLowStock" min="1" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
-                                <p class="mt-1 text-[11px] text-slate-500">Items at or below this count show as Low Stock.</p>
-                            </div>
-                            <div>
-                                <label for="setOutStock" class="block text-sm font-medium text-slate-700">Out of Stock Threshold (&le;)</label>
-                                <input type="number" id="setOutStock" min="0" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
-                                <p class="mt-1 text-[11px] text-slate-500">Usually 0 (increase for a safety buffer).</p>
-                            </div>
+                        <div>
+                            <label for="setOutStock" class="block text-sm font-medium text-slate-700">Out of Stock Threshold (&le;)</label>
+                            <input type="number" id="setOutStock" min="0" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                            <p class="mt-1 text-[11px] text-slate-500">Items at or below this count show as Out of Stock (usually 0).</p>
                         </div>
 
                         <label class="flex items-start gap-3 pt-1 cursor-pointer">
@@ -557,7 +645,7 @@
                             </span>
                             <div>
                                 <h2 class="text-base font-bold text-slate-900">Store, Visual Look &amp; Defaults</h2>
-                                <p class="text-xs text-slate-500">Branding, dashboard color theme, currency, and new item defaults</p>
+                                <p class="text-xs text-slate-500">Branding, header color, page background color, currency, and defaults</p>
                             </div>
                         </div>
 
@@ -567,7 +655,7 @@
                                 <input type="text" id="setStoreName" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
                             </div>
                             <div>
-                                <label for="setThemeColor" class="block text-sm font-medium text-slate-700">Dashboard Theme Color</label>
+                                <label for="setThemeColor" class="block text-sm font-medium text-slate-700">Website Header Color</label>
                                 <select id="setThemeColor" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
                                     <option value="indigo">Indigo (Default)</option>
                                     <option value="emerald">Emerald Green</option>
@@ -587,6 +675,24 @@
                                     <option value="midnight">Midnight Navy</option>
                                     <option value="obsidian">Obsidian Black</option>
                                 </select>
+                            </div>
+                            <div>
+                                <label for="setBgColor" class="block text-sm font-medium text-slate-700">Page Background Color</label>
+                                <div class="mt-1 flex items-center gap-2">
+                                    <input type="color" id="setBgColorPicker" value="#f8fafc" class="h-9 w-12 rounded-lg border border-slate-300 bg-white p-0.5 cursor-pointer shrink-0" title="Pick custom background color">
+                                    <select id="setBgColorPreset" class="block w-full border border-slate-300 rounded-lg px-2.5 py-2 bg-white text-sm">
+                                        <option value="#f8fafc">Cool Slate (Default)</option>
+                                        <option value="#ffffff">Pure White</option>
+                                        <option value="#fafaf9">Warm Alabaster</option>
+                                        <option value="#fdf8f6">Soft Blush Cream</option>
+                                        <option value="#fefce8">Warm Ivory</option>
+                                        <option value="#f0fdf4">Soft Mint Tint</option>
+                                        <option value="#f0f9ff">Soft Sky Tint</option>
+                                        <option value="#f5f3ff">Soft Lavender Tint</option>
+                                        <option value="#f3f4f6">Light Mist Grey</option>
+                                        <option value="custom">Custom Color...</option>
+                                    </select>
+                                </div>
                             </div>
                             <div>
                                 <label for="setCurrency" class="block text-sm font-medium text-slate-700">Currency Symbol</label>
@@ -820,6 +926,123 @@
     <!-- MODALS OVERLAY                             -->
     <!-- ========================================== -->
     <div id="modalOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto">
+
+        <!-- Add / Edit Custom Order or Fitting Modal -->
+        <div id="customOrderModal" class="bg-white rounded-2xl shadow-xl w-full max-w-lg hidden flex-col overflow-hidden my-auto max-h-[92vh]">
+            <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <div>
+                    <h3 id="coModalTitle" class="text-lg font-bold text-slate-900">New Custom Order / Fitting</h3>
+                    <p class="text-xs text-slate-500">Create a bespoke piece or attach alterations/fittings to existing stock</p>
+                </div>
+                <button type="button" onclick="closeModals()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-5 sm:p-6 overflow-y-auto">
+                <form id="customOrderForm" class="space-y-4">
+                    <input type="hidden" id="coId">
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Order Category</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="coSourceType" value="existing" class="peer sr-only" checked>
+                                <div class="p-2.5 rounded-xl border border-slate-300 peer-checked:border-indigo-600 peer-checked:bg-indigo-50/70 peer-checked:text-indigo-900 text-xs font-semibold text-center transition-colors">
+                                    Fitting on Existing Stock
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="coSourceType" value="new" class="peer sr-only">
+                                <div class="p-2.5 rounded-xl border border-slate-300 peer-checked:border-purple-600 peer-checked:bg-purple-50/70 peer-checked:text-purple-900 text-xs font-semibold text-center transition-colors">
+                                    New Custom Piece
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="coExistingWrap" class="space-y-2 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                        <label for="coExistingItemSelect" class="block text-xs font-semibold text-slate-700">Select Piece from Stock *</label>
+                        <select id="coExistingItemSelect" class="block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm"></select>
+                        <label class="inline-flex items-center gap-2 text-xs text-slate-700 pt-1 cursor-pointer">
+                            <input type="checkbox" id="coReserveStock" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                            <span>Reserve 1 unit from Stock in Hand now</span>
+                        </label>
+                    </div>
+
+                    <div id="coNewPieceWrap" class="hidden space-y-3 p-3 rounded-xl bg-purple-50/40 border border-purple-200">
+                        <div>
+                            <label for="coNewPieceName" class="block text-xs font-semibold text-slate-700">Custom Piece Name / Design *</label>
+                            <input type="text" id="coNewPieceName" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm" placeholder="e.g. Custom Embroidered Lehenga Set">
+                        </div>
+                        <div class="grid grid-cols-3 gap-2.5">
+                            <div>
+                                <label for="coNewPieceType" class="block text-xs font-medium text-slate-700">Type</label>
+                                <input type="text" id="coNewPieceType" class="mt-1 block w-full border border-slate-300 rounded-lg px-2.5 py-1.5 bg-white text-sm" placeholder="Dress / Suit">
+                            </div>
+                            <div>
+                                <label for="coNewPieceColor" class="block text-xs font-medium text-slate-700">Color</label>
+                                <input type="text" id="coNewPieceColor" class="mt-1 block w-full border border-slate-300 rounded-lg px-2.5 py-1.5 bg-white text-sm" placeholder="Emerald">
+                            </div>
+                            <div>
+                                <label for="coNewPieceSize" class="block text-xs font-medium text-slate-700">Base Size</label>
+                                <input type="text" id="coNewPieceSize" class="mt-1 block w-full border border-slate-300 rounded-lg px-2.5 py-1.5 bg-white text-sm" placeholder="Custom / M">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label for="coCustomerName" class="block text-xs font-semibold text-slate-700">Customer Name *</label>
+                            <input type="text" id="coCustomerName" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="Customer full name">
+                        </div>
+                        <div>
+                            <label for="coCustomerPhone" class="block text-xs font-semibold text-slate-700">Phone / WhatsApp</label>
+                            <input type="tel" id="coCustomerPhone" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="Phone number">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="coMeasurements" class="block text-xs font-semibold text-slate-700">Measurements (Bust / Waist / Hip / Length / Sleeve)</label>
+                        <input type="text" id="coMeasurements" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="e.g. B: 36, W: 30, H: 38, L: 52 in">
+                    </div>
+
+                    <div>
+                        <label for="coFittingNotes" class="block text-xs font-semibold text-slate-700">Fitting / Alteration / Customization Instructions *</label>
+                        <textarea id="coFittingNotes" rows="2" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="e.g. Take in waist by 1.5 in, shorten hem by 2 in, add side zip..."></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div>
+                            <label for="coDueDate" class="block text-xs font-semibold text-slate-700">Trial / Due Date</label>
+                            <input type="date" id="coDueDate" class="mt-1 block w-full border border-slate-300 rounded-lg px-2.5 py-2 text-sm">
+                        </div>
+                        <div>
+                            <label for="coStatus" class="block text-xs font-semibold text-slate-700">Status</label>
+                            <select id="coStatus" class="mt-1 block w-full border border-slate-300 rounded-lg px-2.5 py-2 bg-white text-sm">
+                                <option value="Pending">Pending</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Ready for Trial">Ready for Trial</option>
+                                <option value="Ready for Pickup">Ready for Pickup</option>
+                                <option value="Delivered">Delivered</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="coTotalPrice" class="block text-xs font-semibold text-slate-700">Total (<span class="currency-symbol">₹</span>)</label>
+                            <input type="number" id="coTotalPrice" min="0" step="0.01" value="0" class="mt-1 block w-full border border-slate-300 rounded-lg px-2.5 py-2 text-sm">
+                        </div>
+                        <div>
+                            <label for="coAdvancePaid" class="block text-xs font-semibold text-slate-700">Advance (<span class="currency-symbol">₹</span>)</label>
+                            <input type="number" id="coAdvancePaid" min="0" step="0.01" value="0" class="mt-1 block w-full border border-slate-300 rounded-lg px-2.5 py-2 text-sm">
+                        </div>
+                    </div>
+
+                    <div class="pt-2 flex justify-end gap-3">
+                        <button type="button" onclick="closeModals()" class="px-4 py-2 border border-slate-300 text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50">Cancel</button>
+                        <button type="submit" class="px-5 py-2 text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700">Save Custom Order</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <!-- Edit Sale Customer Details Modal -->
         <div id="editSaleModal" class="bg-white rounded-2xl shadow-xl w-full max-w-md hidden flex-col overflow-hidden my-auto">
@@ -1331,6 +1554,7 @@
         // ==========================================
         const APPS_SCRIPT_CODE = `const INV_SHEET = "Inventory";
 const SALES_SHEET = "Sales";
+const CUSTOM_SHEET = "CustomOrders";
 const SETTINGS_SHEET = "Settings";
 
 const INV_HEADERS = [
@@ -1343,6 +1567,11 @@ const SALES_HEADERS = [
   "qtySold", "stockAfter", "unitPrice", "totalAmount",
   "customerName", "customerPhone", "customerNotes", "soldAt",
   "length", "sleeves", "look", "lookNotes"
+];
+const CUSTOM_HEADERS = [
+  "customId", "sourceType", "docId", "sku", "pieceName", "pieceType", "color", "size",
+  "customerName", "customerPhone", "measurements", "fittingNotes",
+  "dueDate", "status", "totalPrice", "advancePaid", "stockReserved", "updatedAt", "createdAt"
 ];
 const SETTINGS_HEADERS = ["key", "value"];
 
@@ -1433,6 +1662,52 @@ function readSales(sheet) {
   return sales;
 }
 
+function readCustomOrders(sheet) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow <= 1) return [];
+  const cols = Math.max(sheet.getLastColumn(), CUSTOM_HEADERS.length);
+  const data = sheet.getRange(2, 1, lastRow - 1, cols).getValues();
+  const list = [];
+  for (let i = 0; i < data.length; i++) {
+    const r = data[i];
+    if (String(r[0] || "").trim() === "" && String(r[4] || "").trim() === "") continue;
+    list.push({
+      customId: String(r[0] || ("CUST-" + (i + 2))),
+      sourceType: String(r[1] || "existing"),
+      docId: String(r[2] || ""),
+      sku: String(r[3] || ""),
+      pieceName: String(r[4] || ""),
+      pieceType: String(r[5] || ""),
+      color: String(r[6] || ""),
+      size: String(r[7] || ""),
+      customerName: String(r[8] || ""),
+      customerPhone: String(r[9] || ""),
+      measurements: String(r[10] || ""),
+      fittingNotes: String(r[11] || ""),
+      dueDate: String(r[12] || ""),
+      status: String(r[13] || "Pending"),
+      totalPrice: Number(r[14]) || 0,
+      advancePaid: Number(r[15]) || 0,
+      stockReserved: String(r[16]) === "true" || r[16] === true,
+      updatedAt: Number(r[17]) || Date.now(),
+      createdAt: Number(r[18]) || Date.now()
+    });
+  }
+  return list;
+}
+
+function customOrderToRow(c) {
+  return [
+    String(c.customId), String(c.sourceType || "existing"), String(c.docId || ""),
+    String(c.sku || ""), String(c.pieceName || ""), String(c.pieceType || ""),
+    String(c.color || ""), String(c.size || ""), String(c.customerName || ""),
+    String(c.customerPhone || ""), String(c.measurements || ""), String(c.fittingNotes || ""),
+    String(c.dueDate || ""), String(c.status || "Pending"),
+    Number(c.totalPrice) || 0, Number(c.advancePaid) || 0,
+    Boolean(c.stockReserved), Number(c.updatedAt) || Date.now(), Number(c.createdAt) || Date.now()
+  ];
+}
+
 function readSettings(sheet) {
   if (sheet.getLastRow() <= 1) return null;
   const val = sheet.getRange(2, 2).getValue();
@@ -1487,6 +1762,7 @@ function doGet(e) {
   try {
     const invSheet = getOrCreateSheet(INV_SHEET, INV_HEADERS);
     const salesSheet = getOrCreateSheet(SALES_SHEET, SALES_HEADERS);
+    const customSheet = getOrCreateSheet(CUSTOM_SHEET, CUSTOM_HEADERS);
     const settingsSheet = getOrCreateSheet(SETTINGS_SHEET, SETTINGS_HEADERS);
     const action = (e && e.parameter && e.parameter.action) ? e.parameter.action : "list";
     if (action === "ping") return jsonOutput({ ok: true, message: "Connected to Google Sheets" });
@@ -1494,6 +1770,7 @@ function doGet(e) {
       ok: true,
       items: readInventory(invSheet),
       sales: readSales(salesSheet),
+      customOrders: readCustomOrders(customSheet),
       settings: readSettings(settingsSheet)
     });
   } catch (err) {
@@ -1571,6 +1848,14 @@ function doPost(e) {
           salesSheet.getRange(2, 1, sRows.length, SALES_HEADERS.length).setValues(sRows);
         }
       }
+      if (Array.isArray(payload.customOrders)) {
+        const customSheet = getOrCreateSheet(CUSTOM_SHEET, CUSTOM_HEADERS);
+        if (customSheet.getLastRow() > 1) customSheet.getRange(2, 1, customSheet.getLastRow() - 1, Math.max(customSheet.getLastColumn(), CUSTOM_HEADERS.length)).clearContent();
+        if (payload.customOrders.length > 0) {
+          const cRows = payload.customOrders.map(customOrderToRow);
+          customSheet.getRange(2, 1, cRows.length, CUSTOM_HEADERS.length).setValues(cRows);
+        }
+      }
       if (payload.settings) {
         settingsSheet.getRange(2, 1, 1, 2).setValues([["masterSettings", JSON.stringify(payload.settings)]]);
       }
@@ -1590,6 +1875,7 @@ function doPost(e) {
         // ==========================================
         const LOCAL_INV_KEY = 'stockflow_inventory_v2';
         const LOCAL_SALES_KEY = 'stockflow_sales_v2';
+        const LOCAL_CUSTOM_KEY = 'stockflow_custom_orders_v1';
         const LOCAL_SETTINGS_KEY = 'stockflow_settings_v2';
         const GS_URL_KEY = 'stockflow_gs_url';
         const GS_AUTOSYNC_KEY = 'stockflow_gs_autosync';
@@ -1597,8 +1883,8 @@ function doPost(e) {
         const DEFAULT_SETTINGS = {
             storeName: 'StockFlow',
             themeColor: 'indigo',
+            pageBgColor: '#f8fafc',
             currency: '₹',
-            lowStockThreshold: 10,
             outOfStockThreshold: 0,
             preventOversell: true,
             defaultGender: 'Unisex',
@@ -1624,17 +1910,30 @@ function doPost(e) {
             customLooks: ['N/A', 'Casual', 'Formal', 'Party', 'Ethnic', 'Festive', 'Streetwear']
         };
 
-        const THEME_NAV_CLASSES = {
-            indigo: 'bg-indigo-600 text-white shadow-md sticky top-0 z-30 transition-colors',
-            emerald: 'bg-emerald-700 text-white shadow-md sticky top-0 z-30 transition-colors',
-            rose: 'bg-rose-600 text-white shadow-md sticky top-0 z-30 transition-colors',
-            violet: 'bg-violet-700 text-white shadow-md sticky top-0 z-30 transition-colors',
-            slate: 'bg-slate-800 text-white shadow-md sticky top-0 z-30 transition-colors'
+        const THEME_NAV_HEX = {
+            indigo: '#4f46e5',
+            emerald: '#047857',
+            rose: '#e11d48',
+            violet: '#6d28d9',
+            slate: '#1e293b',
+            amber: '#b45309',
+            coral: '#f97316',
+            crimson: '#dc2626',
+            terracotta: '#c2410c',
+            sky: '#0284c7',
+            teal: '#0f766e',
+            cyan: '#0891b2',
+            mint: '#059669',
+            stone: '#57534e',
+            sand: '#a16207',
+            midnight: '#1e1b4b',
+            obsidian: '#09090b'
         };
 
         let inventoryData = [];
         let visibleInventory = [];
         let salesData = [];
+        let customOrdersData = [];
         let settings = { ...DEFAULT_SETTINGS };
         const selectedIds = new Set();
 
@@ -1749,6 +2048,12 @@ function doPost(e) {
             } catch { salesData = []; }
 
             try {
+                const customRaw = localStorage.getItem(LOCAL_CUSTOM_KEY);
+                customOrdersData = customRaw ? JSON.parse(customRaw) : [];
+                if (!Array.isArray(customOrdersData)) customOrdersData = [];
+            } catch { customOrdersData = []; }
+
+            try {
                 const setRaw = localStorage.getItem(LOCAL_SETTINGS_KEY);
                 const parsed = setRaw ? JSON.parse(setRaw) : {};
                 settings = { ...DEFAULT_SETTINGS, ...parsed };
@@ -1756,6 +2061,7 @@ function doPost(e) {
 
             sortInventory();
             sortSales();
+            sortCustomOrders();
         }
 
         function saveInventoryLocal() {
@@ -1764,6 +2070,10 @@ function doPost(e) {
 
         function saveSalesLocal() {
             localStorage.setItem(LOCAL_SALES_KEY, JSON.stringify(salesData));
+        }
+
+        function saveCustomLocal() {
+            localStorage.setItem(LOCAL_CUSTOM_KEY, JSON.stringify(customOrdersData));
         }
 
         function saveSettingsLocal() {
@@ -1778,6 +2088,10 @@ function doPost(e) {
             salesData.sort((a, b) => (b.soldAt || 0) - (a.soldAt || 0));
         }
 
+        function sortCustomOrders() {
+            customOrdersData.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        }
+
         function createId(prefix = 'id') {
             if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
             return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -1788,7 +2102,7 @@ function doPost(e) {
         // ==========================================
         window.switchTab = (tabName) => {
             activeTab = tabName;
-            ['inventory', 'sales', 'settings'].forEach(t => {
+            ['inventory', 'custom', 'sales', 'settings'].forEach(t => {
                 const sec = document.getElementById(`tab-${t}`);
                 if (sec) sec.classList.toggle('hidden', t !== tabName);
             });
@@ -1810,6 +2124,7 @@ function doPost(e) {
 
             if (tabName === 'settings') populateSettingsForm();
             if (tabName === 'sales') refreshSalesView();
+            if (tabName === 'custom') refreshCustomOrdersView();
         };
 
         window.goToSheetsSettings = () => {
@@ -1833,13 +2148,19 @@ function doPost(e) {
 
         function applySettingsToUI() {
             document.getElementById('navBrandName').innerText = settings.storeName || 'StockFlow';
-            document.getElementById('mainNavbar').className = THEME_NAV_CLASSES[settings.themeColor] || THEME_NAV_CLASSES.indigo;
+            const navEl = document.getElementById('mainNavbar');
+            navEl.className = 'text-white shadow-md sticky top-0 z-30 transition-colors';
+            navEl.style.backgroundColor = THEME_NAV_HEX[settings.themeColor] || THEME_NAV_HEX.indigo;
+
+            const bgHex = settings.pageBgColor || '#f8fafc';
+            document.body.style.backgroundColor = bgHex;
+            const appMain = document.getElementById('appMain');
+            if (appMain) appMain.style.backgroundColor = bgHex;
 
             document.querySelectorAll('.currency-symbol').forEach(el => {
                 el.innerText = settings.currency || '₹';
             });
 
-            document.getElementById('statLowLabel').innerText = `Low Stock (≤${settings.lowStockThreshold})`;
             document.getElementById('statOutLabel').innerText = `Out of Stock (≤${settings.outOfStockThreshold})`;
 
             const types = settings.customTypes?.length ? settings.customTypes : DEFAULT_SETTINGS.customTypes;
@@ -1890,11 +2211,17 @@ function doPost(e) {
         }
 
         function populateSettingsForm() {
-            setVal('setLowStock', settings.lowStockThreshold);
             setVal('setOutStock', settings.outOfStockThreshold);
             setChk('setPreventOversell', settings.preventOversell);
             setVal('setStoreName', settings.storeName || 'StockFlow');
             setVal('setThemeColor', settings.themeColor || 'indigo');
+            const bgHex = (settings.pageBgColor || '#f8fafc').toLowerCase();
+            setVal('setBgColorPicker', bgHex);
+            const presetEl = document.getElementById('setBgColorPreset');
+            if (presetEl) {
+                const hasPreset = Array.from(presetEl.options).some(o => o.value.toLowerCase() === bgHex);
+                presetEl.value = hasPreset ? bgHex : 'custom';
+            }
             setVal('setCurrency', settings.currency || '₹');
             setVal('setDefaultGender', settings.defaultGender || 'Unisex');
             setVal('setDefaultQty', settings.defaultQty ?? 1);
@@ -1918,14 +2245,35 @@ function doPost(e) {
             setChk('gsAutoSyncCheckbox', gsAutoSync);
         }
 
-        window.saveSettingsFromPage = async () => {
-            const low = Math.max(1, parseInt(document.getElementById('setLowStock')?.value, 10) || 10);
-            const out = Math.max(0, parseInt(document.getElementById('setOutStock')?.value, 10) || 0);
+        document.getElementById('setThemeColor')?.addEventListener('change', (e) => {
+            const navEl = document.getElementById('mainNavbar');
+            if (navEl) navEl.style.backgroundColor = THEME_NAV_HEX[e.target.value] || THEME_NAV_HEX.indigo;
+        });
 
-            if (out >= low) {
-                showToast("Low Stock threshold must be greater than Out of Stock threshold.", "error");
-                return;
+        document.getElementById('setBgColorPreset')?.addEventListener('change', (e) => {
+            const val = e.target.value;
+            if (val !== 'custom') {
+                setVal('setBgColorPicker', val);
+                document.body.style.backgroundColor = val;
+                const appMain = document.getElementById('appMain');
+                if (appMain) appMain.style.backgroundColor = val;
             }
+        });
+
+        document.getElementById('setBgColorPicker')?.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            const presetEl = document.getElementById('setBgColorPreset');
+            if (presetEl) {
+                const hasPreset = Array.from(presetEl.options).some(o => o.value.toLowerCase() === val);
+                presetEl.value = hasPreset ? val : 'custom';
+            }
+            document.body.style.backgroundColor = val;
+            const appMain = document.getElementById('appMain');
+            if (appMain) appMain.style.backgroundColor = val;
+        });
+
+        window.saveSettingsFromPage = async () => {
+            const out = Math.max(0, parseInt(document.getElementById('setOutStock')?.value, 10) || 0);
 
             const parseCsvList = (str, fallback, excludeOther = true) => {
                 const arr = (str || '').split(',').map(s => s.trim()).filter(Boolean)
@@ -1933,13 +2281,15 @@ function doPost(e) {
                 return arr.length > 0 ? [...new Set(arr)] : fallback;
             };
 
+            const chosenBg = document.getElementById('setBgColorPicker')?.value || '#f8fafc';
+
             settings = {
                 ...settings,
-                lowStockThreshold: low,
                 outOfStockThreshold: out,
                 preventOversell: Boolean(document.getElementById('setPreventOversell')?.checked),
                 storeName: document.getElementById('setStoreName')?.value.trim() || 'StockFlow',
                 themeColor: document.getElementById('setThemeColor')?.value || 'indigo',
+                pageBgColor: chosenBg,
                 currency: document.getElementById('setCurrency')?.value.trim() || '₹',
                 defaultGender: document.getElementById('setDefaultGender')?.value || 'Unisex',
                 defaultQty: Math.max(0, parseInt(document.getElementById('setDefaultQty')?.value, 10) || 0),
@@ -2000,7 +2350,6 @@ function doPost(e) {
         function getStockBadge(qty) {
             const q = Math.max(0, parseInt(qty, 10) || 0);
             if (q <= settings.outOfStockThreshold) return { label: "Out of Stock", cls: "bg-red-100 text-red-800 border-red-200" };
-            if (q <= settings.lowStockThreshold) return { label: "Low Stock", cls: "bg-amber-100 text-amber-800 border-amber-200" };
             return { label: "In Stock", cls: "bg-emerald-100 text-emerald-800 border-emerald-200" };
         }
 
@@ -2008,18 +2357,32 @@ function doPost(e) {
             if (!colorStr) return 'transparent';
             const cleaned = colorStr.trim().toLowerCase();
             const map = {
-                'navy blue': '#001f3f', 'sky blue': '#38bdf8', 'royal blue': '#2563eb',
-                'dark blue': '#1e3a8a', 'light blue': '#93c5fd', 'dark green': '#14532d',
-                'olive green': '#556b2f', 'dark grey': '#4b5563', 'dark gray': '#4b5563',
-                'light grey': '#d1d5db', 'light gray': '#d1d5db', 'charcoal': '#36454f',
-                'cream': '#fffdd0', 'off white': '#faf9f6', 'maroon': '#800000',
-                'burgundy': '#800020', 'khaki': '#c3b091', 'beige': '#f5f5dc'
+                'navy blue': '#001f3f', 'navy': '#001f3f', 'sky blue': '#38bdf8', 'royal blue': '#2563eb',
+                'dark blue': '#1e3a8a', 'light blue': '#93c5fd', 'baby blue': '#89cff0',
+                'dark green': '#14532d', 'olive green': '#556b2f', 'olive': '#556b2f',
+                'emerald': '#10b981', 'emerald green': '#10b981', 'mint': '#6ee7b7', 'sage': '#9caf88',
+                'dark grey': '#4b5563', 'dark gray': '#4b5563', 'light grey': '#d1d5db', 'light gray': '#d1d5db',
+                'charcoal': '#36454f', 'cream': '#fffdd0', 'off white': '#faf9f6', 'ivory': '#fffff0',
+                'maroon': '#800000', 'burgundy': '#800020', 'wine': '#722f37', 'rust': '#b7410e',
+                'khaki': '#c3b091', 'beige': '#f5f5dc', 'tan': '#d2b48c', 'camel': '#c19a6b',
+                'mustard': '#eab308', 'gold': '#f59e0b', 'peach': '#fdba74', 'blush': '#fda4af',
+                'baby pink': '#f9a8d4', 'hot pink': '#ec4899', 'magenta': '#d946ef', 'lavender': '#c4b5fd',
+                'lilac': '#c084fc', 'mauve': '#e0b0ff', 'teal': '#14b8a6', 'turquoise': '#06b6d4', 'coral': '#fb7185'
             };
             if (map[cleaned]) return map[cleaned];
             const noSpaces = cleaned.replace(/\s+/g, '');
             if (window.CSS && CSS.supports && CSS.supports('color', noSpaces)) return noSpaces;
             if (window.CSS && CSS.supports && CSS.supports('color', cleaned)) return cleaned;
             return 'transparent';
+        }
+
+        function getSoftRowBgColor(colorStr) {
+            const resolved = resolveCssColor(colorStr);
+            if (!resolved || resolved === 'transparent') return '';
+            // White / near-white colors look best with a very faint cool tint so rows remain distinct
+            const lower = colorStr.trim().toLowerCase();
+            if (lower === 'white' || lower === '#ffffff' || lower === '#fff') return 'rgba(241, 245, 249, 0.7)';
+            return `color-mix(in srgb, ${resolved} 14%, #ffffff)`;
         }
 
         // ==========================================
@@ -2087,20 +2450,19 @@ function doPost(e) {
             handleFilters();
             updateInventoryStats();
             refreshSalesView();
+            refreshCustomOrdersView();
         }
 
         function updateInventoryStats() {
             const totalSkus = inventoryData.length;
             const totalUnits = inventoryData.reduce((sum, i) => sum + Math.max(0, parseInt(i.qty, 10) || 0), 0);
-            const low = inventoryData.filter(i => {
-                const q = Math.max(0, parseInt(i.qty, 10) || 0);
-                return q > settings.outOfStockThreshold && q <= settings.lowStockThreshold;
-            }).length;
+            const activeCustom = customOrdersData.filter(c => c.status !== 'Delivered').length;
             const out = inventoryData.filter(i => (parseInt(i.qty, 10) || 0) <= settings.outOfStockThreshold).length;
 
             document.getElementById('statTotalUnits').innerText = totalUnits;
             document.getElementById('statTotalSkus').innerText = `(${totalSkus} SKUs)`;
-            document.getElementById('statLow').innerText = low;
+            const customStatEl = document.getElementById('statCustomActive');
+            if (customStatEl) customStatEl.innerText = activeCustom;
             document.getElementById('statOut').innerText = out;
         }
 
@@ -2184,8 +2546,10 @@ function doPost(e) {
                     `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200 text-[11px] font-medium">${escapeHtml(tag)}</span>`
                 ).join('');
 
+                const softBg = getSoftRowBgColor(item.color);
                 const tr = document.createElement('tr');
-                tr.className = `hover:bg-slate-50 transition-colors group ${isChecked ? 'bg-indigo-50/40' : ''}`;
+                tr.className = `transition-colors group ${isChecked ? 'ring-1 ring-inset ring-indigo-400' : 'hover:brightness-[0.97]'}`;
+                if (softBg) tr.style.backgroundColor = softBg;
                 tr.innerHTML = `
                     <td class="pl-5 pr-2 py-4 w-10">
                         <input type="checkbox" class="item-select-cb w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer" data-id="${escapeHtml(item.docId)}" ${isChecked ? 'checked' : ''}>
@@ -2235,6 +2599,7 @@ function doPost(e) {
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div class="flex justify-end gap-1.5 opacity-100 md:opacity-80 md:group-hover:opacity-100 transition-opacity">
                             <button type="button" class="sell-btn px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-semibold" data-id="${escapeHtml(item.docId)}">Sell</button>
+                            <button type="button" class="custom-fit-btn px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg text-xs font-semibold" data-id="${escapeHtml(item.docId)}" title="Create Custom Fitting for this piece">Fit</button>
                             <button type="button" class="print-btn text-slate-600 hover:text-slate-900 p-2 bg-slate-100 hover:bg-slate-200 rounded-lg" data-id="${escapeHtml(item.docId)}" title="Print Barcode">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                             </button>
@@ -2254,7 +2619,8 @@ function doPost(e) {
                 inventoryTableBody.appendChild(tr);
 
                 const card = document.createElement('div');
-                card.className = `bg-white rounded-xl shadow-sm border p-4 space-y-2.5 ${isChecked ? 'border-indigo-400 bg-indigo-50/30' : 'border-slate-200'}`;
+                card.className = `bg-white rounded-xl shadow-sm border p-4 space-y-2.5 ${isChecked ? 'border-indigo-400 ring-1 ring-indigo-300' : 'border-slate-200'}`;
+                if (softBg) card.style.backgroundColor = softBg;
                 card.innerHTML = `
                     <div class="flex justify-between items-start gap-3">
                         <div class="flex items-start gap-2.5 min-w-0">
@@ -2331,6 +2697,10 @@ function doPost(e) {
             document.querySelectorAll('.sell-btn').forEach(b => b.onclick = () => {
                 const item = inventoryData.find(i => i.docId === b.dataset.id);
                 if (item) openQuickActionModal(item, 'sell');
+            });
+            document.querySelectorAll('.custom-fit-btn').forEach(b => b.onclick = () => {
+                const item = inventoryData.find(i => i.docId === b.dataset.id);
+                if (item) openCustomOrderModal(null, item.docId);
             });
             document.querySelectorAll('.print-btn').forEach(b => b.onclick = () => {
                 const item = inventoryData.find(i => i.docId === b.dataset.id);
@@ -3517,10 +3887,379 @@ function doPost(e) {
         // Modals & Scanner Controls
         // ==========================================
         function hideAllModalPanels() {
-            [itemModal, printModal, scanActionModal, scannerModal, confirmModal, editSaleModal].forEach(el => {
+            const customOrderModal = document.getElementById('customOrderModal');
+            [itemModal, printModal, scanActionModal, scannerModal, confirmModal, editSaleModal, customOrderModal].forEach(el => {
                 if (!el) return;
                 el.classList.add('hidden');
                 el.classList.remove('flex');
+            });
+        }
+
+        // ==========================================
+        // Custom Orders & Fittings Management
+        // ==========================================
+        function getCustomStatusBadge(status) {
+            switch (status) {
+                case 'In Progress': return 'bg-indigo-100 text-indigo-800 border-indigo-200';
+                case 'Ready for Trial': return 'bg-blue-100 text-blue-800 border-blue-200';
+                case 'Ready for Pickup': return 'bg-purple-100 text-purple-800 border-purple-200';
+                case 'Delivered': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+                default: return 'bg-amber-100 text-amber-800 border-amber-200';
+            }
+        }
+
+        function refreshCustomOrdersView() {
+            const activeCount = customOrdersData.filter(c => c.status !== 'Delivered').length;
+            const navBadge = document.getElementById('navCustomBadge');
+            const mobBadge = document.getElementById('mobileCustomBadge');
+            if (navBadge) navBadge.innerText = activeCount;
+            if (mobBadge) mobBadge.innerText = activeCount;
+
+            const total = customOrdersData.length;
+            const pending = customOrdersData.filter(c => c.status === 'Pending' || c.status === 'In Progress').length;
+            const ready = customOrdersData.filter(c => c.status === 'Ready for Trial' || c.status === 'Ready for Pickup').length;
+            const done = customOrdersData.filter(c => c.status === 'Delivered').length;
+
+            if (document.getElementById('statCustomTotal')) document.getElementById('statCustomTotal').innerText = total;
+            if (document.getElementById('statCustomPending')) document.getElementById('statCustomPending').innerText = pending;
+            if (document.getElementById('statCustomReady')) document.getElementById('statCustomReady').innerText = ready;
+            if (document.getElementById('statCustomDone')) document.getElementById('statCustomDone').innerText = done;
+
+            handleCustomFilters();
+        }
+
+        function handleCustomFilters() {
+            const q = (document.getElementById('customSearchInput')?.value || '').toLowerCase().trim();
+            const srcFilter = document.getElementById('customSourceFilter')?.value || '';
+            const statusFilter = document.getElementById('customStatusFilter')?.value || '';
+            const resetBtn = document.getElementById('resetCustomFilterBtn');
+            if (resetBtn) resetBtn.classList.toggle('hidden', !q && !srcFilter && !statusFilter);
+
+            const filtered = customOrdersData.filter(c => {
+                const matchQ = !q || [
+                    c.customerName, c.customerPhone, c.pieceName, c.sku,
+                    c.pieceType, c.color, c.measurements, c.fittingNotes
+                ].some(v => v && v.toLowerCase().includes(q));
+                const matchSrc = !srcFilter || c.sourceType === srcFilter;
+                const matchStatus = !statusFilter || c.status === statusFilter;
+                return matchQ && matchSrc && matchStatus;
+            });
+
+            renderCustomOrders(filtered);
+        }
+
+        window.resetCustomFilters = () => {
+            setVal('customSearchInput', '');
+            setVal('customSourceFilter', '');
+            setVal('customStatusFilter', '');
+            handleCustomFilters();
+        };
+
+        document.getElementById('customSearchInput')?.addEventListener('input', handleCustomFilters);
+        document.getElementById('customSourceFilter')?.addEventListener('change', handleCustomFilters);
+        document.getElementById('customStatusFilter')?.addEventListener('change', handleCustomFilters);
+
+        function renderCustomOrders(list) {
+            const tbody = document.getElementById('customOrdersTableBody');
+            const mlist = document.getElementById('customOrdersMobileList');
+            if (!tbody || !mlist) return;
+
+            if (list.length === 0) {
+                const emptyHtml = `
+                    <div class="px-6 py-12 text-center text-slate-500 bg-white rounded-xl border border-slate-200">
+                        <p class="text-base font-medium">No custom orders or fittings yet.</p>
+                        <p class="text-sm mt-1">Click "New Custom Order / Fitting" or click "Fit" on any stock item.</p>
+                    </div>`;
+                tbody.innerHTML = `<tr><td colspan="6">${emptyHtml.replace('rounded-xl border border-slate-200', '')}</td></tr>`;
+                mlist.innerHTML = emptyHtml;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            mlist.innerHTML = '';
+
+            list.forEach(c => {
+                const isExisting = c.sourceType === 'existing';
+                const sourceBadge = isExisting
+                    ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200">Existing Stock Fitting</span>`
+                    : `<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-purple-100 text-purple-800 border border-purple-200">New Custom Piece</span>`;
+
+                const balance = Math.max(0, (Number(c.totalPrice) || 0) - (Number(c.advancePaid) || 0));
+                const softBg = getSoftRowBgColor(c.color);
+
+                const tr = document.createElement('tr');
+                tr.className = 'transition-colors hover:brightness-[0.98]';
+                if (softBg) tr.style.backgroundColor = softBg;
+                tr.innerHTML = `
+                    <td class="px-5 py-4">
+                        <div class="text-sm font-bold text-slate-900">${escapeHtml(c.customerName)}</div>
+                        ${c.customerPhone ? `<div class="text-xs text-slate-600">${escapeHtml(c.customerPhone)}</div>` : ''}
+                        ${c.dueDate ? `<div class="text-[11px] font-semibold text-indigo-700 mt-1">Due: ${escapeHtml(c.dueDate)}</div>` : ''}
+                    </td>
+                    <td class="px-5 py-4">
+                        <div class="mb-1">${sourceBadge}</div>
+                        <div class="text-sm font-semibold text-slate-900">${escapeHtml(c.pieceName)}</div>
+                        <div class="text-xs text-slate-500">
+                            ${c.sku ? `<span class="font-mono">SKU: ${escapeHtml(c.sku)} • </span>` : ''}
+                            ${[c.pieceType, c.color, c.size].filter(Boolean).map(escapeHtml).join(' • ')}
+                        </div>
+                        ${c.stockReserved ? `<div class="text-[11px] text-emerald-700 font-medium mt-0.5">1 unit reserved from stock</div>` : ''}
+                    </td>
+                    <td class="px-5 py-4 max-w-xs">
+                        ${c.measurements ? `<div class="text-xs font-mono text-slate-700 bg-white/80 px-2 py-1 rounded border border-slate-200 mb-1">${escapeHtml(c.measurements)}</div>` : ''}
+                        <div class="text-xs text-slate-700">${escapeHtml(c.fittingNotes)}</div>
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap text-xs">
+                        <div class="font-bold text-sm text-slate-900">${escapeHtml(formatMoney(c.totalPrice))}</div>
+                        <div class="text-slate-600">Adv: ${escapeHtml(formatMoney(c.advancePaid))}</div>
+                        <div class="font-semibold ${balance > 0 ? 'text-amber-700' : 'text-emerald-700'}">Bal: ${escapeHtml(formatMoney(balance))}</div>
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap">
+                        <select data-cid="${escapeHtml(c.customId)}" class="co-status-select px-2.5 py-1.5 rounded-lg border text-xs font-semibold cursor-pointer ${getCustomStatusBadge(c.status)}">
+                            ${['Pending', 'In Progress', 'Ready for Trial', 'Ready for Pickup', 'Delivered'].map(st =>
+                                `<option value="${st}" ${c.status === st ? 'selected' : ''}>${st}</option>`
+                            ).join('')}
+                        </select>
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap text-right text-xs">
+                        <div class="inline-flex items-center gap-1.5">
+                            <button type="button" class="co-edit-btn px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-semibold" data-cid="${escapeHtml(c.customId)}">Edit</button>
+                            <button type="button" class="co-del-btn px-2.5 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-semibold" data-cid="${escapeHtml(c.customId)}">Delete</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-2.5';
+                if (softBg) card.style.backgroundColor = softBg;
+                card.innerHTML = `
+                    <div class="flex justify-between items-start gap-2">
+                        <div>
+                            ${sourceBadge}
+                            <h3 class="text-sm font-bold text-slate-900 mt-1">${escapeHtml(c.pieceName)}</h3>
+                            <p class="text-xs text-slate-600">${escapeHtml(c.customerName)}${c.customerPhone ? ` • ${escapeHtml(c.customerPhone)}` : ''}</p>
+                        </div>
+                        <span class="px-2.5 py-0.5 rounded-full border text-[11px] font-semibold ${getCustomStatusBadge(c.status)}">${escapeHtml(c.status)}</span>
+                    </div>
+                    ${c.measurements ? `<p class="text-xs font-mono bg-white/80 p-2 rounded border border-slate-200 text-slate-700">${escapeHtml(c.measurements)}</p>` : ''}
+                    <p class="text-xs text-slate-700">${escapeHtml(c.fittingNotes)}</p>
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-200/70 text-xs">
+                        <div>
+                            <span class="font-bold text-slate-900">${escapeHtml(formatMoney(c.totalPrice))}</span>
+                            <span class="text-slate-600 ml-1.5">(Bal: ${escapeHtml(formatMoney(balance))})</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <button type="button" class="co-edit-btn px-2.5 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 font-semibold" data-cid="${escapeHtml(c.customId)}">Edit</button>
+                            <button type="button" class="co-del-btn px-2.5 py-1.5 rounded-lg bg-red-50 text-red-700 font-semibold" data-cid="${escapeHtml(c.customId)}">Delete</button>
+                        </div>
+                    </div>
+                `;
+                mlist.appendChild(card);
+            });
+
+            document.querySelectorAll('.co-status-select').forEach(sel => {
+                sel.onchange = () => updateCustomOrderStatus(sel.dataset.cid, sel.value);
+            });
+            document.querySelectorAll('.co-edit-btn').forEach(btn => {
+                btn.onclick = () => {
+                    const order = customOrdersData.find(x => x.customId === btn.dataset.cid);
+                    if (order) openCustomOrderModal(order);
+                };
+            });
+            document.querySelectorAll('.co-del-btn').forEach(btn => {
+                btn.onclick = () => requestDeleteCustomOrder(btn.dataset.cid);
+            });
+        }
+
+        function syncCustomSourceToggle() {
+            const srcType = document.querySelector('input[name="coSourceType"]:checked')?.value || 'existing';
+            document.getElementById('coExistingWrap').classList.toggle('hidden', srcType !== 'existing');
+            document.getElementById('coNewPieceWrap').classList.toggle('hidden', srcType !== 'new');
+        }
+
+        document.querySelectorAll('input[name="coSourceType"]').forEach(r => {
+            r.addEventListener('change', syncCustomSourceToggle);
+        });
+
+        window.openCustomOrderModal = async (existingOrder = null, preselectedDocId = '') => {
+            const sel = document.getElementById('coExistingItemSelect');
+            sel.innerHTML = inventoryData.length
+                ? inventoryData.map(i => `<option value="${escapeHtml(i.docId)}">${escapeHtml(i.name)} (SKU: ${escapeHtml(i.sku)} • ${escapeHtml(i.size || 'N/A')} • ${escapeHtml(i.color || 'N/A')} • Stock: ${i.qty ?? 0})</option>`).join('')
+                : '<option value="">No items in stock yet</option>';
+
+            document.getElementById('customOrderForm').reset();
+
+            if (existingOrder) {
+                document.getElementById('coModalTitle').innerText = 'Edit Custom Order / Fitting';
+                setVal('coId', existingOrder.customId);
+                const radio = document.querySelector(`input[name="coSourceType"][value="${existingOrder.sourceType || 'existing'}"]`);
+                if (radio) radio.checked = true;
+                if (existingOrder.docId && Array.from(sel.options).some(o => o.value === existingOrder.docId)) {
+                    sel.value = existingOrder.docId;
+                }
+                setChk('coReserveStock', existingOrder.stockReserved);
+                document.getElementById('coReserveStock').disabled = Boolean(existingOrder.stockReserved);
+                setVal('coNewPieceName', existingOrder.pieceName || '');
+                setVal('coNewPieceType', existingOrder.pieceType || '');
+                setVal('coNewPieceColor', existingOrder.color || '');
+                setVal('coNewPieceSize', existingOrder.size || '');
+                setVal('coCustomerName', existingOrder.customerName || '');
+                setVal('coCustomerPhone', existingOrder.customerPhone || '');
+                setVal('coMeasurements', existingOrder.measurements || '');
+                setVal('coFittingNotes', existingOrder.fittingNotes || '');
+                setVal('coDueDate', existingOrder.dueDate || '');
+                setVal('coStatus', existingOrder.status || 'Pending');
+                setVal('coTotalPrice', existingOrder.totalPrice ?? 0);
+                setVal('coAdvancePaid', existingOrder.advancePaid ?? 0);
+            } else {
+                document.getElementById('coModalTitle').innerText = 'New Custom Order / Fitting';
+                setVal('coId', '');
+                const defaultSrc = (preselectedDocId || inventoryData.length > 0) ? 'existing' : 'new';
+                const radio = document.querySelector(`input[name="coSourceType"][value="${defaultSrc}"]`);
+                if (radio) radio.checked = true;
+                if (preselectedDocId && Array.from(sel.options).some(o => o.value === preselectedDocId)) {
+                    sel.value = preselectedDocId;
+                }
+                document.getElementById('coReserveStock').disabled = false;
+                setChk('coReserveStock', false);
+                setVal('coStatus', 'Pending');
+                const selectedItem = inventoryData.find(i => i.docId === (preselectedDocId || sel.value));
+                if (selectedItem) setVal('coTotalPrice', selectedItem.price || 0);
+            }
+
+            syncCustomSourceToggle();
+            await stopScanner();
+            hideAllModalPanels();
+            modalOverlay.classList.remove('hidden');
+            modalOverlay.classList.add('flex');
+            const m = document.getElementById('customOrderModal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        };
+
+        document.getElementById('customOrderForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const existingId = document.getElementById('coId').value.trim();
+            const sourceType = document.querySelector('input[name="coSourceType"]:checked')?.value || 'existing';
+            const customerName = document.getElementById('coCustomerName').value.trim();
+            const customerPhone = document.getElementById('coCustomerPhone').value.trim();
+            const measurements = document.getElementById('coMeasurements').value.trim();
+            const fittingNotes = document.getElementById('coFittingNotes').value.trim();
+            const dueDate = document.getElementById('coDueDate').value;
+            const status = document.getElementById('coStatus').value || 'Pending';
+            const totalPrice = Math.max(0, parseFloat(document.getElementById('coTotalPrice').value) || 0);
+            const advancePaid = Math.max(0, parseFloat(document.getElementById('coAdvancePaid').value) || 0);
+
+            let docId = '', sku = '', pieceName = '', pieceType = '', color = '', size = '';
+            let stockReserved = false;
+
+            if (sourceType === 'existing') {
+                docId = document.getElementById('coExistingItemSelect').value;
+                const invItem = inventoryData.find(i => i.docId === docId);
+                if (!invItem) {
+                    showToast("Please select a valid piece from stock.", "error");
+                    return;
+                }
+                sku = invItem.sku;
+                pieceName = invItem.name;
+                pieceType = formatItemType(invItem);
+                color = invItem.color || '';
+                size = invItem.size || 'N/A';
+
+                const prevOrder = existingId ? customOrdersData.find(c => c.customId === existingId) : null;
+                const wantReserve = document.getElementById('coReserveStock').checked;
+                if (wantReserve && !(prevOrder && prevOrder.stockReserved)) {
+                    const curQty = Math.max(0, parseInt(invItem.qty, 10) || 0);
+                    if (settings.preventOversell && curQty < 1) {
+                        showToast(`Cannot reserve: "${invItem.name}" is out of stock.`, "error");
+                        return;
+                    }
+                    invItem.qty = Math.max(0, curQty - 1);
+                    invItem.updatedAt = Date.now();
+                    saveInventoryLocal();
+                    stockReserved = true;
+                } else if (prevOrder && prevOrder.stockReserved) {
+                    stockReserved = true;
+                }
+            } else {
+                pieceName = document.getElementById('coNewPieceName').value.trim();
+                if (!pieceName) {
+                    showToast("Enter the custom piece name.", "error");
+                    return;
+                }
+                pieceType = document.getElementById('coNewPieceType').value.trim() || 'Custom';
+                color = document.getElementById('coNewPieceColor').value.trim();
+                size = document.getElementById('coNewPieceSize').value.trim() || 'Custom';
+            }
+
+            const now = Date.now();
+            if (existingId) {
+                const idx = customOrdersData.findIndex(c => c.customId === existingId);
+                const createdAt = idx >= 0 ? (customOrdersData[idx].createdAt || now) : now;
+                const updated = {
+                    customId: existingId, sourceType, docId, sku, pieceName, pieceType, color, size,
+                    customerName, customerPhone, measurements, fittingNotes, dueDate, status,
+                    totalPrice, advancePaid, stockReserved, updatedAt: now, createdAt
+                };
+                if (idx >= 0) customOrdersData[idx] = updated;
+                else customOrdersData.unshift(updated);
+                showToast("Custom order updated.", "success");
+            } else {
+                customOrdersData.unshift({
+                    customId: createId('cust'), sourceType, docId, sku, pieceName, pieceType, color, size,
+                    customerName, customerPhone, measurements, fittingNotes, dueDate, status,
+                    totalPrice, advancePaid, stockReserved, updatedAt: now, createdAt: now
+                });
+                showToast("Custom order / fitting added!", "success");
+            }
+
+            sortCustomOrders();
+            saveCustomLocal();
+            refreshAllViews();
+            await closeModals();
+
+            if (gsUrl && gsAutoSync) {
+                syncToGoogleSheets({ action: 'syncAll', items: inventoryData, sales: salesData, customOrders: customOrdersData, settings });
+            }
+        });
+
+        function updateCustomOrderStatus(customId, newStatus) {
+            const idx = customOrdersData.findIndex(c => c.customId === customId);
+            if (idx < 0) return;
+            customOrdersData[idx] = { ...customOrdersData[idx], status: newStatus, updatedAt: Date.now() };
+            saveCustomLocal();
+            refreshAllViews();
+            showToast(`Status updated to "${newStatus}".`, "success");
+            if (gsUrl && gsAutoSync) {
+                syncToGoogleSheets({ action: 'syncAll', items: inventoryData, sales: salesData, customOrders: customOrdersData, settings });
+            }
+        }
+
+        function requestDeleteCustomOrder(customId) {
+            const order = customOrdersData.find(c => c.customId === customId);
+            if (!order) return;
+            openConfirmModal({
+                title: 'Delete Custom Order',
+                message: `Delete custom order "${order.pieceName}" for ${order.customerName}?`,
+                btnText: 'Delete',
+                onConfirm: async () => {
+                    if (order.stockReserved && order.docId && order.status !== 'Delivered') {
+                        const invItem = inventoryData.find(i => i.docId === order.docId);
+                        if (invItem) {
+                            invItem.qty = (parseInt(invItem.qty, 10) || 0) + 1;
+                            invItem.updatedAt = Date.now();
+                            saveInventoryLocal();
+                        }
+                    }
+                    customOrdersData = customOrdersData.filter(c => c.customId !== customId);
+                    saveCustomLocal();
+                    refreshAllViews();
+                    showToast("Custom order deleted.", "success");
+                    if (gsUrl && gsAutoSync) {
+                        syncToGoogleSheets({ action: 'syncAll', items: inventoryData, sales: salesData, customOrders: customOrdersData, settings });
+                    }
+                }
             });
         }
 
@@ -4221,6 +4960,12 @@ function doPost(e) {
                     saveSalesLocal();
                 }
 
+                if (Array.isArray(data.customOrders)) {
+                    customOrdersData = data.customOrders;
+                    sortCustomOrders();
+                    saveCustomLocal();
+                }
+
                 if (data.settings && typeof data.settings === 'object') {
                     settings = { ...DEFAULT_SETTINGS, ...data.settings };
                     saveSettingsLocal();
@@ -4251,6 +4996,7 @@ function doPost(e) {
                     action: 'syncAll',
                     items: inventoryData,
                     sales: salesData,
+                    customOrders: customOrdersData,
                     settings
                 });
                 if (!res || !res.ok) throw new Error(res?.error || "Push failed");
@@ -4316,7 +5062,7 @@ function doPost(e) {
         };
 
         window.exportFullBackup = () => {
-            const payload = { version: 4, exportedAt: Date.now(), settings, inventoryData, salesData };
+            const payload = { version: 5, exportedAt: Date.now(), settings, inventoryData, salesData, customOrdersData };
             downloadBlob(JSON.stringify(payload, null, 2), `stockflow-backup-${new Date().toISOString().slice(0, 10)}.json`, 'application/json');
             showToast("Full JSON backup downloaded.", "success");
         };
@@ -4425,10 +5171,12 @@ function doPost(e) {
                 const parsed = JSON.parse(await file.text());
                 if (Array.isArray(parsed.inventoryData)) inventoryData = parsed.inventoryData;
                 if (Array.isArray(parsed.salesData)) salesData = parsed.salesData;
+                if (Array.isArray(parsed.customOrdersData)) customOrdersData = parsed.customOrdersData;
                 if (parsed.settings) settings = { ...DEFAULT_SETTINGS, ...parsed.settings };
 
                 saveInventoryLocal();
                 saveSalesLocal();
+                saveCustomLocal();
                 saveSettingsLocal();
                 applySettingsToUI();
                 populateSettingsForm();
@@ -4481,6 +5229,3 @@ function doPost(e) {
     </script>
 </body>
 </html>
-
-
-
