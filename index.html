@@ -221,7 +221,7 @@
                         <svg class="w-7 h-7 sm:w-8 sm:h-8 mr-2.5 text-white/80 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                         </svg>
-                        <span id="navBrandName" class="font-bold text-lg sm:text-xl tracking-tight truncate">StockFlow</span>
+                        <span id="navBrandName" class="font-bold text-lg sm:text-xl tracking-tight truncate">Rikai</span>
                     </div>
 
                     <!-- Desktop Tabs -->
@@ -1873,26 +1873,29 @@ function doPost(e) {
         // ==========================================
         // Storage Keys & Default Master Settings
         // ==========================================
-        const LOCAL_INV_KEY = 'stockflow_inventory_v2';
-        const LOCAL_SALES_KEY = 'stockflow_sales_v2';
-        const LOCAL_CUSTOM_KEY = 'stockflow_custom_orders_v1';
-        const LOCAL_SETTINGS_KEY = 'stockflow_settings_v2';
-        const GS_URL_KEY = 'stockflow_gs_url';
-        const GS_AUTOSYNC_KEY = 'stockflow_gs_autosync';
+        const LOCAL_INV_KEY = 'Rikai_inventory_v2';
+        const LOCAL_SALES_KEY = 'Rikai_sales_v2';
+        const LOCAL_CUSTOM_KEY = 'Rikai_custom_orders_v1';
+        const LOCAL_SETTINGS_KEY = 'Rikai_settings_v2';
+        const GS_URL_KEY = 'Rikai_gs_url';
+        const GS_AUTOSYNC_KEY = 'Rikai_gs_autosync';
 
         const DEFAULT_SETTINGS = {
-            storeName: 'StockFlow',
-            themeColor: 'indigo',
+            storeName: 'Rikai',
+            themeColor: 'Midnight Navy',
             pageBgColor: '#f8fafc',
             currency: '₹',
             outOfStockThreshold: 0,
             preventOversell: true,
-            defaultGender: 'Unisex',
+            defaultGender: 'Men',
             defaultQty: 1,
             barcodeFormat: 'CODE128',
             defaultPrintLayout: 'thermal-roll',
             thermalBrandText: 'Rikai',
-            shopAddress: '',
+            shopAddress: 'Contact Us- 7021246251/9619295228
+Mail Us - care@riaki.in
+Visit us at - Shop No.4, Vini Garden 1, D wing
+Santoshi Mata Rd. Borivali West, Mumbai 400103',
             thermalPaperSize: '50x75',
             customPaperWidth: 50,
             customPaperHeight: 75,
@@ -1903,11 +1906,11 @@ function doPost(e) {
             barcodeSize: 'md',
             defaultScanAction: 'ask',
             beepOnScan: true,
-            customTypes: ['Shirt', 'Pant', 'Dress', 'Tops', 'Accessories'],
-            customSizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'N/A'],
+            customTypes: ['Shirt', 'Pants', 'Dress', 'Top', 'Hoodie', 'Shacket', 'Jacket', 'Kurta', 'Nehru Jacket'],
+            customSizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '32', '34', '36', '38', '40', '42'],
             customLengths: ['N/A', 'Short', 'Knee-Length', 'Midi', 'Long', 'Cropped', 'Full Length'],
-            customSleeves: ['N/A', 'Full Sleeves', 'Short Sleeves', 'No Sleeves', '3/4 Sleeves', 'Cap Sleeves'],
-            customLooks: ['N/A', 'Casual', 'Formal', 'Party', 'Ethnic', 'Festive', 'Streetwear']
+            customSleeves: ['N/A', 'Contrast Sleeve', 'Full Sleeves', 'Short Sleeves', 'No Sleeves', '3/4 Sleeves', 'Cap Sleeves'],
+            customLooks: ['N/A', 'Cowl Neck', 'Chinese Collar', 'Empire']
         };
 
         const THEME_NAV_HEX = {
@@ -2036,7 +2039,7 @@ function doPost(e) {
 
         function loadAllLocal() {
             try {
-                const invRaw = localStorage.getItem(LOCAL_INV_KEY) || localStorage.getItem('stockflow_inventory_v1');
+                const invRaw = localStorage.getItem(LOCAL_INV_KEY) || localStorage.getItem('Rikai_inventory_v1');
                 inventoryData = invRaw ? JSON.parse(invRaw) : [];
                 if (!Array.isArray(inventoryData)) inventoryData = [];
             } catch { inventoryData = []; }
@@ -2147,7 +2150,7 @@ function doPost(e) {
         }
 
         function applySettingsToUI() {
-            document.getElementById('navBrandName').innerText = settings.storeName || 'StockFlow';
+            document.getElementById('navBrandName').innerText = settings.storeName || 'Rikai';
             const navEl = document.getElementById('mainNavbar');
             navEl.className = 'text-white shadow-md sticky top-0 z-30 transition-colors';
             navEl.style.backgroundColor = THEME_NAV_HEX[settings.themeColor] || THEME_NAV_HEX.indigo;
@@ -2213,7 +2216,7 @@ function doPost(e) {
         function populateSettingsForm() {
             setVal('setOutStock', settings.outOfStockThreshold);
             setChk('setPreventOversell', settings.preventOversell);
-            setVal('setStoreName', settings.storeName || 'StockFlow');
+            setVal('setStoreName', settings.storeName || 'Rikai');
             setVal('setThemeColor', settings.themeColor || 'indigo');
             const bgHex = (settings.pageBgColor || '#f8fafc').toLowerCase();
             setVal('setBgColorPicker', bgHex);
@@ -2287,7 +2290,7 @@ function doPost(e) {
                 ...settings,
                 outOfStockThreshold: out,
                 preventOversell: Boolean(document.getElementById('setPreventOversell')?.checked),
-                storeName: document.getElementById('setStoreName')?.value.trim() || 'StockFlow',
+                storeName: document.getElementById('setStoreName')?.value.trim() || 'Rikai',
                 themeColor: document.getElementById('setThemeColor')?.value || 'indigo',
                 pageBgColor: chosenBg,
                 currency: document.getElementById('setCurrency')?.value.trim() || '₹',
@@ -2990,11 +2993,12 @@ function doPost(e) {
             catch { JsBarcode(svg, item.sku, { ...opts, format: 'CODE128' }); }
 
             if (cfg.shopAddress) {
-                const addrEl = document.createElement('div');
-                addrEl.style.cssText = `margin-top:2px;text-align:center;font-size:${Math.max(6.5, cfg.fontSize - 1.5)}px;line-height:1.2;color:#000000;font-family:${cfg.fontFamily};white-space:pre-line;word-break:break-word;`;
-                addrEl.innerText = cfg.shopAddress;
-                el.appendChild(addrEl);
-            }
+    const addrEl = document.createElement('div');
+    // Address Size Below
+    addrEl.style.cssText = `margin-top:2px;text-align:center;font-size:7.5px;line-height:1.15;color:#000000;font-family:${cfg.fontFamily};white-space:pre-line;word-break:break-word;`;
+    addrEl.innerText = cfg.shopAddress;
+    el.appendChild(addrEl);
+}
 
             if (isRotated) {
                 const wrapper = document.createElement('div');
@@ -5046,7 +5050,7 @@ function doPost(e) {
             ];
             const esc = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
             const lines = [headers.join(','), ...inventoryData.map(i => headers.map(h => esc(i[h])).join(','))];
-            downloadBlob(lines.join('\n'), `stockflow-inventory-${new Date().toISOString().slice(0, 10)}.csv`, 'text/csv;charset=utf-8;');
+            downloadBlob(lines.join('\n'), `Rikai-inventory-${new Date().toISOString().slice(0, 10)}.csv`, 'text/csv;charset=utf-8;');
             showToast("Inventory CSV exported.", "success");
         };
 
@@ -5057,13 +5061,13 @@ function doPost(e) {
                 headers.join(','),
                 ...salesData.map(s => headers.map(h => esc(h === 'date' ? new Date(s.soldAt).toISOString() : s[h])).join(','))
             ];
-            downloadBlob(lines.join('\n'), `stockflow-sales-${new Date().toISOString().slice(0, 10)}.csv`, 'text/csv;charset=utf-8;');
+            downloadBlob(lines.join('\n'), `Rikai-sales-${new Date().toISOString().slice(0, 10)}.csv`, 'text/csv;charset=utf-8;');
             showToast("Sales CSV exported.", "success");
         };
 
         window.exportFullBackup = () => {
             const payload = { version: 5, exportedAt: Date.now(), settings, inventoryData, salesData, customOrdersData };
-            downloadBlob(JSON.stringify(payload, null, 2), `stockflow-backup-${new Date().toISOString().slice(0, 10)}.json`, 'application/json');
+            downloadBlob(JSON.stringify(payload, null, 2), `Rikai-backup-${new Date().toISOString().slice(0, 10)}.json`, 'application/json');
             showToast("Full JSON backup downloaded.", "success");
         };
 
