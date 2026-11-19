@@ -1694,7 +1694,7 @@ function readSales(sheet) {
       totalAmount: Number(r[8]) || 0,
       customerName: String(r[9] || ""),
       customerPhone: String(r[10] || ""),
-      customerNotes: String(r[11] || ""),
+      customerNotes: String(r[11]) || "",
       soldAt: Number(r[12]) || Date.now(),
       length: String(r[13] || ""),
       sleeves: String(r[14] || ""),
@@ -1788,19 +1788,33 @@ function saleToRow(s) {
 
 function upsertInventoryRow(invSheet, item) {
   const lastRow = invSheet.getLastRow();
-  let targetRow = -1;
+  const incomingSkus = parseSkusField(item.sku, item.skus).map(s => s.toLowerCase());
+  const matchedRows = [];
+
   if (lastRow > 1) {
-    const ids = invSheet.getRange(2, 1, lastRow - 1, 2).getValues();
-    for (let i = 0; i < ids.length; i++) {
-      if (String(ids[i][0]) === String(item.docId) || String(ids[i][1]) === String(item.sku)) {
-        targetRow = i + 2;
-        break;
+    const cols = Math.max(invSheet.getLastColumn(), INV_HEADERS.length);
+    const rows = invSheet.getRange(2, 1, lastRow - 1, cols).getValues();
+    for (let i = 0; i < rows.length; i++) {
+      const rowDocId = String(rows[i][0] || "");
+      const rowSkus = parseSkusField(rows[i][1], rows[i][19]).map(s => s.toLowerCase());
+      const docMatch = rowDocId === String(item.docId);
+      const skuMatch = incomingSkus.some(s => rowSkus.indexOf(s) !== -1);
+      if (docMatch || skuMatch) {
+        matchedRows.push(i + 2);
       }
     }
   }
+
   const rowValues = itemToRow(item);
-  if (targetRow > 0) invSheet.getRange(targetRow, 1, 1, INV_HEADERS.length).setValues([rowValues]);
-  else invSheet.appendRow(rowValues);
+  if (matchedRows.length > 0) {
+    // Update the first matching row and remove any older duplicate rows absorbed into it
+    invSheet.getRange(matchedRows[0], 1, 1, INV_HEADERS.length).setValues([rowValues]);
+    for (let j = matchedRows.length - 1; j >= 1; j--) {
+      invSheet.deleteRow(matchedRows[j]);
+    }
+  } else {
+    invSheet.appendRow(rowValues);
+  }
 }
 
 function doGet(e) {
@@ -1841,9 +1855,12 @@ function doPost(e) {
     if (action === "delete") {
       const lastRow = invSheet.getLastRow();
       if (lastRow > 1) {
-        const ids = invSheet.getRange(2, 1, lastRow - 1, 2).getValues();
-        for (let i = ids.length - 1; i >= 0; i--) {
-          if (String(ids[i][0]) === String(payload.docId) || (payload.sku && String(ids[i][1]) === String(payload.sku))) {
+        const cols = Math.max(invSheet.getLastColumn(), INV_HEADERS.length);
+        const rows = invSheet.getRange(2, 1, lastRow - 1, cols).getValues();
+        const targetSku = String(payload.sku || "").trim().toLowerCase();
+        for (let i = rows.length - 1; i >= 0; i--) {
+          const rowSkus = parseSkusField(rows[i][1], rows[i][19]).map(s => s.toLowerCase());
+          if (String(rows[i][0]) === String(payload.docId) || (targetSku && rowSkus.indexOf(targetSku) !== -1)) {
             invSheet.deleteRow(i + 2);
             break;
           }
