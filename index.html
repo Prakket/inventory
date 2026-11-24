@@ -2899,9 +2899,9 @@ function doPost(e) {
 
             if (forPrint) {
                 el.style.width = '100%';
-                if (dims.heightMm) {
-                    el.style.minHeight = `${Math.max(15, dims.heightMm - 1.5)}mm`;
-                    el.style.maxHeight = `${Math.max(15, dims.heightMm - 1)}mm`;
+               if (dims.heightMm) {
+                    el.style.minHeight = `${Math.max(15, dims.heightMm - 3)}mm`;
+                    el.style.maxHeight = `${Math.max(15, dims.heightMm - 2.2)}mm`;
                 }
             }
 
@@ -3024,13 +3024,13 @@ function doPost(e) {
             const styleEl = document.getElementById('dynamicPrintStyle');
             const dims = resolvePaperDimensionsMm(cfg);
 
-            if (dims.isAuto) {
-                styleEl.textContent = `@media print { @page { size: auto; margin: 0.5mm; } }`;
+           if (dims.isAuto) {
+                styleEl.textContent = `@media print { @page { size: auto; margin: 1mm; } }`;
             } else if (dims.isRoll) {
-                styleEl.textContent = `@media print { @page { size: ${dims.widthMm}mm auto; margin: 1mm; } }`;
+                styleEl.textContent = `@media print { @page { size: ${dims.widthMm}mm auto; margin: 1.2mm; } }`;
             } else {
                 const orient = dims.widthMm < dims.heightMm ? ' portrait' : '';
-                styleEl.textContent = `@media print { @page { size: ${dims.widthMm}mm ${dims.heightMm}mm${orient}; margin: 0.5mm; } }`;
+                styleEl.textContent = `@media print { @page { size: ${dims.widthMm}mm ${dims.heightMm}mm${orient}; margin: 1mm; } }`;
             }
         }
 
