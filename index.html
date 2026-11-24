@@ -1,3 +1,11 @@
+Because the complete file is over ~1,700 lines (which exceeds a single message's
+output limit and caused the cut-off earlier), I am sending it in 2 clean parts
+with zero risk of truncation.
+
+Here is Part 1 of 2 (all CSS + HTML + all upgraded Modals including Label Price,
+Auto-Fit, and Footer Bottom Space). Copy this first, then reply "continue" and I
+will send Part 2 of 2 (<script> to </html>) to paste right below it.
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,9 +43,8 @@
 
         /* ============================================================ */
         /* [CSS_SECTION: PRINT_MEDIA_RULES] Search tag: #PRINT_CSS      */
-        /* Note: Padding, margins, width, alignment & borders are now   */
-        /* injected inline from the UI settings so you never need to    */
-        /* edit CSS manually.                                           */
+        /* Padding, margins, width, alignment, auto-fit & borders are   */
+        /* controlled live from the Print Modal UI.                     */
         /* ============================================================ */
         @media print {
             html, body {
@@ -759,7 +766,7 @@
                                 </span>
                                 <div>
                                     <h2 class="text-base font-bold text-slate-900">Google Sheets Master Data Sync</h2>
-                                    <p class="text-xs text-slate-500">Syncs 4 tabs automatically: <strong>Inventory</strong> (with absorbed SKUs), <strong>Sales</strong>, <strong>CustomOrders</strong>, and <strong>Settings</strong></p>
+                                    <p class="text-xs text-slate-500">Syncs 4 tabs automatically: <strong>Inventory</strong> (with absorbed SKUs &amp; Label Price), <strong>Sales</strong>, <strong>CustomOrders</strong>, and <strong>Settings</strong></p>
                                 </div>
                             </div>
                             <button type="button" onclick="disconnectGoogleSheets()" class="text-xs text-red-600 hover:underline self-start sm:self-center">Disconnect URL</button>
@@ -788,7 +795,7 @@
 
                         <div class="border border-slate-200 rounded-xl overflow-hidden">
                             <div class="bg-slate-100 px-4 py-2.5 flex items-center justify-between gap-2">
-                                <span class="text-xs font-semibold text-slate-700">Google Apps Script Code (Inventory + Absorbed SKUs + Sales + CustomOrders + Settings)</span>
+                                <span class="text-xs font-semibold text-slate-700">Google Apps Script Code (Inventory + Absorbed SKUs + LabelPrice + Sales + CustomOrders + Settings)</span>
                                 <button type="button" onclick="copyAppsScriptCode()" class="px-3 py-1 bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium rounded-md">Copy Script</button>
                             </div>
                             <div class="p-4 text-xs text-slate-600 space-y-2 bg-white">
@@ -807,7 +814,7 @@
                     <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <h2 class="text-base font-bold text-slate-900">Import, Export &amp; Full Backup</h2>
-                            <p class="text-xs text-slate-500">Export or import CSV including absorbed SKUs, length, sleeves, look, and notes, or download a full JSON backup.</p>
+                            <p class="text-xs text-slate-500">Export or import CSV including absorbed SKUs, label price, length, sleeves, look, and notes, or download a full JSON backup.</p>
                         </div>
                         <div class="flex flex-wrap gap-2">
                             <button type="button" onclick="exportCsv()" class="px-3 py-2 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-lg">Export Inventory CSV</button>
@@ -1100,14 +1107,20 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
                             <label for="itemQty" class="block text-sm font-medium text-slate-700">Stock in Hand (Qty)</label>
                             <input type="number" id="itemQty" min="0" required class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" value="1">
                         </div>
                         <div>
-                            <label for="itemPrice" class="block text-sm font-medium text-slate-700">Unit Price (<span class="currency-symbol">₹</span>)</label>
+                            <label for="itemPrice" class="block text-sm font-medium text-slate-700">Actual Sale Price (<span class="currency-symbol">₹</span>)</label>
                             <input type="number" id="itemPrice" min="0" step="0.01" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" value="0">
+                            <p class="mt-0.5 text-[10px] text-slate-500">Used at checkout (not printed)</p>
+                        </div>
+                        <div>
+                            <label for="itemLabelPrice" class="block text-sm font-medium text-slate-700">Label Price / MRP (<span class="currency-symbol">₹</span>)</label>
+                            <input type="number" id="itemLabelPrice" min="0" step="0.01" class="mt-1 block w-full border border-indigo-300 bg-indigo-50/30 rounded-lg px-3 py-2 text-sm" placeholder="Optional">
+                            <p class="mt-0.5 text-[10px] text-indigo-600">Printed on barcode label</p>
                         </div>
                     </div>
 
@@ -1127,7 +1140,7 @@
         <!-- ============================================================ -->
         <!-- [HTML_SECTION: MODAL_PRINT_BARCODES] Search tag: #MODAL_PRINT -->
         <!-- Full visual Thermal Label Designer (Alignment, Padding,      -->
-        <!-- Page Margin, Offsets, Borders, Divider Lines & Spacing)      -->
+        <!-- Page Margin, Offsets, Auto-Fit, Borders, Spacing & MRP)      -->
         <!-- ============================================================ -->
         <div id="printModal" class="bg-white rounded-2xl shadow-xl w-full max-w-4xl hidden flex-col overflow-hidden my-auto max-h-[94vh]">
             <div class="px-5 py-3.5 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
@@ -1154,8 +1167,9 @@
                         <div class="max-w-full overflow-auto p-2 bg-slate-200/70 rounded-lg border border-dashed border-slate-300 flex justify-center items-center">
                             <div id="pmPreviewBox" class="bg-white shadow-sm overflow-hidden flex flex-col"></div>
                         </div>
-                        <p class="mt-2 text-[11px] text-slate-500 text-center">
-                            Tip: If printed text shifts right or clips on your sticker, lower <strong>Content Width %</strong> (e.g. 92%) or set <strong>X Offset</strong> to negative (e.g. -1.5mm).
+                        <span id="pmFitStatusBadge" class="mt-2 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">Fits 100%</span>
+                        <p class="mt-1.5 text-[11px] text-slate-500 text-center">
+                            Tip: If printed text shifts right or clips on your sticker, lower <strong>Content Width %</strong> (e.g. 95%) or set <strong>X Offset</strong> to negative (e.g. -1.5mm).
                         </p>
                     </div>
 
@@ -1227,11 +1241,11 @@
                             <div class="grid grid-cols-3 gap-2.5">
                                 <div>
                                     <label for="pmContentWidthPct" class="block text-[11px] font-semibold text-slate-700">Content Width (%)</label>
-                                    <input type="number" id="pmContentWidthPct" min="60" max="100" step="1" value="100" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                    <input type="number" id="pmContentWidthPct" min="60" max="100" step="1" value="95" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
                                 </div>
                                 <div>
                                     <label for="pmOffsetXMm" class="block text-[11px] font-semibold text-slate-700">X Offset (mm)</label>
-                                    <input type="number" id="pmOffsetXMm" min="-15" max="15" step="0.5" value="0" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs" title="Negative moves left, Positive moves right">
+                                    <input type="number" id="pmOffsetXMm" min="-15" max="15" step="0.5" value="-1.5" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs" title="Negative moves left, Positive moves right">
                                 </div>
                                 <div>
                                     <label for="pmOffsetYMm" class="block text-[11px] font-semibold text-slate-700">Y Offset (mm)</label>
@@ -1239,23 +1253,28 @@
                                 </div>
                             </div>
 
+                            <label class="inline-flex items-center gap-2 text-[11px] font-semibold text-indigo-900 bg-indigo-50/70 border border-indigo-200 rounded-lg px-2.5 py-1.5 cursor-pointer w-full">
+                                <input type="checkbox" id="pmAutoFit" class="rounded border-slate-300 text-indigo-600" checked>
+                                <span>Auto-Fit to sticker height (prevents overlapping &amp; 2nd page spill)</span>
+                            </label>
+
                             <div>
                                 <p class="text-[11px] font-semibold text-slate-700 mb-1">Inner Label Padding (mm) &mdash; Top / Right / Bottom / Left</p>
                                 <div class="grid grid-cols-4 gap-2">
-                                    <input type="number" id="pmPadTop" min="0" max="15" step="0.5" value="1.5" placeholder="Top" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Top Padding (mm)">
-                                    <input type="number" id="pmPadRight" min="0" max="15" step="0.5" value="2" placeholder="Right" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Right Padding (mm)">
+                                    <input type="number" id="pmPadTop" min="0" max="15" step="0.5" value="1" placeholder="Top" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Top Padding (mm)">
+                                    <input type="number" id="pmPadRight" min="0" max="15" step="0.5" value="1" placeholder="Right" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Right Padding (mm)">
                                     <input type="number" id="pmPadBottom" min="0" max="15" step="0.5" value="1.5" placeholder="Bottom" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Bottom Padding (mm)">
-                                    <input type="number" id="pmPadLeft" min="0" max="15" step="0.5" value="2" placeholder="Left" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Left Padding (mm)">
+                                    <input type="number" id="pmPadLeft" min="0" max="15" step="0.5" value="0" placeholder="Left" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Left Padding (mm)">
                                 </div>
                             </div>
 
                             <div>
                                 <p class="text-[11px] font-semibold text-slate-700 mb-1">Printer @page Margin (mm) &mdash; Top / Right / Bottom / Left</p>
                                 <div class="grid grid-cols-4 gap-2">
-                                    <input type="number" id="pmPageMarginTop" min="0" max="15" step="0.5" value="0" placeholder="Top" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Page Margin Top (mm)">
-                                    <input type="number" id="pmPageMarginRight" min="0" max="15" step="0.5" value="0" placeholder="Right" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Page Margin Right (mm)">
+                                    <input type="number" id="pmPageMarginTop" min="0" max="15" step="0.5" value="1" placeholder="Top" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Page Margin Top (mm)">
+                                    <input type="number" id="pmPageMarginRight" min="0" max="15" step="0.5" value="1" placeholder="Right" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Page Margin Right (mm)">
                                     <input type="number" id="pmPageMarginBottom" min="0" max="15" step="0.5" value="0" placeholder="Bottom" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Page Margin Bottom (mm)">
-                                    <input type="number" id="pmPageMarginLeft" min="0" max="15" step="0.5" value="0" placeholder="Left" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Page Margin Left (mm)">
+                                    <input type="number" id="pmPageMarginLeft" min="0" max="15" step="0.5" value="2.5" placeholder="Left" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Page Margin Left (mm)">
                                 </div>
                             </div>
                         </div>
@@ -1316,7 +1335,7 @@
                                 </div>
                                 <div>
                                     <label for="pmHeaderFontSize" class="block text-[11px] font-semibold text-slate-700">Header Size (px)</label>
-                                    <input type="number" id="pmHeaderFontSize" min="8" max="28" step="0.5" value="13" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                    <input type="number" id="pmHeaderFontSize" min="8" max="28" step="0.5" value="17" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
                                 </div>
                                 <div>
                                     <label for="pmHeaderWeight" class="block text-[11px] font-semibold text-slate-700">Header Weight</label>
@@ -1328,15 +1347,15 @@
                                 </div>
                                 <div>
                                     <label for="pmFontSize" class="block text-[11px] font-semibold text-slate-700">Details Size (px)</label>
-                                    <input type="number" id="pmFontSize" min="6" max="22" step="0.5" value="10" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                    <input type="number" id="pmFontSize" min="6" max="22" step="0.5" value="10.5" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
                                 </div>
                                 <div>
                                     <label for="pmAddressFontSize" class="block text-[11px] font-semibold text-slate-700">Address Size (px)</label>
-                                    <input type="number" id="pmAddressFontSize" min="5" max="16" step="0.5" value="8" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                    <input type="number" id="pmAddressFontSize" min="5" max="16" step="0.5" value="10" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
                                 </div>
                                 <div>
                                     <label for="pmFooterFontSize" class="block text-[11px] font-semibold text-slate-700">Footer Size (px)</label>
-                                    <input type="number" id="pmFooterFontSize" min="5" max="16" step="0.5" value="8.5" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                    <input type="number" id="pmFooterFontSize" min="5" max="16" step="0.5" value="9.5" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
                                 </div>
                             </div>
                         </div>
@@ -1357,39 +1376,43 @@
                                 </div>
                                 <div>
                                     <label for="pmHeaderMarginBottom" class="block text-[10px] font-semibold text-slate-600">Top Line &rarr; Details (px)</label>
-                                    <input type="number" id="pmHeaderMarginBottom" min="0" max="20" step="0.5" value="3" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                    <input type="number" id="pmHeaderMarginBottom" min="0" max="20" step="0.5" value="2" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
                                 </div>
                                 <div>
                                     <label for="pmDetailsLineHeight" class="block text-[10px] font-semibold text-slate-600">Details Line Height</label>
-                                    <input type="number" id="pmDetailsLineHeight" min="0.9" max="2.2" step="0.05" value="1.25" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                    <input type="number" id="pmDetailsLineHeight" min="0.9" max="2.2" step="0.05" value="1.2" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
                                 </div>
                                 <div>
                                     <label for="pmDetailsRowGap" class="block text-[10px] font-semibold text-slate-600">Gap Between Detail Rows (px)</label>
-                                    <input type="number" id="pmDetailsRowGap" min="0" max="15" step="0.5" value="1.5" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                    <input type="number" id="pmDetailsRowGap" min="0" max="15" step="0.5" value="2" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
                                 </div>
                                 <div>
                                     <label for="pmDetailsMarginBottom" class="block text-[10px] font-semibold text-slate-600">Details Bottom Gap (px)</label>
-                                    <input type="number" id="pmDetailsMarginBottom" min="0" max="25" step="1" value="4" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                    <input type="number" id="pmDetailsMarginBottom" min="0" max="25" step="1" value="2" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
                                 </div>
                                 <div>
                                     <label for="pmAddressMarginTop" class="block text-[10px] font-semibold text-slate-600">Space Above Address (px)</label>
-                                    <input type="number" id="pmAddressMarginTop" min="0" max="20" step="0.5" value="2" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                    <input type="number" id="pmAddressMarginTop" min="0" max="20" step="0.5" value="4" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
                                 </div>
                                 <div>
                                     <label for="pmAddressLineHeight" class="block text-[10px] font-semibold text-slate-600">Address Line Height</label>
-                                    <input type="number" id="pmAddressLineHeight" min="0.9" max="2.0" step="0.05" value="1.15" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                    <input type="number" id="pmAddressLineHeight" min="0.9" max="2.0" step="0.05" value="1.2" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
                                 </div>
                                 <div>
                                     <label for="pmFooterMarginTop" class="block text-[10px] font-semibold text-slate-600">Space Above Bottom Line (px)</label>
-                                    <input type="number" id="pmFooterMarginTop" min="0" max="20" step="0.5" value="3" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                    <input type="number" id="pmFooterMarginTop" min="0" max="20" step="0.5" value="6" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
                                 </div>
                                 <div>
                                     <label for="pmFooterPadTop" class="block text-[10px] font-semibold text-slate-600">Bottom Line &rarr; Footer (px)</label>
-                                    <input type="number" id="pmFooterPadTop" min="0" max="20" step="0.5" value="3" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                    <input type="number" id="pmFooterPadTop" min="0" max="20" step="0.5" value="5" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
                                 </div>
                                 <div>
                                     <label for="pmFooterLineGap" class="block text-[10px] font-semibold text-slate-600">Gap Between Footer Lines (px)</label>
                                     <input type="number" id="pmFooterLineGap" min="0" max="12" step="0.5" value="1" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                </div>
+                                <div>
+                                    <label for="pmFooterMarginBottom" class="block text-[10px] font-semibold text-slate-600">Footer Bottom Space (px)</label>
+                                    <input type="number" id="pmFooterMarginBottom" min="0" max="30" step="1" value="3" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs" title="Extra space between bottom text and sticker edge">
                                 </div>
                             </div>
 
@@ -1401,35 +1424,35 @@
                                         <label for="pmBarcodeSize" class="block text-[10px] font-semibold text-slate-600">Quick Preset</label>
                                         <select id="pmBarcodeSize" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs bg-white">
                                             <option value="sm">Small</option>
-                                            <option value="md" selected>Medium</option>
+                                            <option value="md">Medium</option>
                                             <option value="lg">Large</option>
                                             <option value="xl">XL</option>
-                                            <option value="custom">Custom</option>
+                                            <option value="custom" selected>Custom</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label for="pmBarcodeBarWidth" class="block text-[10px] font-semibold text-slate-600">Bar Width</label>
-                                        <input type="number" id="pmBarcodeBarWidth" min="0.6" max="3" step="0.1" value="1.3" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                        <input type="number" id="pmBarcodeBarWidth" min="0.6" max="3" step="0.1" value="1.6" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
                                     </div>
                                     <div>
                                         <label for="pmBarcodeHeight" class="block text-[10px] font-semibold text-slate-600">Bar Height (px)</label>
-                                        <input type="number" id="pmBarcodeHeight" min="15" max="80" step="1" value="34" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                        <input type="number" id="pmBarcodeHeight" min="15" max="80" step="1" value="44" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
                                     </div>
                                     <div>
                                         <label for="pmBarcodeMaxWidthPct" class="block text-[10px] font-semibold text-slate-600">Max Width (%)</label>
-                                        <input type="number" id="pmBarcodeMaxWidthPct" min="40" max="100" step="1" value="95" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                        <input type="number" id="pmBarcodeMaxWidthPct" min="40" max="100" step="1" value="96" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
                                     </div>
                                     <div>
                                         <label for="pmBarcodePadTop" class="block text-[10px] font-semibold text-slate-600">Pad Top (px)</label>
-                                        <input type="number" id="pmBarcodePadTop" min="0" max="25" step="1" value="4" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                        <input type="number" id="pmBarcodePadTop" min="0" max="25" step="1" value="5" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
                                     </div>
                                     <div>
                                         <label for="pmBarcodePadBottom" class="block text-[10px] font-semibold text-slate-600">Pad Bottom (px)</label>
-                                        <input type="number" id="pmBarcodePadBottom" min="0" max="25" step="1" value="4" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                        <input type="number" id="pmBarcodePadBottom" min="0" max="25" step="1" value="5" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
                                     </div>
                                     <div>
                                         <label for="pmBarcodeFontSize" class="block text-[10px] font-semibold text-slate-600">SKU Text Size (px)</label>
-                                        <input type="number" id="pmBarcodeFontSize" min="6" max="18" step="0.5" value="9" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                        <input type="number" id="pmBarcodeFontSize" min="6" max="18" step="0.5" value="10" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
                                     </div>
                                     <div class="flex items-end pb-1">
                                         <label class="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-700 cursor-pointer">
@@ -1517,14 +1540,14 @@
                     <details class="rounded-xl border border-slate-200 bg-white overflow-hidden">
                         <summary class="px-3.5 py-2.5 bg-slate-50 hover:bg-slate-100 cursor-pointer text-xs font-bold text-slate-800 flex items-center justify-between select-none">
                             <span>4. Address, Footer Text &amp; Visible Product Fields</span>
-                            <span class="text-[10px] font-medium text-slate-500">Show / Hide Rows</span>
+                            <span class="text-[10px] font-medium text-slate-500">Show / Hide Rows &amp; Label Price</span>
                         </summary>
                         <div class="p-3.5 space-y-3 border-t border-slate-100 text-xs">
                             <div>
                                 <label for="pmShopAddress" class="block text-[11px] font-semibold text-slate-700">Shop Address (Below Barcode)</label>
                                 <textarea id="pmShopAddress" rows="2" class="mt-1 block w-full border border-slate-300 rounded-md px-2.5 py-1.5 text-xs bg-white" placeholder="Enter shop address..."></textarea>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                                 <div>
                                     <label for="pmFooterLine1" class="block text-[11px] font-semibold text-slate-700">Footer Line 1</label>
                                     <input type="text" id="pmFooterLine1" value="100% PURE LINEN" class="mt-1 w-full border border-slate-300 rounded-md px-2.5 py-1 text-xs">
@@ -1532,6 +1555,10 @@
                                 <div>
                                     <label for="pmFooterLine2" class="block text-[11px] font-semibold text-slate-700">Footer Line 2</label>
                                     <input type="text" id="pmFooterLine2" value="Proudly Made in India" class="mt-1 w-full border border-slate-300 rounded-md px-2.5 py-1 text-xs">
+                                </div>
+                                <div>
+                                    <label for="pmPricePrefix" class="block text-[11px] font-semibold text-slate-700">Label Price Prefix</label>
+                                    <input type="text" id="pmPricePrefix" value="MRP:" placeholder="MRP: or Price:" class="mt-1 w-full border border-slate-300 rounded-md px-2.5 py-1 text-xs">
                                 </div>
                             </div>
                             <div>
@@ -1541,6 +1568,7 @@
                                     <label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" id="pmFieldStyle" class="rounded border-slate-300 text-indigo-600" checked> Style</label>
                                     <label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" id="pmFieldType" class="rounded border-slate-300 text-indigo-600" checked> Type</label>
                                     <label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" id="pmFieldSize" class="rounded border-slate-300 text-indigo-600" checked> Size</label>
+                                    <label class="inline-flex items-center gap-1 cursor-pointer text-indigo-800 font-semibold"><input type="checkbox" id="pmFieldPrice" class="rounded border-slate-300 text-indigo-600" checked> Label Price (MRP)</label>
                                     <label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" id="pmFieldLength" class="rounded border-slate-300 text-indigo-600"> Length</label>
                                     <label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" id="pmFieldSleeves" class="rounded border-slate-300 text-indigo-600"> Sleeves</label>
                                     <label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" id="pmFieldGender" class="rounded border-slate-300 text-indigo-600"> Gender</label>
@@ -1846,7 +1874,6 @@
 
     <!-- Print Container (Populated dynamically for thermal printing) -->
     <div id="print-container" class="hidden"></div>
-
     <!-- ============================================================ -->
     <!-- [JS_SECTION: APPLICATION_LOGIC] Search tag: #APP_SCRIPT      -->
     <!-- ============================================================ -->
@@ -1863,7 +1890,7 @@ const INV_HEADERS = [
   "id", "sku", "name", "type", "customType", "gender", "size", "color",
   "price", "qty", "updatedAt", "createdAt",
   "length", "customLength", "sleeves", "customSleeves", "look", "customLook", "lookNotes",
-  "skus"
+  "skus", "labelPrice"
 ];
 const SALES_HEADERS = [
   "saleId", "docId", "sku", "itemName", "specs",
@@ -1945,7 +1972,8 @@ function readInventory(sheet) {
       customSleeves: String(r[15] || ""),
       look: String(r[16] || "N/A"),
       customLook: String(r[17] || ""),
-      lookNotes: String(r[18] || "")
+      lookNotes: String(r[18] || ""),
+      labelPrice: Number(r[20]) || 0
     });
   }
   return items;
@@ -1971,7 +1999,7 @@ function readSales(sheet) {
       unitPrice: Number(r[7]) || 0,
       totalAmount: Number(r[8]) || 0,
       customerName: String(r[9] || ""),
-      customerPhone: String(r[10] || ""),
+      customerPhone: String(r[10]) || "",
       customerNotes: String(r[11] || ""),
       soldAt: Number(r[12]) || Date.now(),
       length: String(r[13] || ""),
@@ -2048,7 +2076,7 @@ function itemToRow(item) {
     String(item.length || "N/A"), String(item.customLength || ""),
     String(item.sleeves || "N/A"), String(item.customSleeves || ""),
     String(item.look || "N/A"), String(item.customLook || ""),
-    String(item.lookNotes || ""), skus.join(", ")
+    String(item.lookNotes || ""), skus.join(", "), Number(item.labelPrice) || 0
   ];
 }
 
@@ -2185,30 +2213,31 @@ function doPost(e) {
 
         // All print layout defaults live here and are also editable live inside the Print Modal!
         const DEFAULT_PRINT_LAYOUT = {
-            defaultPrintLayout: 'thermal-roll',
-            thermalBrandText: 'Rikai',
-            shopAddress: 'Contact Us- 7021246251/9619295228 Mail Us - care@riaki.in Visit us at - Shop No.4, Vini Garden 1, D-wing Santoshi Mata Rd. Borivali West, Mumbai-400103',
+            defaultPrintLayout: 'thermal-page',
+            thermalBrandText: 'rikai',
+            shopAddress: 'Shop No.4, Vini Garden 1, D-wing,\nSantoshi Mata Rd. Borivali West,\nMumbai-400103',
             thermalPaperSize: '50x70',
             customPaperWidth: 50,
             customPaperHeight: 70,
-            defaultFontFamily: 'Inter, Arial, sans-serif',
-            headerFontSize: 13,
-            portraitFontSize: 10,
-            barcodeSize: 'md',
+            defaultFontFamily: "'Trebuchet MS', sans-serif",
+            headerFontSize: 17,
+            portraitFontSize: 10.5,
+            barcodeSize: 'custom',
             showSkuText: true,
 
             // [PRINT_MARGINS_PADDING_OFFSETS] Fixes off-center & right-edge cutoffs
-            labelPageMarginTopMm: 0,
-            labelPageMarginRightMm: 0,
+            labelPageMarginTopMm: 1,
+            labelPageMarginRightMm: 1,
             labelPageMarginBottomMm: 0,
-            labelPageMarginLeftMm: 0,
-            labelPaddingTopMm: 1.5,
-            labelPaddingRightMm: 2,
+            labelPageMarginLeftMm: 2.5,
+            labelPaddingTopMm: 1,
+            labelPaddingRightMm: 1,
             labelPaddingBottomMm: 1.5,
-            labelPaddingLeftMm: 2,
-            labelOffsetXMm: 0,
+            labelPaddingLeftMm: 0,
+            labelOffsetXMm: -1.5,
             labelOffsetYMm: 0,
-            labelContentWidthPct: 100,
+            labelContentWidthPct: 95,
+            labelAutoFit: true,
 
             // [PRINT_SECTION_ALIGNMENTS] Independent alignment per block
             labelHeaderAlign: 'center',
@@ -2220,29 +2249,31 @@ function doPost(e) {
             // [PRINT_TYPOGRAPHY_AND_SPACING]
             labelHeaderWeight: 800,
             labelHeaderPadBottomPx: 2,
-            labelHeaderMarginBottomPx: 3,
-            labelDetailsLineHeight: 1.25,
-            labelDetailsRowGapPx: 1.5,
-            labelDetailsMarginBottomPx: 4,
+            labelHeaderMarginBottomPx: 2,
+            labelDetailsLineHeight: 1.2,
+            labelDetailsRowGapPx: 2,
+            labelDetailsMarginBottomPx: 2,
 
             // [PRINT_BARCODE_DIMENSIONS]
-            labelBarcodeBarWidth: 1.3,
-            labelBarcodeHeightPx: 34,
-            labelBarcodeMaxWidthPct: 95,
-            labelBarcodePadTopPx: 4,
-            labelBarcodePadBottomPx: 4,
-            labelBarcodeFontSizePx: 9,
+            labelBarcodeBarWidth: 1.6,
+            labelBarcodeHeightPx: 44,
+            labelBarcodeMaxWidthPct: 96,
+            labelBarcodePadTopPx: 5,
+            labelBarcodePadBottomPx: 5,
+            labelBarcodeFontSizePx: 10,
 
             // [PRINT_ADDRESS_AND_FOOTER]
-            labelAddressFontSizePx: 8,
-            labelAddressLineHeight: 1.15,
-            labelAddressMarginTopPx: 2,
-            labelFooterPadTopPx: 3,
-            labelFooterMarginTopPx: 3,
-            labelFooterFontSizePx: 8.5,
+            labelAddressFontSizePx: 10,
+            labelAddressLineHeight: 1.2,
+            labelAddressMarginTopPx: 4,
+            labelFooterPadTopPx: 5,
+            labelFooterMarginTopPx: 6,
+            labelFooterMarginBottomPx: 3,
+            labelFooterFontSizePx: 9.5,
             labelFooterLineGapPx: 1,
             labelFooterLine1: '100% PURE LINEN',
             labelFooterLine2: 'Proudly Made in India',
+            labelPricePrefix: 'MRP:',
 
             // [PRINT_BORDERS_AND_DIVIDERS]
             labelTopLineShow: true,
@@ -2266,6 +2297,7 @@ function doPost(e) {
             labelShowFieldGender: false,
             labelShowFieldColor: false,
             labelShowFieldSize: true,
+            labelShowFieldPrice: true,
             labelShowFieldNotes: false
         };
 
@@ -2636,7 +2668,7 @@ function doPost(e) {
             setVal('setBarcodeFormat', settings.barcodeFormat || 'CODE128');
             setVal('setThermalBrandText', settings.thermalBrandText ?? 'Rikai');
             setVal('setShopAddress', settings.shopAddress || '');
-            setVal('setDefaultFontFamily', settings.defaultFontFamily || 'Inter, Arial, sans-serif');
+            setVal('setDefaultFontFamily', settings.defaultFontFamily || "'Trebuchet MS', sans-serif");
             setVal('setThermalPaperSize', settings.thermalPaperSize || '50x70');
             setVal('setCustomWidthMm', settings.customPaperWidth || 50);
             setVal('setCustomHeightMm', settings.customPaperHeight || 70);
@@ -2684,7 +2716,8 @@ function doPost(e) {
                 color: 'Ivory',
                 look: 'Chinese Collar',
                 qty: 1,
-                price: 2499
+                price: 3500,
+                labelPrice: 4500
             });
             openPrintModal([sample]);
         };
@@ -2716,7 +2749,7 @@ function doPost(e) {
                 barcodeFormat: document.getElementById('setBarcodeFormat')?.value || 'CODE128',
                 thermalBrandText: document.getElementById('setThermalBrandText')?.value.trim() || 'Rikai',
                 shopAddress: document.getElementById('setShopAddress')?.value.trim() || '',
-                defaultFontFamily: document.getElementById('setDefaultFontFamily')?.value || 'Inter, Arial, sans-serif',
+                defaultFontFamily: document.getElementById('setDefaultFontFamily')?.value || "'Trebuchet MS', sans-serif",
                 thermalPaperSize: document.getElementById('setThermalPaperSize')?.value || '50x70',
                 customPaperWidth: Math.max(15, Math.min(300, parseFloat(document.getElementById('setCustomWidthMm')?.value) || 50)),
                 customPaperHeight: Math.max(15, Math.min(300, parseFloat(document.getElementById('setCustomHeightMm')?.value) || 70)),
@@ -2767,8 +2800,8 @@ function doPost(e) {
             if (!colorStr) return 'transparent';
             const cleaned = colorStr.trim().toLowerCase();
             const map = {
-                'navy blue': '#001f3f', 'navy': '#001f3f', 'sky blue': '#38bdf8', 'royal blue': '#2563eb','dark blue': '#1e3a8a',
-                'light blue': '#93c5fd', 'baby blue': '#89cff0', 'bold blue': '#1d4ed8',
+                'navy blue': '#001f3f', 'navy': '#001f3f', 'sky blue': '#38bdf8', 'royal blue': '#2563eb',
+                'dark blue': '#1e3a8a', 'light blue': '#93c5fd', 'baby blue': '#89cff0', 'bold blue': '#1d4ed8',
                 'dark green': '#14532d', 'olive green': '#556b2f', 'olive': '#556b2f',
                 'emerald': '#10b981', 'emerald green': '#10b981', 'mint': '#6ee7b7', 'sage': '#9caf88',
                 'dark grey': '#4b5563', 'dark gray': '#4b5563', 'light grey': '#d1d5db', 'light gray': '#d1d5db',
@@ -2990,6 +3023,9 @@ function doPost(e) {
                 const typeDisplay = formatItemType(item);
                 const lookTags = getItemLookTags(item);
                 const priceDisplay = item.price ? formatMoney(item.price) : '—';
+                const labelPriceBadge = (Number(item.labelPrice) > 0)
+                    ? `<span class="text-[11px] font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 rounded px-1.5 py-0.5" title="Printed Label Price (MRP)">Tag: ${escapeHtml(formatMoney(item.labelPrice))}</span>`
+                    : '';
                 const isChecked = selectedIds.has(item.docId);
                 const skuDisplayHtml = renderSkuBadgesHtml(item);
                 const lookPillsHtml = lookTags.map(tag => `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200 text-[11px] font-medium">${escapeHtml(tag)}</span>`).join('');
@@ -3020,9 +3056,10 @@ function doPost(e) {
                     </td>
                     <td class="px-5 py-4 whitespace-nowrap">
                         <div class="flex flex-col gap-1">
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-1.5 flex-wrap">
                                 <span class="font-medium text-xs text-slate-900 border border-slate-300 rounded px-2 py-0.5 bg-slate-50">${escapeHtml(item.size || 'N/A')}</span>
                                 <span class="text-xs font-semibold text-slate-700">${escapeHtml(priceDisplay)}</span>
+                                ${labelPriceBadge}
                             </div>
                             <span class="text-xs text-slate-600 flex items-center gap-1.5">
                                 <span class="swatch-dot w-3 h-3 rounded-full border border-slate-300 shrink-0"></span>
@@ -3084,7 +3121,7 @@ function doPost(e) {
                             <span class="swatch-dot-m w-3 h-3 rounded-full border border-slate-300 shrink-0"></span>
                             ${escapeHtml(item.color || 'N/A')}
                         </span>
-                        <span class="ml-auto font-bold text-slate-800">${escapeHtml(priceDisplay)}</span>
+                        <span class="ml-auto flex items-center gap-1.5 font-bold text-slate-800">${labelPriceBadge}<span>${escapeHtml(priceDisplay)}</span></span>
                     </div>
                     ${(lookPillsHtml || item.lookNotes) ? `<div class="flex flex-wrap items-center gap-1 pt-0.5">${lookPillsHtml}${item.lookNotes ? `<span class="text-[11px] text-slate-500 italic ml-1">${escapeHtml(item.lookNotes)}</span>` : ''}</div>` : ''}
                     <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2">
@@ -3132,8 +3169,8 @@ function doPost(e) {
 
         // ============================================================
         // [JS_SECTION: PRINT_LABEL_DESIGNER_AND_RENDERER] Search tag: #PRINT_JS
-        // Controls every alignment, padding, margin, offset, border,
-        // divider line, spacing, barcode size & visible field from UI.
+        // Controls every alignment, padding, margin, offset, auto-fit,
+        // border, divider line, spacing, barcode size & Label Price.
         // ============================================================
         const BARCODE_PRESETS = {
             sm: { barWidth: 1.0, height: 24 },
@@ -3143,62 +3180,59 @@ function doPost(e) {
         };
 
         function loadPrintSettingsIntoModal(src = settings) {
-            setVal('pmLayout', src.defaultPrintLayout || 'thermal-roll');
+            setVal('pmLayout', src.defaultPrintLayout || 'thermal-page');
             setVal('pmPaperSize', src.thermalPaperSize || '50x70');
             setVal('pmBrandText', src.thermalBrandText ?? 'Rikai');
             setVal('pmShopAddress', src.shopAddress ?? '');
             setVal('pmCustomWidth', src.customPaperWidth ?? 50);
             setVal('pmCustomHeight', src.customPaperHeight ?? 70);
 
-            // Margins, Padding, Width % & Printer Offset
-            setVal('pmContentWidthPct', src.labelContentWidthPct ?? 100);
-            setVal('pmOffsetXMm', src.labelOffsetXMm ?? 0);
+            setVal('pmContentWidthPct', src.labelContentWidthPct ?? 95);
+            setVal('pmOffsetXMm', src.labelOffsetXMm ?? -1.5);
             setVal('pmOffsetYMm', src.labelOffsetYMm ?? 0);
-            setVal('pmPadTop', src.labelPaddingTopMm ?? 1.5);
-            setVal('pmPadRight', src.labelPaddingRightMm ?? 2);
+            setChk('pmAutoFit', src.labelAutoFit !== false);
+            setVal('pmPadTop', src.labelPaddingTopMm ?? 1);
+            setVal('pmPadRight', src.labelPaddingRightMm ?? 1);
             setVal('pmPadBottom', src.labelPaddingBottomMm ?? 1.5);
-            setVal('pmPadLeft', src.labelPaddingLeftMm ?? 2);
-            setVal('pmPageMarginTop', src.labelPageMarginTopMm ?? 0);
-            setVal('pmPageMarginRight', src.labelPageMarginRightMm ?? 0);
+            setVal('pmPadLeft', src.labelPaddingLeftMm ?? 0);
+            setVal('pmPageMarginTop', src.labelPageMarginTopMm ?? 1);
+            setVal('pmPageMarginRight', src.labelPageMarginRightMm ?? 1);
             setVal('pmPageMarginBottom', src.labelPageMarginBottomMm ?? 0);
-            setVal('pmPageMarginLeft', src.labelPageMarginLeftMm ?? 0);
+            setVal('pmPageMarginLeft', src.labelPageMarginLeftMm ?? 2.5);
 
-            // Alignments & Typography
             setVal('pmHeaderAlign', src.labelHeaderAlign || 'center');
             setVal('pmDetailsAlign', src.labelDetailsAlign || 'center');
             setVal('pmBarcodeAlign', src.labelBarcodeAlign || 'center');
             setVal('pmAddressAlign', src.labelAddressAlign || 'center');
             setVal('pmFooterAlign', src.labelFooterAlign || 'center');
-            setVal('pmFontFamily', src.defaultFontFamily || 'Inter, Arial, sans-serif');
-            setVal('pmHeaderFontSize', src.headerFontSize ?? 13);
+            setVal('pmFontFamily', src.defaultFontFamily || "'Trebuchet MS', sans-serif");
+            setVal('pmHeaderFontSize', src.headerFontSize ?? 17);
             setVal('pmHeaderWeight', String(src.labelHeaderWeight ?? 800));
-            setVal('pmFontSize', src.portraitFontSize ?? 10);
-            setVal('pmAddressFontSize', src.labelAddressFontSizePx ?? 8);
-            setVal('pmFooterFontSize', src.labelFooterFontSizePx ?? 8.5);
+            setVal('pmFontSize', src.portraitFontSize ?? 10.5);
+            setVal('pmAddressFontSize', src.labelAddressFontSizePx ?? 10);
+            setVal('pmFooterFontSize', src.labelFooterFontSizePx ?? 9.5);
 
-            // Spacing & Gaps
             setVal('pmHeaderPadBottom', src.labelHeaderPadBottomPx ?? 2);
-            setVal('pmHeaderMarginBottom', src.labelHeaderMarginBottomPx ?? 3);
-            setVal('pmDetailsLineHeight', src.labelDetailsLineHeight ?? 1.25);
-            setVal('pmDetailsRowGap', src.labelDetailsRowGapPx ?? 1.5);
-            setVal('pmDetailsMarginBottom', src.labelDetailsMarginBottomPx ?? 4);
-            setVal('pmAddressMarginTop', src.labelAddressMarginTopPx ?? 2);
-            setVal('pmAddressLineHeight', src.labelAddressLineHeight ?? 1.15);
-            setVal('pmFooterMarginTop', src.labelFooterMarginTopPx ?? 3);
-            setVal('pmFooterPadTop', src.labelFooterPadTopPx ?? 3);
+            setVal('pmHeaderMarginBottom', src.labelHeaderMarginBottomPx ?? 2);
+            setVal('pmDetailsLineHeight', src.labelDetailsLineHeight ?? 1.2);
+            setVal('pmDetailsRowGap', src.labelDetailsRowGapPx ?? 2);
+            setVal('pmDetailsMarginBottom', src.labelDetailsMarginBottomPx ?? 2);
+            setVal('pmAddressMarginTop', src.labelAddressMarginTopPx ?? 4);
+            setVal('pmAddressLineHeight', src.labelAddressLineHeight ?? 1.2);
+            setVal('pmFooterMarginTop', src.labelFooterMarginTopPx ?? 6);
+            setVal('pmFooterPadTop', src.labelFooterPadTopPx ?? 5);
             setVal('pmFooterLineGap', src.labelFooterLineGapPx ?? 1);
+            setVal('pmFooterMarginBottom', src.labelFooterMarginBottomPx ?? 3);
 
-            // Barcode Controls
-            setVal('pmBarcodeSize', src.barcodeSize || 'md');
-            setVal('pmBarcodeBarWidth', src.labelBarcodeBarWidth ?? 1.3);
-            setVal('pmBarcodeHeight', src.labelBarcodeHeightPx ?? 34);
-            setVal('pmBarcodeMaxWidthPct', src.labelBarcodeMaxWidthPct ?? 95);
-            setVal('pmBarcodePadTop', src.labelBarcodePadTopPx ?? 4);
-            setVal('pmBarcodePadBottom', src.labelBarcodePadBottomPx ?? 4);
-            setVal('pmBarcodeFontSize', src.labelBarcodeFontSizePx ?? 9);
+            setVal('pmBarcodeSize', src.barcodeSize || 'custom');
+            setVal('pmBarcodeBarWidth', src.labelBarcodeBarWidth ?? 1.6);
+            setVal('pmBarcodeHeight', src.labelBarcodeHeightPx ?? 44);
+            setVal('pmBarcodeMaxWidthPct', src.labelBarcodeMaxWidthPct ?? 96);
+            setVal('pmBarcodePadTop', src.labelBarcodePadTopPx ?? 5);
+            setVal('pmBarcodePadBottom', src.labelBarcodePadBottomPx ?? 5);
+            setVal('pmBarcodeFontSize', src.labelBarcodeFontSizePx ?? 10);
             setChk('pmShowSkuText', src.showSkuText !== false);
 
-            // Divider Lines & Outer Border
             setChk('pmTopLineShow', src.labelTopLineShow !== false);
             setVal('pmTopLineThickness', src.labelTopLineThicknessPx ?? 1);
             setVal('pmTopLineWidthPct', src.labelTopLineWidthPct ?? 100);
@@ -3211,13 +3245,14 @@ function doPost(e) {
             setVal('pmOuterBorderStyle', src.labelOuterBorderStyle || 'solid');
             setVal('pmOuterBorderRadius', src.labelOuterBorderRadiusMm ?? 0);
 
-            // Footer Text & Visible Detail Fields
             setVal('pmFooterLine1', src.labelFooterLine1 ?? '100% PURE LINEN');
             setVal('pmFooterLine2', src.labelFooterLine2 ?? 'Proudly Made in India');
+            setVal('pmPricePrefix', src.labelPricePrefix ?? 'MRP:');
             setChk('pmFieldProduct', src.labelShowFieldProduct !== false);
             setChk('pmFieldStyle', src.labelShowFieldStyle !== false);
             setChk('pmFieldType', src.labelShowFieldType !== false);
             setChk('pmFieldSize', src.labelShowFieldSize !== false);
+            setChk('pmFieldPrice', src.labelShowFieldPrice !== false);
             setChk('pmFieldLength', Boolean(src.labelShowFieldLength));
             setChk('pmFieldSleeves', Boolean(src.labelShowFieldSleeves));
             setChk('pmFieldGender', Boolean(src.labelShowFieldGender));
@@ -3259,7 +3294,6 @@ function doPost(e) {
             if (customWrap) { customWrap.classList.toggle('hidden', !isCustom); customWrap.classList.toggle('grid', isCustom); }
         }
 
-        // Sync Barcode Quick Preset -> Bar Width & Bar Height inputs
         document.getElementById('pmBarcodeSize')?.addEventListener('change', (e) => {
             const preset = BARCODE_PRESETS[e.target.value];
             if (preset) {
@@ -3269,7 +3303,6 @@ function doPost(e) {
             renderPrintPreview();
         });
 
-        // Switch preset dropdown to "custom" when user manually edits Bar Width or Height
         ['pmBarcodeBarWidth', 'pmBarcodeHeight'].forEach(id => {
             document.getElementById(id)?.addEventListener('input', () => {
                 const bw = parseFloat(document.getElementById('pmBarcodeBarWidth')?.value);
@@ -3279,22 +3312,21 @@ function doPost(e) {
             });
         });
 
-        // Attach live-preview listeners to all Print Modal controls
         const PRINT_CONTROL_IDS = [
             'pmLayout', 'pmBrandText', 'pmPaperSize', 'pmCustomWidth', 'pmCustomHeight',
-            'pmContentWidthPct', 'pmOffsetXMm', 'pmOffsetYMm',
+            'pmContentWidthPct', 'pmOffsetXMm', 'pmOffsetYMm', 'pmAutoFit',
             'pmPadTop', 'pmPadRight', 'pmPadBottom', 'pmPadLeft',
             'pmPageMarginTop', 'pmPageMarginRight', 'pmPageMarginBottom', 'pmPageMarginLeft',
             'pmHeaderAlign', 'pmDetailsAlign', 'pmBarcodeAlign', 'pmAddressAlign', 'pmFooterAlign',
             'pmFontFamily', 'pmHeaderFontSize', 'pmHeaderWeight', 'pmFontSize', 'pmAddressFontSize', 'pmFooterFontSize',
             'pmHeaderPadBottom', 'pmHeaderMarginBottom', 'pmDetailsLineHeight', 'pmDetailsRowGap', 'pmDetailsMarginBottom',
-            'pmAddressMarginTop', 'pmAddressLineHeight', 'pmFooterMarginTop', 'pmFooterPadTop', 'pmFooterLineGap',
+            'pmAddressMarginTop', 'pmAddressLineHeight', 'pmFooterMarginTop', 'pmFooterPadTop', 'pmFooterLineGap', 'pmFooterMarginBottom',
             'pmBarcodeBarWidth', 'pmBarcodeHeight', 'pmBarcodeMaxWidthPct', 'pmBarcodePadTop', 'pmBarcodePadBottom', 'pmBarcodeFontSize', 'pmShowSkuText',
             'pmTopLineShow', 'pmTopLineThickness', 'pmTopLineWidthPct',
             'pmBottomLineShow', 'pmBottomLineThickness', 'pmBottomLineWidthPct',
             'pmOuterBorderShow', 'pmRollCutLineShow', 'pmOuterBorderThickness', 'pmOuterBorderStyle', 'pmOuterBorderRadius',
-            'pmShopAddress', 'pmFooterLine1', 'pmFooterLine2',
-            'pmFieldProduct', 'pmFieldStyle', 'pmFieldType', 'pmFieldSize', 'pmFieldLength', 'pmFieldSleeves', 'pmFieldGender', 'pmFieldColor', 'pmFieldNotes'
+            'pmShopAddress', 'pmFooterLine1', 'pmFooterLine2', 'pmPricePrefix',
+            'pmFieldProduct', 'pmFieldStyle', 'pmFieldType', 'pmFieldSize', 'pmFieldPrice', 'pmFieldLength', 'pmFieldSleeves', 'pmFieldGender', 'pmFieldColor', 'pmFieldNotes'
         ];
 
         PRINT_CONTROL_IDS.forEach(id => {
@@ -3316,12 +3348,16 @@ function doPost(e) {
                        </select>`
                     : `<span class="text-[11px] font-mono text-slate-500">SKU: ${escapeHtml(entry.selectedSku)}</span>`;
 
+                const tagPriceNote = Number(entry.item.labelPrice) > 0
+                    ? `<span class="text-[11px] font-semibold text-indigo-700">Label: ${escapeHtml(formatMoney(entry.item.labelPrice))}</span>`
+                    : `<span class="text-[11px] text-slate-400">No Label Price</span>`;
+
                 const row = document.createElement('div');
                 row.className = "px-3 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs";
                 row.innerHTML = `
                     <div class="min-w-0 flex-1">
                         <p class="font-semibold text-slate-900 truncate">${escapeHtml(entry.item.name)}</p>
-                        <div class="flex items-center gap-2 mt-0.5 flex-wrap">${skuControlHtml}<span class="text-[11px] text-slate-500">Stock: ${escapeHtml(entry.item.qty ?? 0)}</span></div>
+                        <div class="flex items-center gap-2 mt-0.5 flex-wrap">${skuControlHtml}${tagPriceNote}<span class="text-[11px] text-slate-500">Stock: ${escapeHtml(entry.item.qty ?? 0)}</span></div>
                     </div>
                     <div class="flex items-center gap-1.5 shrink-0">
                         <span class="text-[11px] text-slate-500">Copies:</span>
@@ -3363,62 +3399,59 @@ function doPost(e) {
 
         function getPrintConfig() {
             return {
-                layout: document.getElementById('pmLayout')?.value || 'thermal-roll',
+                layout: document.getElementById('pmLayout')?.value || 'thermal-page',
                 brandText: document.getElementById('pmBrandText')?.value ?? 'Rikai',
                 shopAddress: (document.getElementById('pmShopAddress')?.value || '').trim(),
                 paperSize: document.getElementById('pmPaperSize')?.value || '50x70',
                 customWidth: numVal('pmCustomWidth', 50, 15, 300),
                 customHeight: numVal('pmCustomHeight', 70, 15, 300),
 
-                // Margins, Padding, Content Width & Offsets
-                contentWidthPct: numVal('pmContentWidthPct', 100, 60, 100),
-                offsetXMm: numVal('pmOffsetXMm', 0, -15, 15),
+                contentWidthPct: numVal('pmContentWidthPct', 95, 60, 100),
+                offsetXMm: numVal('pmOffsetXMm', -1.5, -15, 15),
                 offsetYMm: numVal('pmOffsetYMm', 0, -15, 15),
-                padTopMm: numVal('pmPadTop', 1.5, 0, 15),
-                padRightMm: numVal('pmPadRight', 2, 0, 15),
+                autoFit: Boolean(document.getElementById('pmAutoFit')?.checked),
+                padTopMm: numVal('pmPadTop', 1, 0, 15),
+                padRightMm: numVal('pmPadRight', 1, 0, 15),
                 padBottomMm: numVal('pmPadBottom', 1.5, 0, 15),
-                padLeftMm: numVal('pmPadLeft', 2, 0, 15),
-                pageMarginTopMm: numVal('pmPageMarginTop', 0, 0, 15),
-                pageMarginRightMm: numVal('pmPageMarginRight', 0, 0, 15),
+                padLeftMm: numVal('pmPadLeft', 0, 0, 15),
+                pageMarginTopMm: numVal('pmPageMarginTop', 1, 0, 15),
+                pageMarginRightMm: numVal('pmPageMarginRight', 1, 0, 15),
                 pageMarginBottomMm: numVal('pmPageMarginBottom', 0, 0, 15),
-                pageMarginLeftMm: numVal('pmPageMarginLeft', 0, 0, 15),
+                pageMarginLeftMm: numVal('pmPageMarginLeft', 2.5, 0, 15),
 
-                // Alignments & Typography
                 headerAlign: document.getElementById('pmHeaderAlign')?.value || 'center',
                 detailsAlign: document.getElementById('pmDetailsAlign')?.value || 'center',
                 barcodeAlign: document.getElementById('pmBarcodeAlign')?.value || 'center',
                 addressAlign: document.getElementById('pmAddressAlign')?.value || 'center',
                 footerAlign: document.getElementById('pmFooterAlign')?.value || 'center',
-                fontFamily: document.getElementById('pmFontFamily')?.value || 'Inter, Arial, sans-serif',
-                headerFontSize: numVal('pmHeaderFontSize', 13, 8, 28),
+                fontFamily: document.getElementById('pmFontFamily')?.value || "'Trebuchet MS', sans-serif",
+                headerFontSize: numVal('pmHeaderFontSize', 17, 8, 28),
                 headerWeight: parseInt(document.getElementById('pmHeaderWeight')?.value, 10) || 800,
-                fontSize: numVal('pmFontSize', 10, 6, 22),
-                addressFontSize: numVal('pmAddressFontSize', 8, 5, 16),
-                footerFontSize: numVal('pmFooterFontSize', 8.5, 5, 16),
+                fontSize: numVal('pmFontSize', 10.5, 6, 22),
+                addressFontSize: numVal('pmAddressFontSize', 10, 5, 16),
+                footerFontSize: numVal('pmFooterFontSize', 9.5, 5, 16),
 
-                // Spacing & Gaps
                 headerPadBottom: numVal('pmHeaderPadBottom', 2, 0, 20),
-                headerMarginBottom: numVal('pmHeaderMarginBottom', 3, 0, 20),
-                detailsLineHeight: numVal('pmDetailsLineHeight', 1.25, 0.9, 2.2),
-                detailsRowGap: numVal('pmDetailsRowGap', 1.5, 0, 15),
-                detailsMarginBottom: numVal('pmDetailsMarginBottom', 4, 0, 25),
-                addressMarginTop: numVal('pmAddressMarginTop', 2, 0, 20),
-                addressLineHeight: numVal('pmAddressLineHeight', 1.15, 0.9, 2.0),
-                footerMarginTop: numVal('pmFooterMarginTop', 3, 0, 20),
-                footerPadTop: numVal('pmFooterPadTop', 3, 0, 20),
+                headerMarginBottom: numVal('pmHeaderMarginBottom', 2, 0, 20),
+                detailsLineHeight: numVal('pmDetailsLineHeight', 1.2, 0.9, 2.2),
+                detailsRowGap: numVal('pmDetailsRowGap', 2, 0, 15),
+                detailsMarginBottom: numVal('pmDetailsMarginBottom', 2, 0, 25),
+                addressMarginTop: numVal('pmAddressMarginTop', 4, 0, 20),
+                addressLineHeight: numVal('pmAddressLineHeight', 1.2, 0.9, 2.0),
+                footerMarginTop: numVal('pmFooterMarginTop', 6, 0, 20),
+                footerPadTop: numVal('pmFooterPadTop', 5, 0, 20),
                 footerLineGap: numVal('pmFooterLineGap', 1, 0, 12),
+                footerMarginBottom: numVal('pmFooterMarginBottom', 3, 0, 30),
 
-                // Barcode
-                barcodeSize: document.getElementById('pmBarcodeSize')?.value || 'md',
-                barcodeBarWidth: numVal('pmBarcodeBarWidth', 1.3, 0.6, 3.0),
-                barcodeHeight: numVal('pmBarcodeHeight', 34, 15, 80),
-                barcodeMaxWidthPct: numVal('pmBarcodeMaxWidthPct', 95, 40, 100),
-                barcodePadTop: numVal('pmBarcodePadTop', 4, 0, 25),
-                barcodePadBottom: numVal('pmBarcodePadBottom', 4, 0, 25),
-                barcodeFontSize: numVal('pmBarcodeFontSize', 9, 6, 18),
+                barcodeSize: document.getElementById('pmBarcodeSize')?.value || 'custom',
+                barcodeBarWidth: numVal('pmBarcodeBarWidth', 1.6, 0.6, 3.0),
+                barcodeHeight: numVal('pmBarcodeHeight', 44, 15, 80),
+                barcodeMaxWidthPct: numVal('pmBarcodeMaxWidthPct', 96, 40, 100),
+                barcodePadTop: numVal('pmBarcodePadTop', 5, 0, 25),
+                barcodePadBottom: numVal('pmBarcodePadBottom', 5, 0, 25),
+                barcodeFontSize: numVal('pmBarcodeFontSize', 10, 6, 18),
                 showSkuText: Boolean(document.getElementById('pmShowSkuText')?.checked),
 
-                // Borders & Lines
                 topLineShow: Boolean(document.getElementById('pmTopLineShow')?.checked),
                 topLineThickness: numVal('pmTopLineThickness', 1, 0.5, 5),
                 topLineWidthPct: numVal('pmTopLineWidthPct', 100, 20, 100),
@@ -3431,14 +3464,15 @@ function doPost(e) {
                 outerBorderStyle: document.getElementById('pmOuterBorderStyle')?.value || 'solid',
                 outerBorderRadius: numVal('pmOuterBorderRadius', 0, 0, 10),
 
-                // Footer Text & Fields
                 footerLine1: document.getElementById('pmFooterLine1')?.value ?? '',
                 footerLine2: document.getElementById('pmFooterLine2')?.value ?? '',
+                pricePrefix: document.getElementById('pmPricePrefix')?.value ?? 'MRP:',
                 fields: {
                     product: Boolean(document.getElementById('pmFieldProduct')?.checked),
                     style: Boolean(document.getElementById('pmFieldStyle')?.checked),
                     type: Boolean(document.getElementById('pmFieldType')?.checked),
                     size: Boolean(document.getElementById('pmFieldSize')?.checked),
+                    price: Boolean(document.getElementById('pmFieldPrice')?.checked),
                     length: Boolean(document.getElementById('pmFieldLength')?.checked),
                     sleeves: Boolean(document.getElementById('pmFieldSleeves')?.checked),
                     gender: Boolean(document.getElementById('pmFieldGender')?.checked),
@@ -3473,6 +3507,7 @@ function doPost(e) {
                 labelOffsetXMm: cfg.offsetXMm,
                 labelOffsetYMm: cfg.offsetYMm,
                 labelContentWidthPct: cfg.contentWidthPct,
+                labelAutoFit: cfg.autoFit,
 
                 labelHeaderAlign: cfg.headerAlign,
                 labelDetailsAlign: cfg.detailsAlign,
@@ -3499,10 +3534,12 @@ function doPost(e) {
                 labelAddressMarginTopPx: cfg.addressMarginTop,
                 labelFooterPadTopPx: cfg.footerPadTop,
                 labelFooterMarginTopPx: cfg.footerMarginTop,
+                labelFooterMarginBottomPx: cfg.footerMarginBottom,
                 labelFooterFontSizePx: cfg.footerFontSize,
                 labelFooterLineGapPx: cfg.footerLineGap,
                 labelFooterLine1: cfg.footerLine1,
                 labelFooterLine2: cfg.footerLine2,
+                labelPricePrefix: cfg.pricePrefix,
 
                 labelTopLineShow: cfg.topLineShow,
                 labelTopLineThicknessPx: cfg.topLineThickness,
@@ -3520,6 +3557,7 @@ function doPost(e) {
                 labelShowFieldStyle: cfg.fields.style,
                 labelShowFieldType: cfg.fields.type,
                 labelShowFieldSize: cfg.fields.size,
+                labelShowFieldPrice: cfg.fields.price,
                 labelShowFieldLength: cfg.fields.length,
                 labelShowFieldSleeves: cfg.fields.sleeves,
                 labelShowFieldGender: cfg.fields.gender,
@@ -3587,6 +3625,13 @@ function doPost(e) {
             if (item.gender && item.gender !== 'N/A') add(cfg.fields.gender, 'Gender', item.gender);
             add(cfg.fields.color, 'Color', item.color);
             add(cfg.fields.size, 'Size', item.size || 'N/A');
+
+            // Only print Label Price (MRP) if entered (> 0); Actual Sale Price is never printed
+            if (cfg.fields.price && Number(item.labelPrice) > 0) {
+                const cleanPrefix = (cfg.pricePrefix || '').trim().replace(/:\s*$/, '');
+                rows.push({ label: cleanPrefix, value: formatMoney(item.labelPrice) });
+            }
+
             add(cfg.fields.notes, 'Notes', item.lookNotes);
             return rows;
         }
@@ -3619,7 +3664,6 @@ function doPost(e) {
                 el.style.transform = `translate(${cfg.offsetXMm}mm, ${cfg.offsetYMm}mm)`;
             }
 
-            // Outer border / Roll cut separator
             if (cfg.outerBorderShow) {
                 el.style.border = `${cfg.outerBorderThickness}px ${cfg.outerBorderStyle} #000000`;
                 el.style.borderRadius = `${cfg.outerBorderRadius}mm`;
@@ -3627,24 +3671,14 @@ function doPost(e) {
                 el.style.borderBottom = '1px dashed #000000';
             }
 
-            // Height sizing for fixed sticker / page dimensions
             const printableH = dims.heightMm
                 ? Math.max(15, dims.heightMm - cfg.pageMarginTopMm - cfg.pageMarginBottomMm - (forPrint ? 0.5 : 0))
                 : null;
-            if (forPrint) {
-                if (printableH) {
-                    el.style.minHeight = `${printableH}mm`;
-                    el.style.maxHeight = `${printableH}mm`;
-                } else if (dims.isAuto) {
-                    el.style.minHeight = '63mm';
-                }
-            } else {
-                el.style.minHeight = printableH ? `${printableH}mm` : '63mm';
-            }
+            el.style.minHeight = printableH ? `${printableH}mm` : '63mm';
 
-            // 1. HEADER SECTION (Brand Name + Optional Centered Top Line)
+            // 1. HEADER SECTION (flex-shrink: 0 prevents overlapping)
             const headerWrap = document.createElement('div');
-            headerWrap.style.cssText = `width:100%;display:flex;flex-direction:column;align-items:${alignToFlex(cfg.headerAlign)};margin-bottom:${cfg.headerMarginBottom}px;`;
+            headerWrap.style.cssText = `flex-shrink:0;width:100%;display:flex;flex-direction:column;align-items:${alignToFlex(cfg.headerAlign)};margin-bottom:${cfg.headerMarginBottom}px;`;
 
             if (cfg.brandText) {
                 const brand = document.createElement('div');
@@ -3660,9 +3694,9 @@ function doPost(e) {
             }
             el.appendChild(headerWrap);
 
-            // 2. PRODUCT DETAILS SECTION
+            // 2. PRODUCT DETAILS SECTION (flex-shrink: 0)
             const detailsWrap = document.createElement('div');
-            detailsWrap.style.cssText = `width:100%;text-align:${cfg.detailsAlign};display:flex;flex-direction:column;gap:${cfg.detailsRowGap}px;margin-bottom:${cfg.detailsMarginBottom}px;font-size:${cfg.fontSize}px;line-height:${cfg.detailsLineHeight};color:#000000;font-family:${cfg.fontFamily};`;
+            detailsWrap.style.cssText = `flex-shrink:0;width:100%;text-align:${cfg.detailsAlign};display:flex;flex-direction:column;gap:${cfg.detailsRowGap}px;margin-bottom:${cfg.detailsMarginBottom}px;font-size:${cfg.fontSize}px;line-height:${cfg.detailsLineHeight};color:#000000;font-family:${cfg.fontFamily};`;
 
             buildPortraitDetailRows(item, cfg).forEach(({ label, value }) => {
                 const row = document.createElement('div');
@@ -3680,9 +3714,9 @@ function doPost(e) {
             });
             el.appendChild(detailsWrap);
 
-            // 3. BARCODE SECTION (Responsive viewBox + Flex Alignment so it NEVER clips right)
+            // 3. BARCODE SECTION (flex-shrink: 0 + transparent SVG + aspect-ratio so SKU NEVER overlaps address!)
             const barcodeWrap = document.createElement('div');
-            barcodeWrap.style.cssText = `margin-top:auto;margin-bottom:auto;padding-top:${cfg.barcodePadTop}px;padding-bottom:${cfg.barcodePadBottom}px;width:100%;min-width:0;display:flex;justify-content:${alignToFlex(cfg.barcodeAlign)};align-items:center;overflow:hidden;`;
+            barcodeWrap.style.cssText = `flex-shrink:0;margin-top:auto;margin-bottom:auto;padding-top:${cfg.barcodePadTop}px;padding-bottom:${cfg.barcodePadBottom}px;width:100%;min-width:0;display:flex;justify-content:${alignToFlex(cfg.barcodeAlign)};align-items:center;`;
 
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             barcodeWrap.appendChild(svg);
@@ -3695,8 +3729,9 @@ function doPost(e) {
                 displayValue: cfg.showSkuText,
                 fontSize: Math.max(6, Math.round(cfg.barcodeFontSize)),
                 font: 'monospace',
+                textMargin: 2,
                 margin: 0,
-                background: '#ffffff',
+                background: 'transparent',
                 lineColor: '#000000'
             };
             try { JsBarcode(svg, targetSku, opts); }
@@ -3706,26 +3741,28 @@ function doPost(e) {
             const hAttr = parseFloat(svg.getAttribute('height'));
             if (wAttr && hAttr && !svg.getAttribute('viewBox')) {
                 svg.setAttribute('viewBox', `0 0 ${wAttr} ${hAttr}`);
+                svg.style.aspectRatio = `${wAttr} / ${hAttr}`;
             }
             svg.removeAttribute('width');
             svg.removeAttribute('height');
             svg.style.display = 'block';
+            svg.style.flexShrink = '0';
             svg.style.width = wAttr ? `${Math.round(wAttr)}px` : '100%';
             svg.style.maxWidth = `${cfg.barcodeMaxWidthPct}%`;
             svg.style.height = 'auto';
 
-            // 4. SHOP ADDRESS SECTION
+            // 4. SHOP ADDRESS SECTION (flex-shrink: 0)
             if (cfg.shopAddress) {
                 const addrEl = document.createElement('div');
-                addrEl.style.cssText = `margin-top:${cfg.addressMarginTop}px;width:100%;text-align:${cfg.addressAlign};font-size:${cfg.addressFontSize}px;line-height:${cfg.addressLineHeight};color:#000000;font-family:${cfg.fontFamily};white-space:pre-line;word-break:break-word;`;
+                addrEl.style.cssText = `flex-shrink:0;margin-top:${cfg.addressMarginTop}px;width:100%;text-align:${cfg.addressAlign};font-size:${cfg.addressFontSize}px;line-height:${cfg.addressLineHeight};color:#000000;font-family:${cfg.fontFamily};white-space:pre-line;word-break:break-word;`;
                 addrEl.innerText = cfg.shopAddress;
                 el.appendChild(addrEl);
             }
 
-            // 5. FOOTER SECTION (Optional Centered Bottom Line + 2 Footer Texts)
+            // 5. FOOTER SECTION (flex-shrink: 0 + Footer Bottom Space)
             if (cfg.bottomLineShow || cfg.footerLine1 || cfg.footerLine2) {
                 const footerWrap = document.createElement('div');
-                footerWrap.style.cssText = `margin-top:${cfg.footerMarginTop}px;display:flex;flex-direction:column;align-items:${alignToFlex(cfg.footerAlign)};width:100%;font-family:${cfg.fontFamily};color:#000000;`;
+                footerWrap.style.cssText = `flex-shrink:0;margin-top:${cfg.footerMarginTop}px;margin-bottom:${cfg.footerMarginBottom}px;display:flex;flex-direction:column;align-items:${alignToFlex(cfg.footerAlign)};width:100%;font-family:${cfg.fontFamily};color:#000000;`;
 
                 if (cfg.bottomLineShow) {
                     const bottomLine = document.createElement('div');
@@ -3755,9 +3792,46 @@ function doPost(e) {
             return el;
         }
 
+        // Measures natural label height and applies clean zoom scaling if Auto-Fit is enabled
+        function fitLabelToTargetHeight(el, cfg, printableH, measureHost) {
+            if (!printableH) return { scale: 1, overflowed: false };
+
+            const probe = document.createElement('div');
+            probe.style.cssText = `position:fixed;left:-9999px;top:0;visibility:hidden;width:${resolvePaperDimensionsMm(cfg).widthMm || 50}mm;padding:0 ${cfg.pageMarginRightMm}mm 0 ${cfg.pageMarginLeftMm}mm;box-sizing:border-box;`;
+            const heightProbe = document.createElement('div');
+            heightProbe.style.cssText = `height:${printableH}mm;width:1px;position:absolute;`;
+            probe.appendChild(heightProbe);
+
+            const prevMinH = el.style.minHeight;
+            el.style.minHeight = 'auto';
+            probe.appendChild(el);
+            (measureHost || document.body).appendChild(probe);
+
+            const targetPx = heightProbe.getBoundingClientRect().height;
+            const naturalPx = el.scrollHeight;
+            probe.remove();
+
+            if (naturalPx > targetPx && targetPx > 20) {
+                if (cfg.autoFit) {
+                    const scale = Math.max(0.62, Math.floor(((targetPx - 1) / naturalPx) * 1000) / 1000);
+                    el.style.zoom = String(scale);
+                    el.style.minHeight = `${(printableH / scale).toFixed(2)}mm`;
+                    el.style.maxHeight = `${(printableH / scale).toFixed(2)}mm`;
+                    return { scale, overflowed: false };
+                } else {
+                    el.style.minHeight = prevMinH;
+                    return { scale: 1, overflowed: true };
+                }
+            }
+
+            el.style.minHeight = prevMinH;
+            return { scale: 1, overflowed: false };
+        }
+
         function renderPrintPreview() {
             const box = document.getElementById('pmPreviewBox');
             const caption = document.getElementById('pmPreviewCaption');
+            const fitBadge = document.getElementById('pmFitStatusBadge');
             if (!box) return;
             box.innerHTML = '';
             if (printQueue.length === 0) return;
@@ -3772,6 +3846,7 @@ function doPost(e) {
             const pw = dims.widthMm || 50;
             const ph = dims.heightMm || 70;
             box.style.width = `${pw}mm`;
+            box.style.height = dims.heightMm ? `${ph}mm` : 'auto';
             box.style.minHeight = `${ph}mm`;
             box.style.padding = `${cfg.pageMarginTopMm}mm ${cfg.pageMarginRightMm}mm ${cfg.pageMarginBottomMm}mm ${cfg.pageMarginLeftMm}mm`;
             box.style.boxSizing = 'border-box';
@@ -3779,7 +3854,25 @@ function doPost(e) {
 
             const first = printQueue[0];
             const previewEl = createLabelElement(first.item, cfg, false, first.selectedSku, true);
+            const printableH = dims.heightMm
+                ? Math.max(15, dims.heightMm - cfg.pageMarginTopMm - cfg.pageMarginBottomMm)
+                : null;
+
+            const fit = fitLabelToTargetHeight(previewEl, cfg, printableH);
             box.appendChild(previewEl);
+
+            if (fitBadge) {
+                if (fit.scale < 1) {
+                    fitBadge.className = 'mt-2 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-100 text-indigo-800';
+                    fitBadge.innerText = `Auto-Fit active (${Math.round(fit.scale * 100)}% scale to fit ${ph}mm)`;
+                } else if (fit.overflowed) {
+                    fitBadge.className = 'mt-2 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-800';
+                    fitBadge.innerText = `Content taller than ${ph}mm — enable Auto-Fit or reduce spacing/bar height`;
+                } else {
+                    fitBadge.className = 'mt-2 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800';
+                    fitBadge.innerText = `Fits cleanly inside ${ph}mm (100%)`;
+                }
+            }
         }
 
         function applyDynamicPageCss(cfg) {
@@ -3801,6 +3894,10 @@ function doPost(e) {
             if (printQueue.length === 0) return;
             await savePrintLayoutSettings(false);
             const cfg = getPrintConfig();
+            const dims = resolvePaperDimensionsMm(cfg);
+            const printableH = dims.heightMm
+                ? Math.max(15, dims.heightMm - cfg.pageMarginTopMm - cfg.pageMarginBottomMm - 0.5)
+                : null;
             applyDynamicPageCss(cfg);
 
             const container = document.getElementById('print-container');
@@ -3818,7 +3915,9 @@ function doPost(e) {
 
                 flatList.forEach((entry, idx) => {
                     const isLast = idx === flatList.length - 1;
-                    container.appendChild(createLabelElement(entry.item, cfg, true, entry.sku, isLast));
+                    const labelEl = createLabelElement(entry.item, cfg, true, entry.sku, isLast);
+                    fitLabelToTargetHeight(labelEl, cfg, printableH);
+                    container.appendChild(labelEl);
                 });
 
                 window.print();
@@ -4032,6 +4131,7 @@ function doPost(e) {
             document.getElementById('itemGender').value = settings.defaultGender || 'Unisex';
             document.getElementById('itemQty').value = settings.defaultQty ?? 1;
             document.getElementById('itemPrice').value = 0;
+            document.getElementById('itemLabelPrice').value = '';
             itemLengthSelect.value = itemLengthSelect.options[0]?.value || 'N/A';
             itemSleevesSelect.value = itemSleevesSelect.options[0]?.value || 'N/A';
             itemLookSelect.value = itemLookSelect.options[0]?.value || 'N/A';
@@ -4072,6 +4172,7 @@ function doPost(e) {
             document.getElementById('itemColor').value = normalized.color || '';
             document.getElementById('itemQty').value = normalized.qty ?? 0;
             document.getElementById('itemPrice').value = normalized.price ?? 0;
+            document.getElementById('itemLabelPrice').value = Number(normalized.labelPrice) > 0 ? normalized.labelPrice : '';
             document.getElementById('modalTitle').innerText = "Edit Item";
             document.getElementById('duplicateBanner').classList.add('hidden');
             document.getElementById('duplicateFromEditBtn').classList.remove('hidden');
@@ -4129,6 +4230,7 @@ function doPost(e) {
             const color = document.getElementById('itemColor').value.trim();
             const qty = Math.max(0, parseInt(document.getElementById('itemQty').value, 10) || 0);
             const price = Math.max(0, parseFloat(document.getElementById('itemPrice').value) || 0);
+            const labelPrice = Math.max(0, parseFloat(document.getElementById('itemLabelPrice').value) || 0);
 
             if (!sku || !name) return;
 
@@ -4142,7 +4244,7 @@ function doPost(e) {
             const itemObj = normalizeItemSkus({
                 docId: docId || createId('item'), sku: mergedSkus[0], skus: mergedSkus,
                 name, type, customType, length, customLength, sleeves, customSleeves, look, customLook, lookNotes,
-                gender, size, color, price, qty, updatedAt: now, createdAt: existing ? existing.createdAt : now
+                gender, size, color, price, labelPrice, qty, updatedAt: now, createdAt: existing ? existing.createdAt : now
             });
 
             if (existing) inventoryData[inventoryData.findIndex(i => i.docId === docId)] = itemObj;
@@ -5287,7 +5389,7 @@ function doPost(e) {
 
         window.exportCsv = () => {
             if (inventoryData.length === 0) { showToast("No inventory to export.", "error"); return; }
-            const headers = ['sku', 'skus', 'name', 'type', 'customType', 'length', 'customLength', 'sleeves', 'customSleeves', 'look', 'customLook', 'lookNotes', 'gender', 'size', 'color', 'price', 'qty'];
+            const headers = ['sku', 'skus', 'name', 'type', 'customType', 'length', 'customLength', 'sleeves', 'customSleeves', 'look', 'customLook', 'lookNotes', 'gender', 'size', 'color', 'price', 'labelPrice', 'qty'];
             const rows = [headers.join(',')];
             inventoryData.forEach(item => {
                 const normalized = normalizeItemSkus(item);
@@ -5346,7 +5448,8 @@ function doPost(e) {
                     type: get('type') || 'Other', customType: get('customType'), length: get('length') || 'N/A', customLength: get('customLength'),
                     sleeves: get('sleeves') || 'N/A', customSleeves: get('customSleeves'), look: get('look') || 'N/A', customLook: get('customLook'),
                     lookNotes: get('lookNotes'), gender: get('gender') || 'Unisex', size: get('size') || 'N/A', color: get('color') || 'N/A',
-                    price: Math.max(0, parseFloat(get('price')) || 0), qty: Math.max(0, parseInt(get('qty'), 10) || 0),
+                    price: Math.max(0, parseFloat(get('price')) || 0), labelPrice: Math.max(0, parseFloat(get('labelPrice')) || 0),
+                    qty: Math.max(0, parseInt(get('qty'), 10) || 0),
                     updatedAt: now, createdAt: existing ? existing.createdAt : now
                 });
                 if (existing) inventoryData[inventoryData.findIndex(i => i.docId === existing.docId)] = itemObj;
@@ -5397,3 +5500,21 @@ function doPost(e) {
     </script>
 </body>
 </html>
+
+Summary of What's Ready Now
+
+1.  No more R-33 / Address overlap: Every section uses flex-shrink: 0, the
+    barcode uses aspect-ratio + background: 'transparent', and Auto-Fit to
+    sticker height ensures tall labels scale cleanly onto 1 page without
+    squishing or colliding.
+2.  Bottom space control: Adjust Footer Bottom Space (px) under Accordion 3 (3.
+    Text Spacing...) or Inner Bottom Padding (mm) under Accordion 1 to control
+    the exact gap below PROUDLY MADE IN INDIA.
+3.  Label Price (MRP) vs Actual Sale Price: Edit any product to set both Actual
+    Sale Price (used at checkout/POS) and Label Price / MRP (printed on the
+    label as MRP: ₹4,500, toggleable in Accordion 4).
+4.  Google Sheets Sync: If you use Google Sheets, open Master Settings → Copy
+    Script, update your Apps Script, and deploy a New version so the new
+    labelPrice column syncs too!
+
+
