@@ -3,44 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rikai &amp; Sales & Inventory Management</title>
+    <title>Rikai &amp; Sales &amp; Inventory Management</title>
+
+    <!-- [HTML_SECTION: EXTERNAL_LIBRARIES] Search tag: #EXTERNAL_LIBS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+
+    <!-- [CSS_SECTION: GLOBAL_AND_PRINT_STYLES] Search tag: #GLOBAL_CSS -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8fafc;
         }
-        .table-container::-webkit-scrollbar {
-            height: 8px;
-            width: 8px;
-        }
-        .table-container::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 4px;
-        }
-        .table-container::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        .table-container::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+
+        /* Custom Scrollbar for Tables */
+        .table-container::-webkit-scrollbar { height: 8px; width: 8px; }
+        .table-container::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        .table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .table-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* QR/Barcode Camera Container */
         #reader video {
             width: 100% !important;
             height: auto !important;
             object-fit: cover;
             border-radius: 0.5rem;
         }
+
+        /* ============================================================ */
+        /* [CSS_SECTION: PRINT_MEDIA_RULES] Search tag: #PRINT_CSS      */
+        /* Note: Padding, margins, width, alignment & borders are now   */
+        /* injected inline from the UI settings so you never need to    */
+        /* edit CSS manually.                                           */
+        /* ============================================================ */
         @media print {
             html, body {
+                width: 100% !important;
+                max-width: 100% !important;
                 height: auto !important;
                 overflow: visible !important;
                 background: #ffffff !important;
                 margin: 0 !important;
                 padding: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
             body > *:not(#print-container) {
                 display: none !important;
@@ -48,19 +57,18 @@
             #print-container {
                 display: block !important;
                 width: 100% !important;
+                max-width: 100% !important;
                 margin: 0 !important;
                 padding: 0 !important;
                 background: #ffffff !important;
+                box-sizing: border-box !important;
             }
             .print-label-thermal-portrait-page {
                 display: flex !important;
                 flex-direction: column !important;
                 justify-content: space-between !important;
-                align-items: stretch !important;
-                text-align: left !important;
-                width: 100% !important;
-                margin: 0 !important;
-                padding: 1.5mm 2mm !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
                 box-sizing: border-box !important;
                 overflow: hidden !important;
                 break-inside: avoid !important;
@@ -76,27 +84,24 @@
                 display: flex !important;
                 flex-direction: column !important;
                 justify-content: space-between !important;
-                align-items: stretch !important;
-                text-align: left !important;
-                width: 100% !important;
-                margin: 0 !important;
-                padding: 1.5mm 2mm !important;
-                border-bottom: 1px dashed #000000 !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
                 box-sizing: border-box !important;
                 overflow: hidden !important;
                 break-inside: avoid !important;
                 page-break-inside: avoid !important;
             }
-            .print-label-thermal-portrait-roll:last-child {
-                border-bottom: none !important;
-            }
         }
     </style>
+
+    <!-- [CSS_SECTION: DYNAMIC_PAGE_SIZE] Dynamically populated by applyDynamicPageCss() -->
     <style id="dynamicPrintStyle"></style>
 </head>
 <body id="appBody" class="text-slate-800 antialiased min-h-screen flex flex-col" style="background-color: #f8fafc;">
 
-    <!-- Top Navigation -->
+    <!-- ============================================================ -->
+    <!-- [HTML_SECTION: TOP_NAVBAR] Search tag: #NAVBAR               -->
+    <!-- ============================================================ -->
     <nav id="mainNavbar" class="bg-indigo-600 text-white shadow-md sticky top-0 z-30 transition-colors">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center gap-3">
@@ -159,13 +164,15 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
+    <!-- ============================================================ -->
+    <!-- [HTML_SECTION: MAIN_CONTENT] Search tag: #MAIN_CONTENT       -->
+    <!-- ============================================================ -->
     <main id="appMain" class="flex-1 p-4 sm:p-6 lg:p-8 transition-colors">
         <div class="max-w-7xl mx-auto">
 
-            <!-- ========================================== -->
-            <!-- TAB 1: INVENTORY DASHBOARD                 -->
-            <!-- ========================================== -->
+            <!-- ==================================================== -->
+            <!-- [HTML_SECTION: TAB_INVENTORY] Search tag: #TAB_INV   -->
+            <!-- ==================================================== -->
             <section id="tab-inventory" class="space-y-5">
                 <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                     <div>
@@ -250,16 +257,16 @@
                         <select id="sortInventorySelect" class="block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:ring-indigo-500 text-sm font-medium text-slate-700" title="Sort Inventory">
                             <option value="newest">Sort: Newest First</option>
                             <option value="oldest">Sort: Oldest First</option>
-                            <option value="name-asc">Sort: Name (A → Z)</option>
-                            <option value="name-desc">Sort: Name (Z → A)</option>
-                            <option value="sku-asc">Sort: SKU (A → Z)</option>
-                            <option value="sku-desc">Sort: SKU (Z → A)</option>
-                            <option value="qty-desc">Sort: Stock (High → Low)</option>
-                            <option value="qty-asc">Sort: Stock (Low → High)</option>
-                            <option value="price-desc">Sort: Price (High → Low)</option>
-                            <option value="price-asc">Sort: Price (Low → High)</option>
+                            <option value="name-asc">Sort: Name (A &rarr; Z)</option>
+                            <option value="name-desc">Sort: Name (Z &rarr; A)</option>
+                            <option value="sku-asc">Sort: SKU (A &rarr; Z)</option>
+                            <option value="sku-desc">Sort: SKU (Z &rarr; A)</option>
+                            <option value="qty-desc">Sort: Stock (High &rarr; Low)</option>
+                            <option value="qty-asc">Sort: Stock (Low &rarr; High)</option>
+                            <option value="price-desc">Sort: Price (High &rarr; Low)</option>
+                            <option value="price-asc">Sort: Price (Low &rarr; High)</option>
                             <option value="size">Sort: Size Order</option>
-                            <option value="color">Sort: Color (A → Z)</option>
+                            <option value="color">Sort: Color (A &rarr; Z)</option>
                         </select>
                         <div class="flex items-center justify-end gap-2">
                             <button type="button" onclick="openDuplicateFinderModal()" class="w-full sm:w-auto inline-flex items-center justify-center px-3 py-2 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors" title="Find duplicate products and absorb their SKUs into 1 product">
@@ -326,9 +333,9 @@
                 </div>
             </section>
 
-            <!-- ========================================== -->
-            <!-- TAB: CUSTOM ORDERS & FITTINGS              -->
-            <!-- ========================================== -->
+            <!-- ==================================================== -->
+            <!-- [HTML_SECTION: TAB_CUSTOM_ORDERS] Search tag: #TAB_CO -->
+            <!-- ==================================================== -->
             <section id="tab-custom" class="hidden space-y-5">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
@@ -414,9 +421,9 @@
                 <div id="customOrdersMobileList" class="md:hidden space-y-3"></div>
             </section>
 
-            <!-- ========================================== -->
-            <!-- TAB 2: PRODUCTS SOLD                       -->
-            <!-- ========================================== -->
+            <!-- ==================================================== -->
+            <!-- [HTML_SECTION: TAB_SALES] Search tag: #TAB_SALES     -->
+            <!-- ==================================================== -->
             <section id="tab-sales" class="hidden space-y-5">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
@@ -496,9 +503,9 @@
                 <div id="salesMobileList" class="md:hidden space-y-3"></div>
             </section>
 
-            <!-- ========================================== -->
-            <!-- TAB 3: MASTER SETTINGS PAGE                -->
-            <!-- ========================================== -->
+            <!-- ==================================================== -->
+            <!-- [HTML_SECTION: TAB_SETTINGS] Search tag: #TAB_SET    -->
+            <!-- ==================================================== -->
             <section id="tab-settings" class="hidden space-y-6">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
@@ -654,14 +661,19 @@
 
                     <!-- Card 4: Scanner & Thermal Printer Settings -->
                     <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-4">
-                        <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
-                            <span class="p-2 rounded-lg bg-cyan-100 text-cyan-700">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
-                            </span>
-                            <div>
-                                <h2 class="text-base font-bold text-slate-900">Scanner &amp; Thermal Barcode Printing Defaults</h2>
-                                <p class="text-xs text-slate-500">Configure default thermal header ("Rikai"), shop address below barcode, font, paper size, and scan behavior</p>
+                        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="p-2 rounded-lg bg-cyan-100 text-cyan-700">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                                </span>
+                                <div>
+                                    <h2 class="text-base font-bold text-slate-900">Scanner &amp; Thermal Barcode Printing Defaults</h2>
+                                    <p class="text-xs text-slate-500">All alignments, paddings, margins, borders &amp; spacings can be fine-tuned visually inside the Print Modal with Live Preview</p>
+                                </div>
                             </div>
+                            <button type="button" onclick="openLabelDesignerFromSettings()" class="px-3.5 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-semibold shadow-sm transition-colors">
+                                Open Visual Label Designer
+                            </button>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -703,11 +715,11 @@
                                 <label for="setThermalPaperSize" class="block text-sm font-medium text-slate-700">Default Thermal Paper Size</label>
                                 <select id="setThermalPaperSize" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
                                     <option value="auto">Auto (Use Printer Driver Size)</option>
-                                    <option value="50x70">50 × 70 mm Portrait (50mm W × 70mm H)</option>
-                                    <option value="50x75">50 × 75 mm Portrait (50mm W × 75mm H)</option>
-                                    <option value="50x25">50 × 25 mm Sticker</option>
-                                    <option value="50x30">50 × 30 mm Sticker</option>
-                                    <option value="75x50">75 × 50 mm Landscape (75mm W × 50mm H)</option>
+                                    <option value="50x70">50 &times; 70 mm Portrait (50mm W &times; 70mm H)</option>
+                                    <option value="50x75">50 &times; 75 mm Portrait (50mm W &times; 75mm H)</option>
+                                    <option value="50x25">50 &times; 25 mm Sticker</option>
+                                    <option value="50x30">50 &times; 30 mm Sticker</option>
+                                    <option value="75x50">75 &times; 50 mm Landscape (75mm W &times; 50mm H)</option>
                                     <option value="58mm">58 mm Thermal Roll</option>
                                     <option value="80mm">80 mm Thermal Roll</option>
                                     <option value="custom">Custom Dimensions (mm)...</option>
@@ -817,12 +829,12 @@
         </div>
     </main>
 
-    <!-- ========================================== -->
-    <!-- MODALS OVERLAY                             -->
-    <!-- ========================================== -->
+    <!-- ============================================================ -->
+    <!-- [HTML_SECTION: MODALS_OVERLAY] Search tag: #MODALS_OVERLAY   -->
+    <!-- ============================================================ -->
     <div id="modalOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto">
 
-        <!-- Add / Edit Custom Order or Fitting Modal -->
+        <!-- [HTML_SECTION: MODAL_CUSTOM_ORDER] Search tag: #MODAL_CO -->
         <div id="customOrderModal" class="bg-white rounded-2xl shadow-xl w-full max-w-lg hidden flex-col overflow-hidden my-auto max-h-[92vh]">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <div>
@@ -939,7 +951,7 @@
             </div>
         </div>
 
-        <!-- Edit Sale Customer Details Modal -->
+        <!-- [HTML_SECTION: MODAL_EDIT_SALE] Search tag: #MODAL_EDIT_SALE -->
         <div id="editSaleModal" class="bg-white rounded-2xl shadow-xl w-full max-w-md hidden flex-col overflow-hidden my-auto">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <div>
@@ -978,7 +990,7 @@
             </form>
         </div>
 
-        <!-- Add / Edit / Duplicate Item Modal -->
+        <!-- [HTML_SECTION: MODAL_ADD_EDIT_ITEM] Search tag: #MODAL_ITEM -->
         <div id="itemModal" class="bg-white rounded-2xl shadow-xl w-full max-w-lg hidden flex-col overflow-hidden my-auto max-h-[92vh]">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <h3 id="modalTitle" class="text-lg font-bold text-slate-900">Add New Item</h3>
@@ -988,7 +1000,7 @@
             </div>
             <div class="p-5 sm:p-6 overflow-y-auto">
                 <div id="duplicateBanner" class="hidden mb-4 px-3.5 py-2.5 rounded-lg bg-sky-50 border border-sky-200 text-xs text-sky-900 font-medium">
-                    Duplicating item — update the SKU, size, color, or details below and click Save to add it as a new item.
+                    Duplicating item &mdash; update the SKU, size, color, or details below and click Save to add it as a new item.
                 </div>
 
                 <form id="itemForm" class="space-y-4">
@@ -1112,130 +1124,449 @@
             </div>
         </div>
 
-        <!-- Print Barcodes Modal (Thermal Portrait Roll) -->
-        <div id="printModal" class="bg-white rounded-2xl shadow-xl w-full max-w-xl hidden flex-col overflow-hidden my-auto max-h-[92vh]">
-            <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+        <!-- ============================================================ -->
+        <!-- [HTML_SECTION: MODAL_PRINT_BARCODES] Search tag: #MODAL_PRINT -->
+        <!-- Full visual Thermal Label Designer (Alignment, Padding,      -->
+        <!-- Page Margin, Offsets, Borders, Divider Lines & Spacing)      -->
+        <!-- ============================================================ -->
+        <div id="printModal" class="bg-white rounded-2xl shadow-xl w-full max-w-4xl hidden flex-col overflow-hidden my-auto max-h-[94vh]">
+            <div class="px-5 py-3.5 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
                 <div>
-                    <h3 class="text-lg font-bold text-slate-900">Print Thermal Labels</h3>
-                    <p id="pmSubtitle" class="text-xs text-slate-500">Thermal portrait roll printing</p>
+                    <h3 class="text-lg font-bold text-slate-900">Print Thermal Labels &amp; Layout Designer</h3>
+                    <p id="pmSubtitle" class="text-xs text-slate-500">Adjust alignment, padding, margins, offsets, borders &amp; spacing visually</p>
                 </div>
-                <button type="button" onclick="closeModals()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <div class="p-5 sm:p-6 overflow-y-auto space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label for="pmBrandText" class="block text-xs font-semibold text-slate-700">Header Title Text</label>
-                        <input type="text" id="pmBrandText" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" value="Rikai" placeholder="Rikai">
-                    </div>
-                    <div>
-                        <label for="pmLayout" class="block text-xs font-semibold text-slate-700">Thermal Feed Layout</label>
-                        <select id="pmLayout" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
-                            <option value="thermal-roll" selected>Thermal Roll (Continuous)</option>
-                            <option value="thermal-page">Thermal Sticker (1 per label)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div>
-                    <label for="pmPaperSize" class="block text-xs font-semibold text-slate-700">Thermal Sticker / Roll Size</label>
-                    <select id="pmPaperSize" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
-                        <option value="auto">Auto (Printer Driver Size)</option>
-                        <option value="50x70">50 × 70 mm Portrait (50mm W × 70mm H)</option>
-                        <option value="50x75">50 × 75 mm Portrait (50mm W × 75mm H)</option>
-                        <option value="50x25">50 × 25 mm Sticker</option>
-                        <option value="50x30">50 × 30 mm Sticker</option>
-                        <option value="75x50">75 × 50 mm Landscape (75mm W × 50mm H)</option>
-                        <option value="58mm">58 mm Roll</option>
-                        <option value="80mm">80 mm Roll</option>
-                        <option value="custom">Custom Dimensions (mm)...</option>
-                    </select>
-                </div>
-
-                <div id="pmCustomDimWrap" class="hidden grid-cols-2 gap-3 p-3 rounded-xl bg-indigo-50/60 border border-indigo-200">
-                    <div>
-                        <label for="pmCustomWidth" class="block text-xs font-semibold text-indigo-900">Width (mm)</label>
-                        <input type="number" id="pmCustomWidth" min="15" max="300" step="1" value="50" class="mt-1 block w-full border border-indigo-300 rounded-lg px-3 py-1.5 text-sm bg-white font-semibold">
-                    </div>
-                    <div>
-                        <label for="pmCustomHeight" class="block text-xs font-semibold text-indigo-900">Height (mm)</label>
-                        <input type="number" id="pmCustomHeight" min="15" max="300" step="1" value="70" class="mt-1 block w-full border border-indigo-300 rounded-lg px-3 py-1.5 text-sm bg-white font-semibold">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label for="pmFontFamily" class="block text-xs font-semibold text-slate-700">Font Style</label>
-                        <select id="pmFontFamily" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
-                            <option value="Inter, Arial, sans-serif">Inter (Modern Clean)</option>
-                            <option value="Arial, Helvetica, sans-serif">Arial / Helvetica</option>
-                            <option value="'Arial Narrow', 'Roboto Condensed', sans-serif">Narrow / Condensed</option>
-                            <option value="'Courier New', Courier, monospace">Courier (Receipt Monospace)</option>
-                            <option value="Georgia, 'Times New Roman', serif">Georgia (Boutique Serif)</option>
-                            <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
-                            <option value="Verdana, sans-serif">Verdana (Wide)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="pmBarcodeSize" class="block text-xs font-semibold text-slate-700">Barcode Size</label>
-                        <select id="pmBarcodeSize" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 bg-white text-sm">
-                            <option value="sm">Small (Compact)</option>
-                            <option value="md" selected>Medium (Default)</option>
-                            <option value="lg">Large</option>
-                            <option value="xl">Extra Large</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label for="pmHeaderFontSize" class="block text-xs font-semibold text-slate-700">Header Font Size (px)</label>
-                        <input type="number" id="pmHeaderFontSize" min="8" max="28" step="0.5" value="13" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
-                    </div>
-                    <div>
-                        <label for="pmFontSize" class="block text-xs font-semibold text-slate-700">Detail Text Size (px)</label>
-                        <input type="number" id="pmFontSize" min="7" max="22" step="0.5" value="10" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
-                    </div>
-                </div>
-
-                <label class="inline-flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
-                    <input type="checkbox" id="pmShowSkuText" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" checked>
-                    <span>Show SKU number underneath barcode bars</span>
-                </label>
-
-                <div>
-                    <label for="pmShopAddress" class="block text-xs font-semibold text-slate-700">Shop Address (Below Barcode)</label>
-                    <textarea id="pmShopAddress" rows="2" class="mt-1 block w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs bg-white" placeholder="Enter shop address (supports 2 lines)..."></textarea>
-                </div>
-
-                <div class="p-3 rounded-xl bg-slate-100 border border-slate-200 flex flex-col items-center">
-                    <span id="pmPreviewCaption" class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-2">Label Preview (First Item)</span>
-                    <div id="pmPreviewBox" class="bg-white border border-slate-300 rounded-lg p-3 shadow-sm flex flex-col justify-between items-stretch w-[190px] min-h-[260px] max-w-full"></div>
-                </div>
-
-                <div class="space-y-2">
-                    <div class="flex flex-wrap items-center justify-between gap-2">
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Products, Selected SKU &amp; Copies (<span id="pmTotalLabelsCount">0</span> labels total)</span>
-                        <div class="flex gap-1.5">
-                            <button type="button" onclick="setPrintCopiesAll(1)" class="px-2.5 py-1 rounded-md border border-slate-300 bg-white hover:bg-slate-50 text-[11px] font-medium text-slate-700">1 Each</button>
-                            <button type="button" onclick="setPrintCopiesMatchStock()" class="px-2.5 py-1 rounded-md border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-[11px] font-medium text-indigo-700">Match Stock Qty</button>
-                        </div>
-                    </div>
-                    <div id="pmItemsList" class="max-h-48 overflow-y-auto divide-y divide-slate-100 border border-slate-200 rounded-xl bg-white"></div>
-                </div>
-
-                <div class="pt-2 flex justify-end gap-3">
-                    <button type="button" onclick="closeModals()" class="px-4 py-2 border border-slate-300 text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50">Cancel</button>
-                    <button type="button" onclick="executeBatchPrint()" class="inline-flex items-center px-5 py-2 text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm">
-                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                        Print Now
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="resetPrintLayoutToDefaults()" class="px-2.5 py-1.5 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-semibold">
+                        Reset Layout
+                    </button>
+                    <button type="button" onclick="closeModals()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
             </div>
+
+            <div class="p-4 sm:p-5 overflow-y-auto grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+                <!-- LEFT COLUMN: Live 1:1 Label Preview & Print Queue -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="p-3.5 rounded-xl bg-slate-100 border border-slate-200 flex flex-col items-center">
+                        <span id="pmPreviewCaption" class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-2">Live 1:1 Label Preview</span>
+                        <div class="max-w-full overflow-auto p-2 bg-slate-200/70 rounded-lg border border-dashed border-slate-300 flex justify-center items-center">
+                            <div id="pmPreviewBox" class="bg-white shadow-sm overflow-hidden flex flex-col"></div>
+                        </div>
+                        <p class="mt-2 text-[11px] text-slate-500 text-center">
+                            Tip: If printed text shifts right or clips on your sticker, lower <strong>Content Width %</strong> (e.g. 92%) or set <strong>X Offset</strong> to negative (e.g. -1.5mm).
+                        </p>
+                    </div>
+
+                    <!-- Products, Selected SKU & Copies -->
+                    <div class="space-y-2">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Queue (<span id="pmTotalLabelsCount">0</span> labels)</span>
+                            <div class="flex gap-1.5">
+                                <button type="button" onclick="setPrintCopiesAll(1)" class="px-2 py-1 rounded-md border border-slate-300 bg-white hover:bg-slate-50 text-[11px] font-medium text-slate-700">1 Each</button>
+                                <button type="button" onclick="setPrintCopiesMatchStock()" class="px-2 py-1 rounded-md border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-[11px] font-medium text-indigo-700">Match Stock</button>
+                            </div>
+                        </div>
+                        <div id="pmItemsList" class="max-h-48 overflow-y-auto divide-y divide-slate-100 border border-slate-200 rounded-xl bg-white"></div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: All Visual Controls (Accordion Sections) -->
+                <div class="lg:col-span-7 space-y-3">
+
+                    <!-- Quick Paper & Header Controls -->
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                            <div>
+                                <label for="pmBrandText" class="block text-[11px] font-semibold text-slate-700">Header Title</label>
+                                <input type="text" id="pmBrandText" class="mt-1 block w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white" value="Rikai" placeholder="Rikai">
+                            </div>
+                            <div>
+                                <label for="pmLayout" class="block text-[11px] font-semibold text-slate-700">Thermal Feed Mode</label>
+                                <select id="pmLayout" class="mt-1 block w-full border border-slate-300 rounded-lg px-2.5 py-1.5 bg-white text-xs">
+                                    <option value="thermal-roll">Thermal Roll (Continuous)</option>
+                                    <option value="thermal-page">Thermal Sticker (1 per label)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="pmPaperSize" class="block text-[11px] font-semibold text-slate-700">Paper Size</label>
+                                <select id="pmPaperSize" class="mt-1 block w-full border border-slate-300 rounded-lg px-2.5 py-1.5 bg-white text-xs">
+                                    <option value="auto">Auto (Printer Driver)</option>
+                                    <option value="50x70">50 &times; 70 mm Portrait</option>
+                                    <option value="50x75">50 &times; 75 mm Portrait</option>
+                                    <option value="50x25">50 &times; 25 mm Sticker</option>
+                                    <option value="50x30">50 &times; 30 mm Sticker</option>
+                                    <option value="75x50">75 &times; 50 mm Landscape</option>
+                                    <option value="58mm">58 mm Roll</option>
+                                    <option value="80mm">80 mm Roll</option>
+                                    <option value="custom">Custom (mm)...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="pmCustomDimWrap" class="hidden grid-cols-2 gap-3 p-2.5 rounded-lg bg-indigo-50 border border-indigo-200">
+                            <div>
+                                <label for="pmCustomWidth" class="block text-[11px] font-semibold text-indigo-900">Width (mm)</label>
+                                <input type="number" id="pmCustomWidth" min="15" max="300" step="1" value="50" class="mt-1 block w-full border border-indigo-300 rounded-md px-2.5 py-1 text-xs bg-white font-semibold">
+                            </div>
+                            <div>
+                                <label for="pmCustomHeight" class="block text-[11px] font-semibold text-indigo-900">Height (mm)</label>
+                                <input type="number" id="pmCustomHeight" min="15" max="300" step="1" value="70" class="mt-1 block w-full border border-indigo-300 rounded-md px-2.5 py-1 text-xs bg-white font-semibold">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ACCORDION 1: Page Margins, Inner Padding, Content Width & Printer Offset -->
+                    <details open class="rounded-xl border border-slate-200 bg-white overflow-hidden">
+                        <summary class="px-3.5 py-2.5 bg-slate-50 hover:bg-slate-100 cursor-pointer text-xs font-bold text-slate-800 flex items-center justify-between select-none">
+                            <span>1. Alignment Fix: Margins, Padding, Content Width &amp; Offsets</span>
+                            <span class="text-[10px] font-medium text-indigo-600">Fix Shift / Cutoff</span>
+                        </summary>
+                        <div class="p-3.5 space-y-3 border-t border-slate-100 text-xs">
+                            <div class="grid grid-cols-3 gap-2.5">
+                                <div>
+                                    <label for="pmContentWidthPct" class="block text-[11px] font-semibold text-slate-700">Content Width (%)</label>
+                                    <input type="number" id="pmContentWidthPct" min="60" max="100" step="1" value="100" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                </div>
+                                <div>
+                                    <label for="pmOffsetXMm" class="block text-[11px] font-semibold text-slate-700">X Offset (mm)</label>
+                                    <input type="number" id="pmOffsetXMm" min="-15" max="15" step="0.5" value="0" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs" title="Negative moves left, Positive moves right">
+                                </div>
+                                <div>
+                                    <label for="pmOffsetYMm" class="block text-[11px] font-semibold text-slate-700">Y Offset (mm)</label>
+                                    <input type="number" id="pmOffsetYMm" min="-15" max="15" step="0.5" value="0" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs" title="Negative moves up, Positive moves down">
+                                </div>
+                            </div>
+
+                            <div>
+                                <p class="text-[11px] font-semibold text-slate-700 mb-1">Inner Label Padding (mm) &mdash; Top / Right / Bottom / Left</p>
+                                <div class="grid grid-cols-4 gap-2">
+                                    <input type="number" id="pmPadTop" min="0" max="15" step="0.5" value="1.5" placeholder="Top" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Top Padding (mm)">
+                                    <input type="number" id="pmPadRight" min="0" max="15" step="0.5" value="2" placeholder="Right" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Right Padding (mm)">
+                                    <input type="number" id="pmPadBottom" min="0" max="15" step="0.5" value="1.5" placeholder="Bottom" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Bottom Padding (mm)">
+                                    <input type="number" id="pmPadLeft" min="0" max="15" step="0.5" value="2" placeholder="Left" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Left Padding (mm)">
+                                </div>
+                            </div>
+
+                            <div>
+                                <p class="text-[11px] font-semibold text-slate-700 mb-1">Printer @page Margin (mm) &mdash; Top / Right / Bottom / Left</p>
+                                <div class="grid grid-cols-4 gap-2">
+                                    <input type="number" id="pmPageMarginTop" min="0" max="15" step="0.5" value="0" placeholder="Top" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Page Margin Top (mm)">
+                                    <input type="number" id="pmPageMarginRight" min="0" max="15" step="0.5" value="0" placeholder="Right" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Page Margin Right (mm)">
+                                    <input type="number" id="pmPageMarginBottom" min="0" max="15" step="0.5" value="0" placeholder="Bottom" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Page Margin Bottom (mm)">
+                                    <input type="number" id="pmPageMarginLeft" min="0" max="15" step="0.5" value="0" placeholder="Left" class="border border-slate-300 rounded-md px-2 py-1 text-xs text-center" title="Page Margin Left (mm)">
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- ACCORDION 2: Alignments & Fonts -->
+                    <details open class="rounded-xl border border-slate-200 bg-white overflow-hidden">
+                        <summary class="px-3.5 py-2.5 bg-slate-50 hover:bg-slate-100 cursor-pointer text-xs font-bold text-slate-800 flex items-center justify-between select-none">
+                            <span>2. Section Alignments &amp; Typography</span>
+                            <span class="text-[10px] font-medium text-slate-500">Center / Left / Right &amp; Sizes</span>
+                        </summary>
+                        <div class="p-3.5 space-y-3 border-t border-slate-100 text-xs">
+                            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                                <div>
+                                    <label for="pmHeaderAlign" class="block text-[10px] font-semibold text-slate-600">Header</label>
+                                    <select id="pmHeaderAlign" class="mt-0.5 w-full border border-slate-300 rounded-md px-1.5 py-1 text-xs bg-white">
+                                        <option value="center">Center</option><option value="left">Left</option><option value="right">Right</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="pmDetailsAlign" class="block text-[10px] font-semibold text-slate-600">Details</label>
+                                    <select id="pmDetailsAlign" class="mt-0.5 w-full border border-slate-300 rounded-md px-1.5 py-1 text-xs bg-white">
+                                        <option value="center">Center</option><option value="left">Left</option><option value="right">Right</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="pmBarcodeAlign" class="block text-[10px] font-semibold text-slate-600">Barcode</label>
+                                    <select id="pmBarcodeAlign" class="mt-0.5 w-full border border-slate-300 rounded-md px-1.5 py-1 text-xs bg-white">
+                                        <option value="center">Center</option><option value="left">Left</option><option value="right">Right</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="pmAddressAlign" class="block text-[10px] font-semibold text-slate-600">Address</label>
+                                    <select id="pmAddressAlign" class="mt-0.5 w-full border border-slate-300 rounded-md px-1.5 py-1 text-xs bg-white">
+                                        <option value="center">Center</option><option value="left">Left</option><option value="right">Right</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="pmFooterAlign" class="block text-[10px] font-semibold text-slate-600">Footer</label>
+                                    <select id="pmFooterAlign" class="mt-0.5 w-full border border-slate-300 rounded-md px-1.5 py-1 text-xs bg-white">
+                                        <option value="center">Center</option><option value="left">Left</option><option value="right">Right</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                                <div class="col-span-2 sm:col-span-1">
+                                    <label for="pmFontFamily" class="block text-[11px] font-semibold text-slate-700">Font Style</label>
+                                    <select id="pmFontFamily" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs bg-white">
+                                        <option value="Inter, Arial, sans-serif">Inter (Modern)</option>
+                                        <option value="Arial, Helvetica, sans-serif">Arial / Helvetica</option>
+                                        <option value="'Arial Narrow', 'Roboto Condensed', sans-serif">Narrow</option>
+                                        <option value="'Courier New', Courier, monospace">Courier Mono</option>
+                                        <option value="Georgia, 'Times New Roman', serif">Georgia Serif</option>
+                                        <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                                        <option value="Verdana, sans-serif">Verdana</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="pmHeaderFontSize" class="block text-[11px] font-semibold text-slate-700">Header Size (px)</label>
+                                    <input type="number" id="pmHeaderFontSize" min="8" max="28" step="0.5" value="13" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                </div>
+                                <div>
+                                    <label for="pmHeaderWeight" class="block text-[11px] font-semibold text-slate-700">Header Weight</label>
+                                    <select id="pmHeaderWeight" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs bg-white">
+                                        <option value="600">Semi-Bold (600)</option>
+                                        <option value="700">Bold (700)</option>
+                                        <option value="800" selected>Extra Bold (800)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="pmFontSize" class="block text-[11px] font-semibold text-slate-700">Details Size (px)</label>
+                                    <input type="number" id="pmFontSize" min="6" max="22" step="0.5" value="10" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                </div>
+                                <div>
+                                    <label for="pmAddressFontSize" class="block text-[11px] font-semibold text-slate-700">Address Size (px)</label>
+                                    <input type="number" id="pmAddressFontSize" min="5" max="16" step="0.5" value="8" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                </div>
+                                <div>
+                                    <label for="pmFooterFontSize" class="block text-[11px] font-semibold text-slate-700">Footer Size (px)</label>
+                                    <input type="number" id="pmFooterFontSize" min="5" max="16" step="0.5" value="8.5" class="mt-1 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- ACCORDION 3: Spacing, Borders, Lines & Barcode Size -->
+                    <details class="rounded-xl border border-slate-200 bg-white overflow-hidden">
+                        <summary class="px-3.5 py-2.5 bg-slate-50 hover:bg-slate-100 cursor-pointer text-xs font-bold text-slate-800 flex items-center justify-between select-none">
+                            <span>3. Text Spacing, Borders, Divider Lines &amp; Barcode Dimensions</span>
+                            <span class="text-[10px] font-medium text-slate-500">Gaps, Lines &amp; Bars</span>
+                        </summary>
+                        <div class="p-3.5 space-y-3.5 border-t border-slate-100 text-xs">
+                            <!-- Spacing Between Texts -->
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                                <div>
+                                    <label for="pmHeaderPadBottom" class="block text-[10px] font-semibold text-slate-600">Header &rarr; Top Line (px)</label>
+                                    <input type="number" id="pmHeaderPadBottom" min="0" max="20" step="0.5" value="2" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                </div>
+                                <div>
+                                    <label for="pmHeaderMarginBottom" class="block text-[10px] font-semibold text-slate-600">Top Line &rarr; Details (px)</label>
+                                    <input type="number" id="pmHeaderMarginBottom" min="0" max="20" step="0.5" value="3" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                </div>
+                                <div>
+                                    <label for="pmDetailsLineHeight" class="block text-[10px] font-semibold text-slate-600">Details Line Height</label>
+                                    <input type="number" id="pmDetailsLineHeight" min="0.9" max="2.2" step="0.05" value="1.25" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                </div>
+                                <div>
+                                    <label for="pmDetailsRowGap" class="block text-[10px] font-semibold text-slate-600">Gap Between Detail Rows (px)</label>
+                                    <input type="number" id="pmDetailsRowGap" min="0" max="15" step="0.5" value="1.5" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                </div>
+                                <div>
+                                    <label for="pmDetailsMarginBottom" class="block text-[10px] font-semibold text-slate-600">Details Bottom Gap (px)</label>
+                                    <input type="number" id="pmDetailsMarginBottom" min="0" max="25" step="1" value="4" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                </div>
+                                <div>
+                                    <label for="pmAddressMarginTop" class="block text-[10px] font-semibold text-slate-600">Space Above Address (px)</label>
+                                    <input type="number" id="pmAddressMarginTop" min="0" max="20" step="0.5" value="2" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                </div>
+                                <div>
+                                    <label for="pmAddressLineHeight" class="block text-[10px] font-semibold text-slate-600">Address Line Height</label>
+                                    <input type="number" id="pmAddressLineHeight" min="0.9" max="2.0" step="0.05" value="1.15" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                </div>
+                                <div>
+                                    <label for="pmFooterMarginTop" class="block text-[10px] font-semibold text-slate-600">Space Above Bottom Line (px)</label>
+                                    <input type="number" id="pmFooterMarginTop" min="0" max="20" step="0.5" value="3" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                </div>
+                                <div>
+                                    <label for="pmFooterPadTop" class="block text-[10px] font-semibold text-slate-600">Bottom Line &rarr; Footer (px)</label>
+                                    <input type="number" id="pmFooterPadTop" min="0" max="20" step="0.5" value="3" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                </div>
+                                <div>
+                                    <label for="pmFooterLineGap" class="block text-[10px] font-semibold text-slate-600">Gap Between Footer Lines (px)</label>
+                                    <input type="number" id="pmFooterLineGap" min="0" max="12" step="0.5" value="1" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                </div>
+                            </div>
+
+                            <!-- Barcode Size & Gaps -->
+                            <div class="pt-2.5 border-t border-slate-100 space-y-2">
+                                <p class="text-[11px] font-bold text-slate-700">Barcode Size &amp; Padding</p>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                    <div>
+                                        <label for="pmBarcodeSize" class="block text-[10px] font-semibold text-slate-600">Quick Preset</label>
+                                        <select id="pmBarcodeSize" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs bg-white">
+                                            <option value="sm">Small</option>
+                                            <option value="md" selected>Medium</option>
+                                            <option value="lg">Large</option>
+                                            <option value="xl">XL</option>
+                                            <option value="custom">Custom</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="pmBarcodeBarWidth" class="block text-[10px] font-semibold text-slate-600">Bar Width</label>
+                                        <input type="number" id="pmBarcodeBarWidth" min="0.6" max="3" step="0.1" value="1.3" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                    </div>
+                                    <div>
+                                        <label for="pmBarcodeHeight" class="block text-[10px] font-semibold text-slate-600">Bar Height (px)</label>
+                                        <input type="number" id="pmBarcodeHeight" min="15" max="80" step="1" value="34" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                    </div>
+                                    <div>
+                                        <label for="pmBarcodeMaxWidthPct" class="block text-[10px] font-semibold text-slate-600">Max Width (%)</label>
+                                        <input type="number" id="pmBarcodeMaxWidthPct" min="40" max="100" step="1" value="95" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                    </div>
+                                    <div>
+                                        <label for="pmBarcodePadTop" class="block text-[10px] font-semibold text-slate-600">Pad Top (px)</label>
+                                        <input type="number" id="pmBarcodePadTop" min="0" max="25" step="1" value="4" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                    </div>
+                                    <div>
+                                        <label for="pmBarcodePadBottom" class="block text-[10px] font-semibold text-slate-600">Pad Bottom (px)</label>
+                                        <input type="number" id="pmBarcodePadBottom" min="0" max="25" step="1" value="4" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                    </div>
+                                    <div>
+                                        <label for="pmBarcodeFontSize" class="block text-[10px] font-semibold text-slate-600">SKU Text Size (px)</label>
+                                        <input type="number" id="pmBarcodeFontSize" min="6" max="18" step="0.5" value="9" class="mt-0.5 w-full border border-slate-300 rounded-md px-2 py-1 text-xs">
+                                    </div>
+                                    <div class="flex items-end pb-1">
+                                        <label class="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-700 cursor-pointer">
+                                            <input type="checkbox" id="pmShowSkuText" class="rounded border-slate-300 text-indigo-600" checked>
+                                            <span>Show SKU</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Divider Lines & Outer Border -->
+                            <div class="pt-2.5 border-t border-slate-100 space-y-2.5">
+                                <p class="text-[11px] font-bold text-slate-700">Top / Bottom Divider Lines &amp; Outer Border</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                    <div class="p-2 rounded-lg bg-slate-50 border border-slate-200 space-y-1.5">
+                                        <label class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-800 cursor-pointer">
+                                            <input type="checkbox" id="pmTopLineShow" class="rounded border-slate-300 text-indigo-600" checked>
+                                            <span>Show Top Line (Below Header)</span>
+                                        </label>
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label for="pmTopLineThickness" class="block text-[10px] text-slate-600">Thickness (px)</label>
+                                                <input type="number" id="pmTopLineThickness" min="0.5" max="5" step="0.5" value="1" class="w-full border border-slate-300 rounded px-1.5 py-0.5 text-xs bg-white">
+                                            </div>
+                                            <div>
+                                                <label for="pmTopLineWidthPct" class="block text-[10px] text-slate-600">Line Width (%)</label>
+                                                <input type="number" id="pmTopLineWidthPct" min="20" max="100" step="1" value="100" class="w-full border border-slate-300 rounded px-1.5 py-0.5 text-xs bg-white">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-2 rounded-lg bg-slate-50 border border-slate-200 space-y-1.5">
+                                        <label class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-800 cursor-pointer">
+                                            <input type="checkbox" id="pmBottomLineShow" class="rounded border-slate-300 text-indigo-600" checked>
+                                            <span>Show Bottom Line (Above Footer)</span>
+                                        </label>
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label for="pmBottomLineThickness" class="block text-[10px] text-slate-600">Thickness (px)</label>
+                                                <input type="number" id="pmBottomLineThickness" min="0.5" max="5" step="0.5" value="1" class="w-full border border-slate-300 rounded px-1.5 py-0.5 text-xs bg-white">
+                                            </div>
+                                            <div>
+                                                <label for="pmBottomLineWidthPct" class="block text-[10px] text-slate-600">Line Width (%)</label>
+                                                <input type="number" id="pmBottomLineWidthPct" min="20" max="100" step="1" value="100" class="w-full border border-slate-300 rounded px-1.5 py-0.5 text-xs bg-white">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="p-2 rounded-lg bg-slate-50 border border-slate-200 space-y-1.5">
+                                    <div class="flex flex-wrap items-center justify-between gap-2">
+                                        <label class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-800 cursor-pointer">
+                                            <input type="checkbox" id="pmOuterBorderShow" class="rounded border-slate-300 text-indigo-600">
+                                            <span>Show Outer Border Box</span>
+                                        </label>
+                                        <label class="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-700 cursor-pointer">
+                                            <input type="checkbox" id="pmRollCutLineShow" class="rounded border-slate-300 text-indigo-600" checked>
+                                            <span>Show Roll Cut Line</span>
+                                        </label>
+                                    </div>
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <div>
+                                            <label for="pmOuterBorderThickness" class="block text-[10px] text-slate-600">Border (px)</label>
+                                            <input type="number" id="pmOuterBorderThickness" min="0.5" max="5" step="0.5" value="1" class="w-full border border-slate-300 rounded px-1.5 py-0.5 text-xs bg-white">
+                                        </div>
+                                        <div>
+                                            <label for="pmOuterBorderStyle" class="block text-[10px] text-slate-600">Style</label>
+                                            <select id="pmOuterBorderStyle" class="w-full border border-slate-300 rounded px-1.5 py-0.5 text-xs bg-white">
+                                                <option value="solid">Solid</option>
+                                                <option value="dashed">Dashed</option>
+                                                <option value="dotted">Dotted</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="pmOuterBorderRadius" class="block text-[10px] text-slate-600">Radius (mm)</label>
+                                            <input type="number" id="pmOuterBorderRadius" min="0" max="10" step="0.5" value="0" class="w-full border border-slate-300 rounded px-1.5 py-0.5 text-xs bg-white">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- ACCORDION 4: Address, Footer Text & Field Visibility -->
+                    <details class="rounded-xl border border-slate-200 bg-white overflow-hidden">
+                        <summary class="px-3.5 py-2.5 bg-slate-50 hover:bg-slate-100 cursor-pointer text-xs font-bold text-slate-800 flex items-center justify-between select-none">
+                            <span>4. Address, Footer Text &amp; Visible Product Fields</span>
+                            <span class="text-[10px] font-medium text-slate-500">Show / Hide Rows</span>
+                        </summary>
+                        <div class="p-3.5 space-y-3 border-t border-slate-100 text-xs">
+                            <div>
+                                <label for="pmShopAddress" class="block text-[11px] font-semibold text-slate-700">Shop Address (Below Barcode)</label>
+                                <textarea id="pmShopAddress" rows="2" class="mt-1 block w-full border border-slate-300 rounded-md px-2.5 py-1.5 text-xs bg-white" placeholder="Enter shop address..."></textarea>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <div>
+                                    <label for="pmFooterLine1" class="block text-[11px] font-semibold text-slate-700">Footer Line 1</label>
+                                    <input type="text" id="pmFooterLine1" value="100% PURE LINEN" class="mt-1 w-full border border-slate-300 rounded-md px-2.5 py-1 text-xs">
+                                </div>
+                                <div>
+                                    <label for="pmFooterLine2" class="block text-[11px] font-semibold text-slate-700">Footer Line 2</label>
+                                    <input type="text" id="pmFooterLine2" value="Proudly Made in India" class="mt-1 w-full border border-slate-300 rounded-md px-2.5 py-1 text-xs">
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-[11px] font-semibold text-slate-700 mb-1.5">Visible Detail Rows on Label:</p>
+                                <div class="flex flex-wrap gap-3 text-[11px]">
+                                    <label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" id="pmFieldProduct" class="rounded border-slate-300 text-indigo-600" checked> Product</label>
+                                    <label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" id="pmFieldStyle" class="rounded border-slate-300 text-indigo-600" checked> Style</label>
+                                    <label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" id="pmFieldType" class="rounded border-slate-300 text-indigo-600" checked> Type</label>
+                                    <label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" id="pmFieldSize" class="rounded border-slate-300 text-indigo-600" checked> Size</label>
+                                    <label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" id="pmFieldLength" class="rounded border-slate-300 text-indigo-600"> Length</label>
+                                    <label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" id="pmFieldSleeves" class="rounded border-slate-300 text-indigo-600"> Sleeves</label>
+                                    <label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" id="pmFieldGender" class="rounded border-slate-300 text-indigo-600"> Gender</label>
+                                    <label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" id="pmFieldColor" class="rounded border-slate-300 text-indigo-600"> Color</label>
+                                    <label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" id="pmFieldNotes" class="rounded border-slate-300 text-indigo-600"> Notes</label>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+
+                </div>
+            </div>
+
+            <div class="px-5 py-3.5 border-t border-slate-100 bg-slate-50 flex flex-wrap items-center justify-end gap-2.5 shrink-0">
+                <button type="button" onclick="savePrintLayoutSettings(true)" class="px-4 py-2 border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 text-xs font-semibold rounded-lg">
+                    Save Layout Only
+                </button>
+                <button type="button" onclick="closeModals()" class="px-4 py-2 border border-slate-300 text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50">Cancel</button>
+                <button type="button" onclick="executeBatchPrint()" class="inline-flex items-center px-5 py-2 text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Save &amp; Print Now
+                </button>
+            </div>
         </div>
 
-        <!-- Scanned Item Quick Action Modal -->
+        <!-- [HTML_SECTION: MODAL_SCAN_QUICK_ACTION] Search tag: #MODAL_QA -->
         <div id="scanActionModal" class="bg-white rounded-2xl shadow-xl w-full max-w-md hidden flex-col overflow-hidden my-auto max-h-[92vh]">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <div>
@@ -1349,7 +1680,7 @@
             </div>
         </div>
 
-        <!-- Scanner Modal -->
+        <!-- [HTML_SECTION: MODAL_SCANNER] Search tag: #MODAL_SCANNER -->
         <div id="scannerModal" class="bg-white rounded-2xl shadow-xl w-full max-w-md hidden flex-col overflow-y-auto max-h-[92vh] my-auto">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <h3 id="scannerModalTitle" class="text-lg font-bold text-slate-900">Scan Barcode / QR Code</h3>
@@ -1377,14 +1708,14 @@
                 <div id="batchPanel" class="w-full hidden space-y-2.5">
                     <div class="flex justify-between items-center">
                         <p class="text-xs font-semibold text-slate-700">
-                            Items to sell: <span id="batchTotal">0</span> piece(s) • <span id="batchGrandTotal" class="text-emerald-700 font-bold">₹0</span>
+                            Items to sell: <span id="batchTotal">0</span> piece(s) &bull; <span id="batchGrandTotal" class="text-emerald-700 font-bold">₹0</span>
                         </p>
                         <button type="button" onclick="clearBatch()" class="text-[11px] text-slate-500 hover:text-red-600">Clear</button>
                     </div>
                     <div id="batchList" class="max-h-36 overflow-y-auto border border-slate-200 rounded-lg divide-y divide-slate-100 text-xs"></div>
                     <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 space-y-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-[11px] font-semibold text-slate-700 uppercase tracking-wide">Customer Details (Optional — Enter 1 Time at End)</span>
+                            <span class="text-[11px] font-semibold text-slate-700 uppercase tracking-wide">Customer Details (Optional &mdash; Enter 1 Time at End)</span>
                             <button type="button" onclick="document.getElementById('batchCustomerName').value='Walk-in Customer'" class="text-[11px] text-indigo-600 hover:underline font-medium">Fill "Walk-in"</button>
                         </div>
                         <input type="text" id="batchCustomerName" placeholder="Customer Name (defaults to Walk-in)" class="block w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white">
@@ -1413,7 +1744,7 @@
             </div>
         </div>
 
-        <!-- Duplicate Finder & SKU Absorber Modal -->
+        <!-- [HTML_SECTION: MODAL_DUPLICATE_FINDER] Search tag: #MODAL_DUPS -->
         <div id="duplicateFinderModal" class="bg-white rounded-2xl shadow-xl w-full max-w-3xl hidden flex-col overflow-hidden my-auto max-h-[92vh]">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <div>
@@ -1486,7 +1817,7 @@
             </div>
         </div>
 
-        <!-- Custom Confirmation Modal -->
+        <!-- [HTML_SECTION: MODAL_CONFIRM] Search tag: #MODAL_CONFIRM -->
         <div id="confirmModal" class="bg-white rounded-2xl shadow-xl w-full max-w-sm hidden flex-col overflow-hidden my-auto">
             <div class="p-6">
                 <div class="flex items-start gap-3">
@@ -1507,18 +1838,22 @@
 
     </div>
 
-    <!-- Toast Notification -->
+    <!-- [HTML_SECTION: TOAST_AND_PRINT_CONTAINER] Search tag: #TOAST_PRINT -->
     <div id="toast" class="fixed bottom-4 right-4 left-4 sm:left-auto bg-slate-800 text-white px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 translate-y-24 opacity-0 pointer-events-none flex items-center gap-3 z-50">
         <div id="toastIcon" class="shrink-0"></div>
         <p id="toastMessage" class="text-sm font-medium"></p>
     </div>
 
-    <!-- Print Container (Populated dynamically for single or multi-product printing) -->
+    <!-- Print Container (Populated dynamically for thermal printing) -->
     <div id="print-container" class="hidden"></div>
+
+    <!-- ============================================================ -->
+    <!-- [JS_SECTION: APPLICATION_LOGIC] Search tag: #APP_SCRIPT      -->
+    <!-- ============================================================ -->
     <script type="module">
-        // ==========================================
-        // Google Apps Script (Inventory + Absorbed SKUs + Sales + CustomOrders + Settings)
-        // ==========================================
+        // ============================================================
+        // [JS_SECTION: GOOGLE_APPS_SCRIPT_TEMPLATE] Search tag: #GS_CODE
+        // ============================================================
         const APPS_SCRIPT_CODE = `const INV_SHEET = "Inventory";
 const SALES_SHEET = "Sales";
 const CUSTOM_SHEET = "CustomOrders";
@@ -1838,15 +2173,101 @@ function doPost(e) {
   }
 }`;
 
-        // ==========================================
-        // Storage Keys & Default Master Settings
-        // ==========================================
+        // ============================================================
+        // [JS_SECTION: STORAGE_KEYS_AND_DEFAULTS] Search tag: #DEFAULTS
+        // ============================================================
         const LOCAL_INV_KEY = 'Rikai_inventory_v2';
         const LOCAL_SALES_KEY = 'Rikai_sales_v2';
         const LOCAL_CUSTOM_KEY = 'Rikai_custom_orders_v1';
         const LOCAL_SETTINGS_KEY = 'Rikai_settings_v2';
         const GS_URL_KEY = 'Rikai_gs_url';
         const GS_AUTOSYNC_KEY = 'Rikai_gs_autosync';
+
+        // All print layout defaults live here and are also editable live inside the Print Modal!
+        const DEFAULT_PRINT_LAYOUT = {
+            defaultPrintLayout: 'thermal-roll',
+            thermalBrandText: 'Rikai',
+            shopAddress: 'Contact Us- 7021246251/9619295228 Mail Us - care@riaki.in Visit us at - Shop No.4, Vini Garden 1, D-wing Santoshi Mata Rd. Borivali West, Mumbai-400103',
+            thermalPaperSize: '50x70',
+            customPaperWidth: 50,
+            customPaperHeight: 70,
+            defaultFontFamily: 'Inter, Arial, sans-serif',
+            headerFontSize: 13,
+            portraitFontSize: 10,
+            barcodeSize: 'md',
+            showSkuText: true,
+
+            // [PRINT_MARGINS_PADDING_OFFSETS] Fixes off-center & right-edge cutoffs
+            labelPageMarginTopMm: 0,
+            labelPageMarginRightMm: 0,
+            labelPageMarginBottomMm: 0,
+            labelPageMarginLeftMm: 0,
+            labelPaddingTopMm: 1.5,
+            labelPaddingRightMm: 2,
+            labelPaddingBottomMm: 1.5,
+            labelPaddingLeftMm: 2,
+            labelOffsetXMm: 0,
+            labelOffsetYMm: 0,
+            labelContentWidthPct: 100,
+
+            // [PRINT_SECTION_ALIGNMENTS] Independent alignment per block
+            labelHeaderAlign: 'center',
+            labelDetailsAlign: 'center',
+            labelBarcodeAlign: 'center',
+            labelAddressAlign: 'center',
+            labelFooterAlign: 'center',
+
+            // [PRINT_TYPOGRAPHY_AND_SPACING]
+            labelHeaderWeight: 800,
+            labelHeaderPadBottomPx: 2,
+            labelHeaderMarginBottomPx: 3,
+            labelDetailsLineHeight: 1.25,
+            labelDetailsRowGapPx: 1.5,
+            labelDetailsMarginBottomPx: 4,
+
+            // [PRINT_BARCODE_DIMENSIONS]
+            labelBarcodeBarWidth: 1.3,
+            labelBarcodeHeightPx: 34,
+            labelBarcodeMaxWidthPct: 95,
+            labelBarcodePadTopPx: 4,
+            labelBarcodePadBottomPx: 4,
+            labelBarcodeFontSizePx: 9,
+
+            // [PRINT_ADDRESS_AND_FOOTER]
+            labelAddressFontSizePx: 8,
+            labelAddressLineHeight: 1.15,
+            labelAddressMarginTopPx: 2,
+            labelFooterPadTopPx: 3,
+            labelFooterMarginTopPx: 3,
+            labelFooterFontSizePx: 8.5,
+            labelFooterLineGapPx: 1,
+            labelFooterLine1: '100% PURE LINEN',
+            labelFooterLine2: 'Proudly Made in India',
+
+            // [PRINT_BORDERS_AND_DIVIDERS]
+            labelTopLineShow: true,
+            labelTopLineThicknessPx: 1,
+            labelTopLineWidthPct: 100,
+            labelBottomLineShow: true,
+            labelBottomLineThicknessPx: 1,
+            labelBottomLineWidthPct: 100,
+            labelOuterBorderShow: false,
+            labelOuterBorderThicknessPx: 1,
+            labelOuterBorderStyle: 'solid',
+            labelOuterBorderRadiusMm: 0,
+            labelRollCutLineShow: true,
+
+            // [PRINT_VISIBLE_FIELDS]
+            labelShowFieldProduct: true,
+            labelShowFieldStyle: true,
+            labelShowFieldType: true,
+            labelShowFieldLength: false,
+            labelShowFieldSleeves: false,
+            labelShowFieldGender: false,
+            labelShowFieldColor: false,
+            labelShowFieldSize: true,
+            labelShowFieldNotes: false
+        };
 
         const DEFAULT_SETTINGS = {
             storeName: 'Rikai',
@@ -1858,23 +2279,14 @@ function doPost(e) {
             defaultGender: 'Men',
             defaultQty: 1,
             barcodeFormat: 'CODE128',
-            defaultPrintLayout: 'thermal-roll',
-            thermalBrandText: 'Rikai',
-            shopAddress: 'Contact Us- 7021246251/9619295228 Mail Us - care@riaki.in Visit us at - Shop No.4, Vini Garden 1, D-wing Santoshi Mata Rd. Borivali West, Mumbai-400103',
-            thermalPaperSize: '50x70',
-            customPaperWidth: 50,
-            customPaperHeight: 70,
-            defaultFontFamily: 'Inter, Arial, sans-serif',
-            headerFontSize: 13,
-            portraitFontSize: 10,
-            barcodeSize: 'md',
             defaultScanAction: 'ask',
             beepOnScan: true,
             customTypes: ['Shirt', 'Pants', 'Dress', 'Top', 'Hoodie', 'Shacket', 'Jacket', 'Kurta', 'Nehru Jacket'],
             customSizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '28', '30', '32', '34', '36', '38', '40', '42', '44'],
             customLengths: ['N/A', 'Short', 'Knee-Length', 'Midi', 'Long', 'Cropped', 'Full Length'],
             customSleeves: ['N/A', 'Contrast Sleeve', 'Full Sleeves', 'Short Sleeves', 'No Sleeves', '3/4 Sleeves', 'Cap Sleeves'],
-            customLooks: ['N/A', 'Cowl Neck', 'Chinese Collar', 'Empire']
+            customLooks: ['N/A', 'Cowl Neck', 'Chinese Collar', 'Empire'],
+            ...DEFAULT_PRINT_LAYOUT
         };
 
         const PANT_NUMERIC_SIZES = ['28', '30', '32', '34', '36', '38', '40', '42', '44'];
@@ -1886,9 +2298,9 @@ function doPost(e) {
             mint: '#059669', stone: '#57534e', sand: '#a16207', midnight: '#1e1b4b', obsidian: '#09090b'
         };
 
-        // ==========================================
-        // Multi-SKU Normalization & Lookup Helpers
-        // ==========================================
+        // ============================================================
+        // [JS_SECTION: MULTI_SKU_HELPERS] Search tag: #SKU_HELPERS
+        // ============================================================
         function normalizeItemSkus(item) {
             const list = [];
             const seen = new Set();
@@ -1915,6 +2327,9 @@ function doPost(e) {
             return target ? inventoryData.find(item => itemHasSku(item, target)) : undefined;
         }
 
+        // ============================================================
+        // [JS_SECTION: APP_STATE_AND_DOM_REFS] Search tag: #APP_STATE
+        // ============================================================
         let inventoryData = [];
         let visibleInventory = [];
         let salesData = [];
@@ -1974,9 +2389,9 @@ function doPost(e) {
         const confirmModal = document.getElementById('confirmModal');
         const itemForm = document.getElementById('itemForm');
 
-        // ==========================================
-        // Initialization
-        // ==========================================
+        // ============================================================
+        // [JS_SECTION: INITIALIZATION] Search tag: #INIT
+        // ============================================================
         async function init() {
             const previewEl = document.getElementById('appsScriptPreview');
             if (previewEl) previewEl.textContent = APPS_SCRIPT_CODE;
@@ -2062,9 +2477,9 @@ function doPost(e) {
             return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
         }
 
-        // ==========================================
-        // Tab Switching & Settings UI Sync
-        // ==========================================
+        // ============================================================
+        // [JS_SECTION: TABS_AND_MASTER_SETTINGS] Search tag: #SETTINGS_JS
+        // ============================================================
         window.switchTab = (tabName) => {
             activeTab = tabName;
             ['inventory', 'custom', 'sales', 'settings'].forEach(t => {
@@ -2137,17 +2552,11 @@ function doPost(e) {
             if (preserveVal && orderedSizes.includes(preserveVal)) {
                 itemSizeEl.value = preserveVal;
             } else if (isPants) {
-                if (currentVal && /^\d+(\.\d+)?$/.test(currentVal.trim()) && orderedSizes.includes(currentVal)) {
-                    itemSizeEl.value = currentVal;
-                } else {
-                    itemSizeEl.value = orderedSizes.includes('32') ? '32' : orderedSizes[0];
-                }
+                itemSizeEl.value = (currentVal && /^\d+(\.\d+)?$/.test(currentVal.trim()) && orderedSizes.includes(currentVal))
+                    ? currentVal : (orderedSizes.includes('32') ? '32' : orderedSizes[0]);
             } else {
-                if (currentVal && !/^\d+(\.\d+)?$/.test(currentVal.trim()) && orderedSizes.includes(currentVal)) {
-                    itemSizeEl.value = currentVal;
-                } else {
-                    itemSizeEl.value = orderedSizes.includes('M') ? 'M' : orderedSizes[0];
-                }
+                itemSizeEl.value = (currentVal && !/^\d+(\.\d+)?$/.test(currentVal.trim()) && orderedSizes.includes(currentVal))
+                    ? currentVal : (orderedSizes.includes('M') ? 'M' : orderedSizes[0]);
             }
         }
 
@@ -2264,6 +2673,22 @@ function doPost(e) {
             if (appMain) appMain.style.backgroundColor = val;
         });
 
+        window.openLabelDesignerFromSettings = () => {
+            const sample = inventoryData[0] || normalizeItemSkus({
+                docId: 'sample-preview',
+                sku: 'RIKAI-101',
+                name: 'Linen Relaxed Shirt',
+                type: 'Shirt',
+                gender: 'Men',
+                size: 'M',
+                color: 'Ivory',
+                look: 'Chinese Collar',
+                qty: 1,
+                price: 2499
+            });
+            openPrintModal([sample]);
+        };
+
         window.saveSettingsFromPage = async () => {
             const out = Math.max(0, parseInt(document.getElementById('setOutStock')?.value, 10) || 0);
             const parseCsvList = (str, fallback, excludeOther = true) => {
@@ -2306,9 +2731,9 @@ function doPost(e) {
             if (gsUrl && gsAutoSync) await syncToGoogleSheets({ action: 'saveSettings', settings });
         };
 
-        // ==========================================
-        // Formatting & Color Helpers
-        // ==========================================
+        // ============================================================
+        // [JS_SECTION: FORMATTING_AND_COLOR_HELPERS] Search tag: #FORMAT
+        // ============================================================
         function formatMoney(amount) {
             const cur = settings.currency || '₹';
             const num = Number(amount) || 0;
@@ -2342,7 +2767,7 @@ function doPost(e) {
             if (!colorStr) return 'transparent';
             const cleaned = colorStr.trim().toLowerCase();
             const map = {
-                'navy blue': '#001f3f', 'navy': '#001f3f', 'sky blue': '#38bdf8', 'royal blue': '#2563eb',
+                'navy blue': '#001f3f', 'navy': '#001f3f', 'sky blue': '#38bdf8', 'royal blue': '#
                 'dark blue': '#1e3a8a', 'light blue': '#93c5fd', 'baby blue': '#89cff0', 'bold blue': '#1d4ed8',
                 'dark green': '#14532d', 'olive green': '#556b2f', 'olive': '#556b2f',
                 'emerald': '#10b981', 'emerald green': '#10b981', 'mint': '#6ee7b7', 'sage': '#9caf88',
@@ -2380,9 +2805,9 @@ function doPost(e) {
             return `<div class="flex flex-wrap items-center gap-1 mt-1"><span class="text-[11px] font-semibold text-indigo-700">${skus.length} SKUs:</span>${badges}</div>`;
         }
 
-        // ==========================================
-        // Multi-Select State & UI
-        // ==========================================
+        // ============================================================
+        // [JS_SECTION: MULTI_SELECT_UI] Search tag: #MULTI_SELECT
+        // ============================================================
         function pruneSelection() {
             const validIds = new Set(inventoryData.map(i => i.docId));
             for (const id of [...selectedIds]) if (!validIds.has(id)) selectedIds.delete(id);
@@ -2423,9 +2848,9 @@ function doPost(e) {
         selectAllMobile.addEventListener('change', (e) => toggleSelectAllVisible(e.target.checked));
         window.clearSelection = () => { selectedIds.clear(); document.querySelectorAll('.item-select-cb').forEach(cb => cb.checked = false); updateSelectionUI(); };
 
-        // ==========================================
-        // Render Inventory + Sales + Custom
-        // ==========================================
+        // ============================================================
+        // [JS_SECTION: INVENTORY_RENDER_AND_FILTERS] Search tag: #INV_RENDER
+        // ============================================================
         function refreshAllViews() {
             pruneSelection();
             handleFilters();
@@ -2705,9 +3130,101 @@ function doPost(e) {
             document.querySelectorAll('.delete-btn').forEach(b => b.onclick = () => requestDeleteItem(b.dataset.id));
         }
 
-        // ==========================================
-        // Multi-Product Thermal Portrait Barcode Printing (50x70mm + Centered SVG)
-        // ==========================================
+        // ============================================================
+        // [JS_SECTION: PRINT_LABEL_DESIGNER_AND_RENDERER] Search tag: #PRINT_JS
+        // Controls every alignment, padding, margin, offset, border,
+        // divider line, spacing, barcode size & visible field from UI.
+        // ============================================================
+        const BARCODE_PRESETS = {
+            sm: { barWidth: 1.0, height: 24 },
+            md: { barWidth: 1.3, height: 34 },
+            lg: { barWidth: 1.7, height: 44 },
+            xl: { barWidth: 2.0, height: 54 }
+        };
+
+        function loadPrintSettingsIntoModal(src = settings) {
+            setVal('pmLayout', src.defaultPrintLayout || 'thermal-roll');
+            setVal('pmPaperSize', src.thermalPaperSize || '50x70');
+            setVal('pmBrandText', src.thermalBrandText ?? 'Rikai');
+            setVal('pmShopAddress', src.shopAddress ?? '');
+            setVal('pmCustomWidth', src.customPaperWidth ?? 50);
+            setVal('pmCustomHeight', src.customPaperHeight ?? 70);
+
+            // Margins, Padding, Width % & Printer Offset
+            setVal('pmContentWidthPct', src.labelContentWidthPct ?? 100);
+            setVal('pmOffsetXMm', src.labelOffsetXMm ?? 0);
+            setVal('pmOffsetYMm', src.labelOffsetYMm ?? 0);
+            setVal('pmPadTop', src.labelPaddingTopMm ?? 1.5);
+            setVal('pmPadRight', src.labelPaddingRightMm ?? 2);
+            setVal('pmPadBottom', src.labelPaddingBottomMm ?? 1.5);
+            setVal('pmPadLeft', src.labelPaddingLeftMm ?? 2);
+            setVal('pmPageMarginTop', src.labelPageMarginTopMm ?? 0);
+            setVal('pmPageMarginRight', src.labelPageMarginRightMm ?? 0);
+            setVal('pmPageMarginBottom', src.labelPageMarginBottomMm ?? 0);
+            setVal('pmPageMarginLeft', src.labelPageMarginLeftMm ?? 0);
+
+            // Alignments & Typography
+            setVal('pmHeaderAlign', src.labelHeaderAlign || 'center');
+            setVal('pmDetailsAlign', src.labelDetailsAlign || 'center');
+            setVal('pmBarcodeAlign', src.labelBarcodeAlign || 'center');
+            setVal('pmAddressAlign', src.labelAddressAlign || 'center');
+            setVal('pmFooterAlign', src.labelFooterAlign || 'center');
+            setVal('pmFontFamily', src.defaultFontFamily || 'Inter, Arial, sans-serif');
+            setVal('pmHeaderFontSize', src.headerFontSize ?? 13);
+            setVal('pmHeaderWeight', String(src.labelHeaderWeight ?? 800));
+            setVal('pmFontSize', src.portraitFontSize ?? 10);
+            setVal('pmAddressFontSize', src.labelAddressFontSizePx ?? 8);
+            setVal('pmFooterFontSize', src.labelFooterFontSizePx ?? 8.5);
+
+            // Spacing & Gaps
+            setVal('pmHeaderPadBottom', src.labelHeaderPadBottomPx ?? 2);
+            setVal('pmHeaderMarginBottom', src.labelHeaderMarginBottomPx ?? 3);
+            setVal('pmDetailsLineHeight', src.labelDetailsLineHeight ?? 1.25);
+            setVal('pmDetailsRowGap', src.labelDetailsRowGapPx ?? 1.5);
+            setVal('pmDetailsMarginBottom', src.labelDetailsMarginBottomPx ?? 4);
+            setVal('pmAddressMarginTop', src.labelAddressMarginTopPx ?? 2);
+            setVal('pmAddressLineHeight', src.labelAddressLineHeight ?? 1.15);
+            setVal('pmFooterMarginTop', src.labelFooterMarginTopPx ?? 3);
+            setVal('pmFooterPadTop', src.labelFooterPadTopPx ?? 3);
+            setVal('pmFooterLineGap', src.labelFooterLineGapPx ?? 1);
+
+            // Barcode Controls
+            setVal('pmBarcodeSize', src.barcodeSize || 'md');
+            setVal('pmBarcodeBarWidth', src.labelBarcodeBarWidth ?? 1.3);
+            setVal('pmBarcodeHeight', src.labelBarcodeHeightPx ?? 34);
+            setVal('pmBarcodeMaxWidthPct', src.labelBarcodeMaxWidthPct ?? 95);
+            setVal('pmBarcodePadTop', src.labelBarcodePadTopPx ?? 4);
+            setVal('pmBarcodePadBottom', src.labelBarcodePadBottomPx ?? 4);
+            setVal('pmBarcodeFontSize', src.labelBarcodeFontSizePx ?? 9);
+            setChk('pmShowSkuText', src.showSkuText !== false);
+
+            // Divider Lines & Outer Border
+            setChk('pmTopLineShow', src.labelTopLineShow !== false);
+            setVal('pmTopLineThickness', src.labelTopLineThicknessPx ?? 1);
+            setVal('pmTopLineWidthPct', src.labelTopLineWidthPct ?? 100);
+            setChk('pmBottomLineShow', src.labelBottomLineShow !== false);
+            setVal('pmBottomLineThickness', src.labelBottomLineThicknessPx ?? 1);
+            setVal('pmBottomLineWidthPct', src.labelBottomLineWidthPct ?? 100);
+            setChk('pmOuterBorderShow', Boolean(src.labelOuterBorderShow));
+            setChk('pmRollCutLineShow', src.labelRollCutLineShow !== false);
+            setVal('pmOuterBorderThickness', src.labelOuterBorderThicknessPx ?? 1);
+            setVal('pmOuterBorderStyle', src.labelOuterBorderStyle || 'solid');
+            setVal('pmOuterBorderRadius', src.labelOuterBorderRadiusMm ?? 0);
+
+            // Footer Text & Visible Detail Fields
+            setVal('pmFooterLine1', src.labelFooterLine1 ?? '100% PURE LINEN');
+            setVal('pmFooterLine2', src.labelFooterLine2 ?? 'Proudly Made in India');
+            setChk('pmFieldProduct', src.labelShowFieldProduct !== false);
+            setChk('pmFieldStyle', src.labelShowFieldStyle !== false);
+            setChk('pmFieldType', src.labelShowFieldType !== false);
+            setChk('pmFieldSize', src.labelShowFieldSize !== false);
+            setChk('pmFieldLength', Boolean(src.labelShowFieldLength));
+            setChk('pmFieldSleeves', Boolean(src.labelShowFieldSleeves));
+            setChk('pmFieldGender', Boolean(src.labelShowFieldGender));
+            setChk('pmFieldColor', Boolean(src.labelShowFieldColor));
+            setChk('pmFieldNotes', Boolean(src.labelShowFieldNotes));
+        }
+
         window.openPrintModalForSelected = () => {
             const items = inventoryData.filter(i => selectedIds.has(i.docId));
             if (items.length === 0) { showToast("Select at least one product to print.", "error"); return; }
@@ -2720,17 +3237,7 @@ function doPost(e) {
                 return { item, selectedSku: skus[0] || item.sku, copies: 1 };
             });
 
-            setVal('pmLayout', settings.defaultPrintLayout || 'thermal-roll');
-            setVal('pmPaperSize', settings.thermalPaperSize || '50x70');
-            setVal('pmBrandText', settings.thermalBrandText ?? 'Rikai');
-            setVal('pmShopAddress', settings.shopAddress || '');
-            setVal('pmFontFamily', settings.defaultFontFamily || 'Inter, Arial, sans-serif');
-            setVal('pmHeaderFontSize', settings.headerFontSize || 13);
-            setVal('pmFontSize', settings.portraitFontSize || 10);
-            setVal('pmBarcodeSize', settings.barcodeSize || 'md');
-            setVal('pmCustomWidth', settings.customPaperWidth || 50);
-            setVal('pmCustomHeight', settings.customPaperHeight || 70);
-            setChk('pmShowSkuText', true);
+            loadPrintSettingsIntoModal(settings);
             document.getElementById('pmSubtitle').innerText = `${items.length} product(s) ready to print`;
 
             renderPrintQueueList();
@@ -2752,7 +3259,45 @@ function doPost(e) {
             if (customWrap) { customWrap.classList.toggle('hidden', !isCustom); customWrap.classList.toggle('grid', isCustom); }
         }
 
-        ['pmLayout', 'pmBrandText', 'pmShopAddress', 'pmPaperSize', 'pmFontFamily', 'pmHeaderFontSize', 'pmFontSize', 'pmBarcodeSize', 'pmCustomWidth', 'pmCustomHeight', 'pmShowSkuText'].forEach(id => {
+        // Sync Barcode Quick Preset -> Bar Width & Bar Height inputs
+        document.getElementById('pmBarcodeSize')?.addEventListener('change', (e) => {
+            const preset = BARCODE_PRESETS[e.target.value];
+            if (preset) {
+                setVal('pmBarcodeBarWidth', preset.barWidth);
+                setVal('pmBarcodeHeight', preset.height);
+            }
+            renderPrintPreview();
+        });
+
+        // Switch preset dropdown to "custom" when user manually edits Bar Width or Height
+        ['pmBarcodeBarWidth', 'pmBarcodeHeight'].forEach(id => {
+            document.getElementById(id)?.addEventListener('input', () => {
+                const bw = parseFloat(document.getElementById('pmBarcodeBarWidth')?.value);
+                const bh = parseFloat(document.getElementById('pmBarcodeHeight')?.value);
+                const matched = Object.entries(BARCODE_PRESETS).find(([, p]) => p.barWidth === bw && p.height === bh);
+                setVal('pmBarcodeSize', matched ? matched[0] : 'custom');
+            });
+        });
+
+        // Attach live-preview listeners to all Print Modal controls
+        const PRINT_CONTROL_IDS = [
+            'pmLayout', 'pmBrandText', 'pmPaperSize', 'pmCustomWidth', 'pmCustomHeight',
+            'pmContentWidthPct', 'pmOffsetXMm', 'pmOffsetYMm',
+            'pmPadTop', 'pmPadRight', 'pmPadBottom', 'pmPadLeft',
+            'pmPageMarginTop', 'pmPageMarginRight', 'pmPageMarginBottom', 'pmPageMarginLeft',
+            'pmHeaderAlign', 'pmDetailsAlign', 'pmBarcodeAlign', 'pmAddressAlign', 'pmFooterAlign',
+            'pmFontFamily', 'pmHeaderFontSize', 'pmHeaderWeight', 'pmFontSize', 'pmAddressFontSize', 'pmFooterFontSize',
+            'pmHeaderPadBottom', 'pmHeaderMarginBottom', 'pmDetailsLineHeight', 'pmDetailsRowGap', 'pmDetailsMarginBottom',
+            'pmAddressMarginTop', 'pmAddressLineHeight', 'pmFooterMarginTop', 'pmFooterPadTop', 'pmFooterLineGap',
+            'pmBarcodeBarWidth', 'pmBarcodeHeight', 'pmBarcodeMaxWidthPct', 'pmBarcodePadTop', 'pmBarcodePadBottom', 'pmBarcodeFontSize', 'pmShowSkuText',
+            'pmTopLineShow', 'pmTopLineThickness', 'pmTopLineWidthPct',
+            'pmBottomLineShow', 'pmBottomLineThickness', 'pmBottomLineWidthPct',
+            'pmOuterBorderShow', 'pmRollCutLineShow', 'pmOuterBorderThickness', 'pmOuterBorderStyle', 'pmOuterBorderRadius',
+            'pmShopAddress', 'pmFooterLine1', 'pmFooterLine2',
+            'pmFieldProduct', 'pmFieldStyle', 'pmFieldType', 'pmFieldSize', 'pmFieldLength', 'pmFieldSleeves', 'pmFieldGender', 'pmFieldColor', 'pmFieldNotes'
+        ];
+
+        PRINT_CONTROL_IDS.forEach(id => {
             const el = document.getElementById(id);
             if (!el) return;
             el.addEventListener('input', () => { syncPrintModalFields(); renderPrintPreview(); });
@@ -2810,21 +3355,195 @@ function doPost(e) {
         window.setPrintCopiesAll = (n) => { printQueue.forEach(e => { e.copies = Math.max(1, n); }); renderPrintQueueList(); };
         window.setPrintCopiesMatchStock = () => { printQueue.forEach(e => { e.copies = Math.max(1, parseInt(e.item.qty, 10) || 0); }); renderPrintQueueList(); };
 
+        function numVal(id, fallback, min = -999, max = 999) {
+            const raw = parseFloat(document.getElementById(id)?.value);
+            if (Number.isNaN(raw)) return fallback;
+            return Math.max(min, Math.min(max, raw));
+        }
+
         function getPrintConfig() {
             return {
                 layout: document.getElementById('pmLayout')?.value || 'thermal-roll',
-                brandText: document.getElementById('pmBrandText')?.value.trim() || 'Rikai',
-                shopAddress: document.getElementById('pmShopAddress')?.value.trim() || '',
+                brandText: document.getElementById('pmBrandText')?.value ?? 'Rikai',
+                shopAddress: (document.getElementById('pmShopAddress')?.value || '').trim(),
                 paperSize: document.getElementById('pmPaperSize')?.value || '50x70',
+                customWidth: numVal('pmCustomWidth', 50, 15, 300),
+                customHeight: numVal('pmCustomHeight', 70, 15, 300),
+
+                // Margins, Padding, Content Width & Offsets
+                contentWidthPct: numVal('pmContentWidthPct', 100, 60, 100),
+                offsetXMm: numVal('pmOffsetXMm', 0, -15, 15),
+                offsetYMm: numVal('pmOffsetYMm', 0, -15, 15),
+                padTopMm: numVal('pmPadTop', 1.5, 0, 15),
+                padRightMm: numVal('pmPadRight', 2, 0, 15),
+                padBottomMm: numVal('pmPadBottom', 1.5, 0, 15),
+                padLeftMm: numVal('pmPadLeft', 2, 0, 15),
+                pageMarginTopMm: numVal('pmPageMarginTop', 0, 0, 15),
+                pageMarginRightMm: numVal('pmPageMarginRight', 0, 0, 15),
+                pageMarginBottomMm: numVal('pmPageMarginBottom', 0, 0, 15),
+                pageMarginLeftMm: numVal('pmPageMarginLeft', 0, 0, 15),
+
+                // Alignments & Typography
+                headerAlign: document.getElementById('pmHeaderAlign')?.value || 'center',
+                detailsAlign: document.getElementById('pmDetailsAlign')?.value || 'center',
+                barcodeAlign: document.getElementById('pmBarcodeAlign')?.value || 'center',
+                addressAlign: document.getElementById('pmAddressAlign')?.value || 'center',
+                footerAlign: document.getElementById('pmFooterAlign')?.value || 'center',
                 fontFamily: document.getElementById('pmFontFamily')?.value || 'Inter, Arial, sans-serif',
-                headerFontSize: Math.max(8, Math.min(28, parseFloat(document.getElementById('pmHeaderFontSize')?.value) || 13)),
-                fontSize: Math.max(7, Math.min(22, parseFloat(document.getElementById('pmFontSize')?.value) || 10)),
+                headerFontSize: numVal('pmHeaderFontSize', 13, 8, 28),
+                headerWeight: parseInt(document.getElementById('pmHeaderWeight')?.value, 10) || 800,
+                fontSize: numVal('pmFontSize', 10, 6, 22),
+                addressFontSize: numVal('pmAddressFontSize', 8, 5, 16),
+                footerFontSize: numVal('pmFooterFontSize', 8.5, 5, 16),
+
+                // Spacing & Gaps
+                headerPadBottom: numVal('pmHeaderPadBottom', 2, 0, 20),
+                headerMarginBottom: numVal('pmHeaderMarginBottom', 3, 0, 20),
+                detailsLineHeight: numVal('pmDetailsLineHeight', 1.25, 0.9, 2.2),
+                detailsRowGap: numVal('pmDetailsRowGap', 1.5, 0, 15),
+                detailsMarginBottom: numVal('pmDetailsMarginBottom', 4, 0, 25),
+                addressMarginTop: numVal('pmAddressMarginTop', 2, 0, 20),
+                addressLineHeight: numVal('pmAddressLineHeight', 1.15, 0.9, 2.0),
+                footerMarginTop: numVal('pmFooterMarginTop', 3, 0, 20),
+                footerPadTop: numVal('pmFooterPadTop', 3, 0, 20),
+                footerLineGap: numVal('pmFooterLineGap', 1, 0, 12),
+
+                // Barcode
                 barcodeSize: document.getElementById('pmBarcodeSize')?.value || 'md',
-                customWidth: Math.max(15, Math.min(300, parseFloat(document.getElementById('pmCustomWidth')?.value) || 50)),
-                customHeight: Math.max(15, Math.min(300, parseFloat(document.getElementById('pmCustomHeight')?.value) || 70)),
-                showSkuText: Boolean(document.getElementById('pmShowSkuText')?.checked)
+                barcodeBarWidth: numVal('pmBarcodeBarWidth', 1.3, 0.6, 3.0),
+                barcodeHeight: numVal('pmBarcodeHeight', 34, 15, 80),
+                barcodeMaxWidthPct: numVal('pmBarcodeMaxWidthPct', 95, 40, 100),
+                barcodePadTop: numVal('pmBarcodePadTop', 4, 0, 25),
+                barcodePadBottom: numVal('pmBarcodePadBottom', 4, 0, 25),
+                barcodeFontSize: numVal('pmBarcodeFontSize', 9, 6, 18),
+                showSkuText: Boolean(document.getElementById('pmShowSkuText')?.checked),
+
+                // Borders & Lines
+                topLineShow: Boolean(document.getElementById('pmTopLineShow')?.checked),
+                topLineThickness: numVal('pmTopLineThickness', 1, 0.5, 5),
+                topLineWidthPct: numVal('pmTopLineWidthPct', 100, 20, 100),
+                bottomLineShow: Boolean(document.getElementById('pmBottomLineShow')?.checked),
+                bottomLineThickness: numVal('pmBottomLineThickness', 1, 0.5, 5),
+                bottomLineWidthPct: numVal('pmBottomLineWidthPct', 100, 20, 100),
+                outerBorderShow: Boolean(document.getElementById('pmOuterBorderShow')?.checked),
+                rollCutLineShow: Boolean(document.getElementById('pmRollCutLineShow')?.checked),
+                outerBorderThickness: numVal('pmOuterBorderThickness', 1, 0.5, 5),
+                outerBorderStyle: document.getElementById('pmOuterBorderStyle')?.value || 'solid',
+                outerBorderRadius: numVal('pmOuterBorderRadius', 0, 0, 10),
+
+                // Footer Text & Fields
+                footerLine1: document.getElementById('pmFooterLine1')?.value ?? '',
+                footerLine2: document.getElementById('pmFooterLine2')?.value ?? '',
+                fields: {
+                    product: Boolean(document.getElementById('pmFieldProduct')?.checked),
+                    style: Boolean(document.getElementById('pmFieldStyle')?.checked),
+                    type: Boolean(document.getElementById('pmFieldType')?.checked),
+                    size: Boolean(document.getElementById('pmFieldSize')?.checked),
+                    length: Boolean(document.getElementById('pmFieldLength')?.checked),
+                    sleeves: Boolean(document.getElementById('pmFieldSleeves')?.checked),
+                    gender: Boolean(document.getElementById('pmFieldGender')?.checked),
+                    color: Boolean(document.getElementById('pmFieldColor')?.checked),
+                    notes: Boolean(document.getElementById('pmFieldNotes')?.checked)
+                }
             };
         }
+
+        function mapConfigToSettings(cfg) {
+            return {
+                defaultPrintLayout: cfg.layout,
+                thermalBrandText: cfg.brandText,
+                shopAddress: cfg.shopAddress,
+                thermalPaperSize: cfg.paperSize,
+                customPaperWidth: cfg.customWidth,
+                customPaperHeight: cfg.customHeight,
+                defaultFontFamily: cfg.fontFamily,
+                headerFontSize: cfg.headerFontSize,
+                portraitFontSize: cfg.fontSize,
+                barcodeSize: cfg.barcodeSize,
+                showSkuText: cfg.showSkuText,
+
+                labelPageMarginTopMm: cfg.pageMarginTopMm,
+                labelPageMarginRightMm: cfg.pageMarginRightMm,
+                labelPageMarginBottomMm: cfg.pageMarginBottomMm,
+                labelPageMarginLeftMm: cfg.pageMarginLeftMm,
+                labelPaddingTopMm: cfg.padTopMm,
+                labelPaddingRightMm: cfg.padRightMm,
+                labelPaddingBottomMm: cfg.padBottomMm,
+                labelPaddingLeftMm: cfg.padLeftMm,
+                labelOffsetXMm: cfg.offsetXMm,
+                labelOffsetYMm: cfg.offsetYMm,
+                labelContentWidthPct: cfg.contentWidthPct,
+
+                labelHeaderAlign: cfg.headerAlign,
+                labelDetailsAlign: cfg.detailsAlign,
+                labelBarcodeAlign: cfg.barcodeAlign,
+                labelAddressAlign: cfg.addressAlign,
+                labelFooterAlign: cfg.footerAlign,
+
+                labelHeaderWeight: cfg.headerWeight,
+                labelHeaderPadBottomPx: cfg.headerPadBottom,
+                labelHeaderMarginBottomPx: cfg.headerMarginBottom,
+                labelDetailsLineHeight: cfg.detailsLineHeight,
+                labelDetailsRowGapPx: cfg.detailsRowGap,
+                labelDetailsMarginBottomPx: cfg.detailsMarginBottom,
+
+                labelBarcodeBarWidth: cfg.barcodeBarWidth,
+                labelBarcodeHeightPx: cfg.barcodeHeight,
+                labelBarcodeMaxWidthPct: cfg.barcodeMaxWidthPct,
+                labelBarcodePadTopPx: cfg.barcodePadTop,
+                labelBarcodePadBottomPx: cfg.barcodePadBottom,
+                labelBarcodeFontSizePx: cfg.barcodeFontSize,
+
+                labelAddressFontSizePx: cfg.addressFontSize,
+                labelAddressLineHeight: cfg.addressLineHeight,
+                labelAddressMarginTopPx: cfg.addressMarginTop,
+                labelFooterPadTopPx: cfg.footerPadTop,
+                labelFooterMarginTopPx: cfg.footerMarginTop,
+                labelFooterFontSizePx: cfg.footerFontSize,
+                labelFooterLineGapPx: cfg.footerLineGap,
+                labelFooterLine1: cfg.footerLine1,
+                labelFooterLine2: cfg.footerLine2,
+
+                labelTopLineShow: cfg.topLineShow,
+                labelTopLineThicknessPx: cfg.topLineThickness,
+                labelTopLineWidthPct: cfg.topLineWidthPct,
+                labelBottomLineShow: cfg.bottomLineShow,
+                labelBottomLineThicknessPx: cfg.bottomLineThickness,
+                labelBottomLineWidthPct: cfg.bottomLineWidthPct,
+                labelOuterBorderShow: cfg.outerBorderShow,
+                labelOuterBorderThicknessPx: cfg.outerBorderThickness,
+                labelOuterBorderStyle: cfg.outerBorderStyle,
+                labelOuterBorderRadiusMm: cfg.outerBorderRadius,
+                labelRollCutLineShow: cfg.rollCutLineShow,
+
+                labelShowFieldProduct: cfg.fields.product,
+                labelShowFieldStyle: cfg.fields.style,
+                labelShowFieldType: cfg.fields.type,
+                labelShowFieldSize: cfg.fields.size,
+                labelShowFieldLength: cfg.fields.length,
+                labelShowFieldSleeves: cfg.fields.sleeves,
+                labelShowFieldGender: cfg.fields.gender,
+                labelShowFieldColor: cfg.fields.color,
+                labelShowFieldNotes: cfg.fields.notes
+            };
+        }
+
+        window.savePrintLayoutSettings = async (showConfirmation = true) => {
+            const cfg = getPrintConfig();
+            settings = { ...settings, ...mapConfigToSettings(cfg) };
+            saveSettingsLocal();
+            if (activeTab === 'settings') populateSettingsForm();
+            if (showConfirmation) showToast("Label layout saved as default!", "success");
+            if (gsUrl && gsAutoSync) await syncToGoogleSheets({ action: 'saveSettings', settings });
+        };
+
+        window.resetPrintLayoutToDefaults = () => {
+            settings = { ...settings, ...DEFAULT_PRINT_LAYOUT };
+            loadPrintSettingsIntoModal(settings);
+            syncPrintModalFields();
+            renderPrintPreview();
+            showToast("Label layout reset to defaults (click Save Layout to keep).", "info");
+        };
 
         function resolvePaperDimensionsMm(cfg) {
             switch (cfg.paperSize) {
@@ -2840,29 +3559,13 @@ function doPost(e) {
             }
         }
 
-        const PORTRAIT_LABEL = {
-            headerWeight: 800,
-            headerLetterSpacing: '0.04em',
-            headerUnderline: true,
-            detailLineHeight: 1.24,
-            detailRowGap: 1.5,
-            labelWeight: 700,
-            barcodeFontFamily: 'monospace',
-            barcodeMargin: 0,
-            rows: {
-                product: { show: true, label: 'Product' },
-                style:   { show: true, label: 'Style' },
-                type:    { show: true, label: 'Type' },
-                length:  { show: false, label: 'Length' },
-                sleeves: { show: false, label: 'Sleeves' },
-                gender:  { show: false, label: 'Gender' },
-                color:   { show: false, label: 'Color' },
-                size:    { show: true, label: 'Size' },
-                notes:   { show: false, label: 'Notes' }
-            }
-        };
+        function alignToFlex(align) {
+            if (align === 'left') return 'flex-start';
+            if (align === 'right') return 'flex-end';
+            return 'center';
+        }
 
-        function buildPortraitDetailRows(item) {
+        function buildPortraitDetailRows(item, cfg) {
             const typeVal = formatItemType(item);
             const cleanType = typeVal && typeVal !== 'N/A' ? typeVal : '';
             const styleVal = formatOptionDisplay(item.look, item.customLook);
@@ -2870,57 +3573,103 @@ function doPost(e) {
             const sleevesVal = formatOptionDisplay(item.sleeves, item.customSleeves);
 
             const rows = [];
-            const add = (key, value) => {
-                const cfgRow = PORTRAIT_LABEL.rows[key];
-                if (cfgRow && cfgRow.show && value) rows.push({ label: cfgRow.label, value });
-            };
+            const add = (show, label, value) => { if (show && value) rows.push({ label, value }); };
 
-            add('product', item.name || '—');
-            add('style', styleVal || cleanType || '—');
-            if (styleVal && cleanType && styleVal.toLowerCase() !== cleanType.toLowerCase()) add('type', cleanType);
-            add('length', lengthVal);
-            add('sleeves', sleevesVal);
-            if (item.gender && item.gender !== 'N/A') add('gender', item.gender);
-            add('color', item.color);
-            add('size', item.size || 'N/A');
-            add('notes', item.lookNotes);
+            add(cfg.fields.product, 'Product', item.name || '—');
+            add(cfg.fields.style, 'Style', styleVal || cleanType || '—');
+            if (styleVal && cleanType && styleVal.toLowerCase() !== cleanType.toLowerCase()) {
+                add(cfg.fields.type, 'Type', cleanType);
+            } else if (!cfg.fields.style) {
+                add(cfg.fields.type, 'Type', cleanType);
+            }
+            add(cfg.fields.length, 'Length', lengthVal);
+            add(cfg.fields.sleeves, 'Sleeves', sleevesVal);
+            if (item.gender && item.gender !== 'N/A') add(cfg.fields.gender, 'Gender', item.gender);
+            add(cfg.fields.color, 'Color', item.color);
+            add(cfg.fields.size, 'Size', item.size || 'N/A');
+            add(cfg.fields.notes, 'Notes', item.lookNotes);
             return rows;
         }
 
-        function createLabelElement(item, cfg, forPrint = false, skuOverride = null) {
+        function createLabelElement(item, cfg, forPrint = false, skuOverride = null, isLastInBatch = false) {
             const el = document.createElement('div');
             const dims = resolvePaperDimensionsMm(cfg);
-            const P = PORTRAIT_LABEL;
             const targetSku = skuOverride || item.sku;
 
             el.className = cfg.layout === 'thermal-page'
                 ? 'print-label-thermal-portrait-page'
                 : 'print-label-thermal-portrait-roll';
 
+            // Base container styling (exact same geometry in Preview & Print)
+            el.style.display = 'flex';
+            el.style.flexDirection = 'column';
+            el.style.justifyContent = 'space-between';
+            el.style.alignItems = 'stretch';
+            el.style.boxSizing = 'border-box';
+            el.style.overflow = 'hidden';
+            el.style.background = '#ffffff';
+            el.style.color = '#000000';
+            el.style.fontFamily = cfg.fontFamily;
+            el.style.width = `${cfg.contentWidthPct}%`;
+            el.style.marginLeft = 'auto';
+            el.style.marginRight = 'auto';
+            el.style.padding = `${cfg.padTopMm}mm ${cfg.padRightMm}mm ${cfg.padBottomMm}mm ${cfg.padLeftMm}mm`;
+
+            if (cfg.offsetXMm !== 0 || cfg.offsetYMm !== 0) {
+                el.style.transform = `translate(${cfg.offsetXMm}mm, ${cfg.offsetYMm}mm)`;
+            }
+
+            // Outer border / Roll cut separator
+            if (cfg.outerBorderShow) {
+                el.style.border = `${cfg.outerBorderThickness}px ${cfg.outerBorderStyle} #000000`;
+                el.style.borderRadius = `${cfg.outerBorderRadius}mm`;
+            } else if (forPrint && cfg.layout === 'thermal-roll' && cfg.rollCutLineShow && !isLastInBatch) {
+                el.style.borderBottom = '1px dashed #000000';
+            }
+
+            // Height sizing for fixed sticker / page dimensions
+            const printableH = dims.heightMm
+                ? Math.max(15, dims.heightMm - cfg.pageMarginTopMm - cfg.pageMarginBottomMm - (forPrint ? 0.5 : 0))
+                : null;
             if (forPrint) {
-             el.style.width = '100%';
-             if (dims.heightMm) {
-                 el.style.minHeight = `${Math.max(15, dims.heightMm - 3.5)}mm`;
-                 el.style.maxHeight = `${Math.max(15, dims.heightMm - 3)}mm`;
-             } else if (dims.isAuto) {
-                 el.style.minHeight = '63mm';
-             }
-         }
+                if (printableH) {
+                    el.style.minHeight = `${printableH}mm`;
+                    el.style.maxHeight = `${printableH}mm`;
+                } else if (dims.isAuto) {
+                    el.style.minHeight = '63mm';
+                }
+            } else {
+                el.style.minHeight = printableH ? `${printableH}mm` : '63mm';
+            }
 
-            const brand = document.createElement('div');
-            brand.style.cssText = `font-weight:${P.headerWeight};font-size:${cfg.headerFontSize}px;color:#000000;text-align:center;letter-spacing:${P.headerLetterSpacing};${P.headerUnderline ? 'border-bottom:1px solid #000000;' : ''}padding-bottom:2px;margin-bottom:3px;font-family:${cfg.fontFamily};`;
-            brand.innerText = cfg.brandText;
-            el.appendChild(brand);
+            // 1. HEADER SECTION (Brand Name + Optional Centered Top Line)
+            const headerWrap = document.createElement('div');
+            headerWrap.style.cssText = `width:100%;display:flex;flex-direction:column;align-items:${alignToFlex(cfg.headerAlign)};margin-bottom:${cfg.headerMarginBottom}px;`;
 
+            if (cfg.brandText) {
+                const brand = document.createElement('div');
+                brand.style.cssText = `width:100%;font-weight:${cfg.headerWeight};font-size:${cfg.headerFontSize}px;color:#000000;text-align:${cfg.headerAlign};letter-spacing:0.04em;padding-bottom:${cfg.headerPadBottom}px;font-family:${cfg.fontFamily};line-height:1.15;`;
+                brand.innerText = cfg.brandText;
+                headerWrap.appendChild(brand);
+            }
+
+            if (cfg.topLineShow) {
+                const topLine = document.createElement('div');
+                topLine.style.cssText = `width:${cfg.topLineWidthPct}%;height:0;border-bottom:${cfg.topLineThickness}px solid #000000;align-self:${alignToFlex(cfg.headerAlign)};`;
+                headerWrap.appendChild(topLine);
+            }
+            el.appendChild(headerWrap);
+
+            // 2. PRODUCT DETAILS SECTION
             const detailsWrap = document.createElement('div');
-            detailsWrap.style.cssText = `width:100%;text-align:left;display:flex;flex-direction:column;gap:${P.detailRowGap}px;font-size:${cfg.fontSize}px;line-height:${P.detailLineHeight};color:#000000;font-family:${cfg.fontFamily};`;
+            detailsWrap.style.cssText = `width:100%;text-align:${cfg.detailsAlign};display:flex;flex-direction:column;gap:${cfg.detailsRowGap}px;margin-bottom:${cfg.detailsMarginBottom}px;font-size:${cfg.fontSize}px;line-height:${cfg.detailsLineHeight};color:#000000;font-family:${cfg.fontFamily};`;
 
-            buildPortraitDetailRows(item).forEach(({ label, value }) => {
+            buildPortraitDetailRows(item, cfg).forEach(({ label, value }) => {
                 const row = document.createElement('div');
-                row.style.cssText = 'word-break:break-word;';
+                row.style.cssText = 'word-break:break-word;width:100%;';
                 if (label) {
                     const keySpan = document.createElement('span');
-                    keySpan.style.fontWeight = String(P.labelWeight);
+                    keySpan.style.fontWeight = '700';
                     keySpan.innerText = `${label}: `;
                     row.appendChild(keySpan);
                 }
@@ -2931,34 +3680,28 @@ function doPost(e) {
             });
             el.appendChild(detailsWrap);
 
-           const barcodeWrap = document.createElement('div');
-         barcodeWrap.style.cssText = 'margin-top:auto;margin-bottom:auto;padding-top:5px;padding-bottom:5px;width:100%;min-width:0;display:flex;justify-content:center;align-items:center;overflow:hidden;';
+            // 3. BARCODE SECTION (Responsive viewBox + Flex Alignment so it NEVER clips right)
+            const barcodeWrap = document.createElement('div');
+            barcodeWrap.style.cssText = `margin-top:auto;margin-bottom:auto;padding-top:${cfg.barcodePadTop}px;padding-bottom:${cfg.barcodePadBottom}px;width:100%;min-width:0;display:flex;justify-content:${alignToFlex(cfg.barcodeAlign)};align-items:center;overflow:hidden;`;
+
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             barcodeWrap.appendChild(svg);
             el.appendChild(barcodeWrap);
 
-            const sizeScale = {
-                sm: { w: 1.0, h: 24 },
-                md: { w: 1.3, h: 34 },
-                lg: { w: 1.7, h: 44 },
-                xl: { w: 2.0, h: 54 }
-            }[cfg.barcodeSize || 'md'];
-
             const opts = {
                 format: settings.barcodeFormat || 'CODE128',
-                width: sizeScale.w,
-                height: sizeScale.h,
+                width: cfg.barcodeBarWidth,
+                height: cfg.barcodeHeight,
                 displayValue: cfg.showSkuText,
-                fontSize: Math.max(8, Math.round(cfg.fontSize)),
-                font: P.barcodeFontFamily || 'monospace',
-                margin: P.barcodeMargin,
+                fontSize: Math.max(6, Math.round(cfg.barcodeFontSize)),
+                font: 'monospace',
+                margin: 0,
                 background: '#ffffff',
                 lineColor: '#000000'
             };
             try { JsBarcode(svg, targetSku, opts); }
             catch { JsBarcode(svg, targetSku, { ...opts, format: 'CODE128' }); }
 
-            // Ensure dead-center alignment and clean scaling inside 50x70mm & Printer Driver widths
             const wAttr = parseFloat(svg.getAttribute('width'));
             const hAttr = parseFloat(svg.getAttribute('height'));
             if (wAttr && hAttr && !svg.getAttribute('viewBox')) {
@@ -2967,29 +3710,47 @@ function doPost(e) {
             svg.removeAttribute('width');
             svg.removeAttribute('height');
             svg.style.display = 'block';
-            svg.style.width = '100%';
-            svg.style.maxWidth = wAttr ? `${Math.round(wAttr)}px` : '100%';
+            svg.style.width = wAttr ? `${Math.round(wAttr)}px` : '100%';
+            svg.style.maxWidth = `${cfg.barcodeMaxWidthPct}%`;
             svg.style.height = 'auto';
-            svg.style.margin = '0 auto';
 
-            el.style.display = 'flex';
-            el.style.flexDirection = 'column';
-            el.style.justifyContent = 'space-between';
-
+            // 4. SHOP ADDRESS SECTION
             if (cfg.shopAddress) {
-             const addrEl = document.createElement('div');
-             addrEl.style.cssText = `margin-top:2px;width:100%;text-align:center;font-size:${Math.max(6.5, cfg.fontSize - 1.5)}px;line-height:1.15;color:#000000;font-family:${cfg.fontFamily};white-space:pre-line;word-break:break-word;`;
-             addrEl.innerText = cfg.shopAddress;
-             el.appendChild(addrEl);
-         }
+                const addrEl = document.createElement('div');
+                addrEl.style.cssText = `margin-top:${cfg.addressMarginTop}px;width:100%;text-align:${cfg.addressAlign};font-size:${cfg.addressFontSize}px;line-height:${cfg.addressLineHeight};color:#000000;font-family:${cfg.fontFamily};white-space:pre-line;word-break:break-word;`;
+                addrEl.innerText = cfg.shopAddress;
+                el.appendChild(addrEl);
+            }
 
-         const footerEl = document.createElement('div');
-         footerEl.style.cssText = `margin-top:3px;padding-top:3px;border-top:0.8px solid #000000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:100%;font-family:${cfg.fontFamily};color:#000000;`;
-         footerEl.innerHTML = `
-             <span style="font-size:8.5px;font-weight:700;letter-spacing:0.25px;line-height:1.15;">100% PURE LINEN</span>
-             <span style="font-size:8.5px;font-weight:700;letter-spacing:0.25px;text-transform:uppercase;line-height:1.15;">Proudly Made in India</span>
-         `;
-         el.appendChild(footerEl);
+            // 5. FOOTER SECTION (Optional Centered Bottom Line + 2 Footer Texts)
+            if (cfg.bottomLineShow || cfg.footerLine1 || cfg.footerLine2) {
+                const footerWrap = document.createElement('div');
+                footerWrap.style.cssText = `margin-top:${cfg.footerMarginTop}px;display:flex;flex-direction:column;align-items:${alignToFlex(cfg.footerAlign)};width:100%;font-family:${cfg.fontFamily};color:#000000;`;
+
+                if (cfg.bottomLineShow) {
+                    const bottomLine = document.createElement('div');
+                    bottomLine.style.cssText = `width:${cfg.bottomLineWidthPct}%;height:0;border-top:${cfg.bottomLineThickness}px solid #000000;margin-bottom:${cfg.footerPadTop}px;align-self:${alignToFlex(cfg.footerAlign)};`;
+                    footerWrap.appendChild(bottomLine);
+                }
+
+                const linesWrap = document.createElement('div');
+                linesWrap.style.cssText = `width:100%;display:flex;flex-direction:column;gap:${cfg.footerLineGap}px;text-align:${cfg.footerAlign};`;
+
+                if (cfg.footerLine1) {
+                    const l1 = document.createElement('span');
+                    l1.style.cssText = `font-size:${cfg.footerFontSize}px;font-weight:700;letter-spacing:0.25px;line-height:1.15;`;
+                    l1.innerText = cfg.footerLine1;
+                    linesWrap.appendChild(l1);
+                }
+                if (cfg.footerLine2) {
+                    const l2 = document.createElement('span');
+                    l2.style.cssText = `font-size:${cfg.footerFontSize}px;font-weight:700;letter-spacing:0.25px;text-transform:uppercase;line-height:1.15;`;
+                    l2.innerText = cfg.footerLine2;
+                    linesWrap.appendChild(l2);
+                }
+                footerWrap.appendChild(linesWrap);
+                el.appendChild(footerWrap);
+            }
 
             return el;
         }
@@ -2997,55 +3758,49 @@ function doPost(e) {
         function renderPrintPreview() {
             const box = document.getElementById('pmPreviewBox');
             const caption = document.getElementById('pmPreviewCaption');
+            if (!box) return;
             box.innerHTML = '';
             if (printQueue.length === 0) return;
 
             const cfg = getPrintConfig();
             const dims = resolvePaperDimensionsMm(cfg);
             if (caption) {
-                const dimNote = dims.widthMm && dims.heightMm ? ` (${dims.widthMm}×${dims.heightMm}mm)` : ' (Printer Driver)';
-                caption.innerText = `Label Preview${dimNote}`;
+                const dimNote = dims.widthMm && dims.heightMm ? `${dims.widthMm}×${dims.heightMm}mm` : (dims.widthMm ? `${dims.widthMm}mm Roll` : 'Printer Driver');
+                caption.innerText = `Live 1:1 Label Preview (${dimNote})`;
             }
 
-            const first = printQueue[0];
-            const previewEl = createLabelElement(first.item, cfg, false, first.selectedSku);
             const pw = dims.widthMm || 50;
             const ph = dims.heightMm || 70;
-            const scale = 3.2;
-            const boxW = Math.max(155, Math.min(260, Math.round(Math.min(pw, ph) * scale)));
-            const boxH = Math.max(180, Math.min(340, Math.round(Math.max(pw, ph) * scale)));
-            box.className = 'bg-white border border-slate-300 rounded-lg p-2.5 shadow-sm flex flex-col justify-between items-stretch max-w-full';
-            box.style.width = `${boxW}px`;
-            box.style.minHeight = `${boxH}px`;
-            previewEl.className = 'flex flex-col justify-between items-stretch text-left flex-1';
+            box.style.width = `${pw}mm`;
+            box.style.minHeight = `${ph}mm`;
+            box.style.padding = `${cfg.pageMarginTopMm}mm ${cfg.pageMarginRightMm}mm ${cfg.pageMarginBottomMm}mm ${cfg.pageMarginLeftMm}mm`;
+            box.style.boxSizing = 'border-box';
+            box.style.border = '1px solid #cbd5e1';
 
+            const first = printQueue[0];
+            const previewEl = createLabelElement(first.item, cfg, false, first.selectedSku, true);
             box.appendChild(previewEl);
         }
 
         function applyDynamicPageCss(cfg) {
             const styleEl = document.getElementById('dynamicPrintStyle');
             const dims = resolvePaperDimensionsMm(cfg);
+            const mCss = `${cfg.pageMarginTopMm}mm ${cfg.pageMarginRightMm}mm ${cfg.pageMarginBottomMm}mm ${cfg.pageMarginLeftMm}mm`;
 
             if (dims.isAuto) {
-                styleEl.textContent = `@media print { @page { size: auto; margin: 1.5mm 2mm; } }`;
+                styleEl.textContent = `@media print { @page { size: auto; margin: ${mCss}; } }`;
             } else if (dims.isRoll) {
-                styleEl.textContent = `@media print { @page { size: ${dims.widthMm}mm auto; margin: 1.5mm 2mm; } }`;
+                styleEl.textContent = `@media print { @page { size: ${dims.widthMm}mm auto; margin: ${mCss}; } }`;
             } else {
                 const orient = dims.widthMm < dims.heightMm ? ' portrait' : '';
-                styleEl.textContent = `@media print { @page { size: ${dims.widthMm}mm ${dims.heightMm}mm${orient}; margin: 1.5mm 2mm; } }`;
+                styleEl.textContent = `@media print { @page { size: ${dims.widthMm}mm ${dims.heightMm}mm${orient}; margin: ${mCss}; } }`;
             }
         }
 
-        window.executeBatchPrint = () => {
+        window.executeBatchPrint = async () => {
             if (printQueue.length === 0) return;
+            await savePrintLayoutSettings(false);
             const cfg = getPrintConfig();
-            settings.defaultPrintLayout = cfg.layout;
-            settings.shopAddress = cfg.shopAddress;
-            settings.defaultFontFamily = cfg.fontFamily;
-            settings.headerFontSize = cfg.headerFontSize;
-            settings.portraitFontSize = cfg.fontSize;
-            settings.barcodeSize = cfg.barcodeSize;
-            saveSettingsLocal();
             applyDynamicPageCss(cfg);
 
             const container = document.getElementById('print-container');
@@ -3053,12 +3808,19 @@ function doPost(e) {
             container.className = 'hidden';
 
             try {
+                const flatList = [];
                 printQueue.forEach(entry => {
                     const copies = Math.max(1, parseInt(entry.copies, 10) || 1);
                     for (let c = 0; c < copies; c++) {
-                        container.appendChild(createLabelElement(entry.item, cfg, true, entry.selectedSku));
+                        flatList.push({ item: entry.item, sku: entry.selectedSku });
                     }
                 });
+
+                flatList.forEach((entry, idx) => {
+                    const isLast = idx === flatList.length - 1;
+                    container.appendChild(createLabelElement(entry.item, cfg, true, entry.sku, isLast));
+                });
+
                 window.print();
             } catch (err) {
                 console.error("Batch print error:", err);
@@ -3066,9 +3828,9 @@ function doPost(e) {
             }
         };
 
-        // ==========================================
-        // Render Products Sold Tab
-        // ==========================================
+        // ============================================================
+        // [JS_SECTION: SALES_VIEW_AND_ACTIONS] Search tag: #SALES_JS
+        // ============================================================
         function refreshSalesView() {
             document.getElementById('navSalesBadge').innerText = salesData.length;
             document.getElementById('mobileSalesBadge').innerText = salesData.length;
@@ -3157,7 +3919,7 @@ function doPost(e) {
                     <div class="flex justify-between items-start gap-2">
                         <div>
                             <h3 class="text-sm font-bold text-slate-900">${escapeHtml(s.itemName)}</h3>
-                            <p class="text-[11px] text-slate-500">${escapeHtml(dateStr)} • SKU: ${escapeHtml(s.sku)}</p>
+                            <p class="text-[11px] text-slate-500">${escapeHtml(dateStr)} &bull; SKU: ${escapeHtml(s.sku)}</p>
                             ${s.specs ? `<p class="text-[11px] text-slate-600 mt-0.5">${escapeHtml(s.specs)}</p>` : ''}
                         </div>
                         <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 shrink-0">-${escapeHtml(s.qtySold)} sold</span>
@@ -3184,9 +3946,9 @@ function doPost(e) {
             document.querySelectorAll('.return-sale-btn').forEach(btn => { btn.onclick = () => requestReturnSale(btn.dataset.saleid); });
         }
 
-        // ==========================================
-        // Add / Edit / Duplicate Item Modal (Auto Pants Sizes & Auto Women)
-        // ==========================================
+        // ============================================================
+        // [JS_SECTION: ADD_EDIT_DUPLICATE_ITEM] Search tag: #ITEM_MODAL_JS
+        // ============================================================
         const itemTypeSelect = document.getElementById('itemType');
         const itemLengthSelect = document.getElementById('itemLength');
         const itemSleevesSelect = document.getElementById('itemSleeves');
@@ -3439,9 +4201,9 @@ function doPost(e) {
             );
         }
 
-        // ==========================================
-        // Duplicate Inventory Finder & SKU Absorber
-        // ==========================================
+        // ============================================================
+        // [JS_SECTION: DUPLICATE_FINDER_AND_ABSORBER] Search tag: #DUPS_JS
+        // ============================================================
         const dupMatchModeEl = document.getElementById('dupMatchMode');
         const dupIgnoreCaseSpacesEl = document.getElementById('dupIgnoreCaseSpaces');
         const dupFilterActiveOnlyEl = document.getElementById('dupFilterActiveOnly');
@@ -3546,7 +4308,7 @@ function doPost(e) {
                     <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
                         <div class="min-w-0">
                             <span class="text-xs font-bold text-slate-900">Group #${gIdx + 1}: ${escapeHtml(sorted[0].name)}</span>
-                            <span class="ml-2 text-[11px] text-slate-500">(${sorted.length} rows • Combined Stock: <strong>${totalQty}</strong> • ${combinedSkus.length} SKUs)</span>
+                            <span class="ml-2 text-[11px] text-slate-500">(${sorted.length} rows &bull; Combined Stock: <strong>${totalQty}</strong> &bull; ${combinedSkus.length} SKUs)</span>
                         </div>
                         <button type="button" class="dup-merge-btn px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm" data-gidx="${gIdx}">Absorb into 1 Product (${combinedSkus.length} SKUs, Qty: ${totalQty})</button>
                     </div>
@@ -3559,7 +4321,7 @@ function doPost(e) {
                                         <span class="font-semibold text-slate-900">${escapeHtml(it.name)}</span>
                                         <span class="font-mono text-[11px] text-slate-600">SKUs: ${escapeHtml(getItemSkus(it).join(', '))}</span>
                                     </div>
-                                    <p class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(formatItemType(it))} • ${escapeHtml(it.gender || 'N/A')} • Size: <strong>${escapeHtml(it.size || 'N/A')}</strong> • Color: ${escapeHtml(it.color || 'N/A')} • Price: ${escapeHtml(formatMoney(it.price || 0))}</p>
+                                    <p class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(formatItemType(it))} &bull; ${escapeHtml(it.gender || 'N/A')} &bull; Size: <strong>${escapeHtml(it.size || 'N/A')}</strong> &bull; Color: ${escapeHtml(it.color || 'N/A')} &bull; Price: ${escapeHtml(formatMoney(it.price || 0))}</p>
                                 </div>
                                 <div class="flex items-center gap-2 shrink-0">
                                     <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-800 font-bold">Qty: ${Math.max(0, parseInt(it.qty, 10) || 0)}</span>
@@ -3651,9 +4413,9 @@ function doPost(e) {
         [dupMatchModeEl, dupIgnoreCaseSpacesEl, dupFilterActiveOnlyEl].forEach(el => { if (el) el.addEventListener('change', runDuplicateScan); });
         document.querySelectorAll('.dup-field-cb').forEach(cb => cb.addEventListener('change', runDuplicateScan));
 
-        // ==========================================
-        // Scanned Item Quick Action Modal (+ / - / Sell)
-        // ==========================================
+        // ============================================================
+        // [JS_SECTION: QUICK_ACTION_AND_SALE_MODALS] Search tag: #QA_JS
+        // ============================================================
         window.openQuickActionModal = async (item, forceMode = null, scannedSku = '') => {
             currentQuickActionItemId = item.docId;
             currentQuickActionScannedSku = (scannedSku || item.sku || '').trim();
@@ -3863,9 +4625,9 @@ function doPost(e) {
             );
         }
 
-        // ==========================================
-        // Custom Orders & Fittings Management
-        // ==========================================
+        // ============================================================
+        // [JS_SECTION: CUSTOM_ORDERS_AND_FITTINGS] Search tag: #CO_JS
+        // ============================================================
         const customSearchInput = document.getElementById('customSearchInput');
         const customSourceFilter = document.getElementById('customSourceFilter');
         const customStatusFilter = document.getElementById('customStatusFilter');
@@ -4047,7 +4809,7 @@ function doPost(e) {
                 tr.className = 'hover:bg-slate-50 transition-colors';
                 tr.innerHTML = `
                     <td class="px-5 py-4"><div class="text-sm font-bold text-slate-900">${escapeHtml(c.customerName)}</div>${c.customerPhone ? `<div class="text-xs text-slate-600">${escapeHtml(c.customerPhone)}</div>` : ''}${c.dueDate ? `<div class="text-[11px] font-semibold text-amber-700 mt-1">Due: ${escapeHtml(c.dueDate)}</div>` : ''}</td>
-                    <td class="px-5 py-4"><div class="mb-1">${typeBadge}</div><div class="text-sm font-semibold text-slate-900">${escapeHtml(c.pieceName)}</div><div class="text-xs text-slate-500 font-mono">${escapeHtml(c.sku)} • ${escapeHtml(c.size || 'Custom')} ${c.color ? '• ' + escapeHtml(c.color) : ''}</div>${c.stockReserved ? `<span class="inline-block mt-1 px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-semibold">1 Unit Reserved</span>` : ''}</td>
+                    <td class="px-5 py-4"><div class="mb-1">${typeBadge}</div><div class="text-sm font-semibold text-slate-900">${escapeHtml(c.pieceName)}</div><div class="text-xs text-slate-500 font-mono">${escapeHtml(c.sku)} &bull; ${escapeHtml(c.size || 'Custom')} ${c.color ? '&bull; ' + escapeHtml(c.color) : ''}</div>${c.stockReserved ? `<span class="inline-block mt-1 px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-semibold">1 Unit Reserved</span>` : ''}</td>
                     <td class="px-5 py-4 max-w-xs">${c.measurements ? `<div class="text-xs font-medium text-slate-800 bg-slate-100 px-2 py-1 rounded mb-1">${escapeHtml(c.measurements)}</div>` : ''}<div class="text-xs text-slate-600">${escapeHtml(c.fittingNotes)}</div></td>
                     <td class="px-5 py-4 whitespace-nowrap text-xs"><div class="font-bold text-slate-900 text-sm">${escapeHtml(formatMoney(c.totalPrice))}</div><div class="text-emerald-700">Adv: ${escapeHtml(formatMoney(c.advancePaid))}</div><div class="text-slate-500">Bal: ${escapeHtml(formatMoney(bal))}</div></td>
                     <td class="px-5 py-4 whitespace-nowrap">${statusSelectHtml}</td>
@@ -4057,7 +4819,7 @@ function doPost(e) {
                 const card = document.createElement('div');
                 card.className = 'bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-2.5';
                 card.innerHTML = `
-                    <div class="flex justify-between items-start gap-2"><div>${typeBadge}<h3 class="text-sm font-bold text-slate-900 mt-1">${escapeHtml(c.pieceName)}</h3><p class="text-xs text-slate-600">${escapeHtml(c.customerName)} ${c.customerPhone ? '• ' + escapeHtml(c.customerPhone) : ''}</p></div>${statusSelectHtml}</div>
+                    <div class="flex justify-between items-start gap-2"><div>${typeBadge}<h3 class="text-sm font-bold text-slate-900 mt-1">${escapeHtml(c.pieceName)}</h3><p class="text-xs text-slate-600">${escapeHtml(c.customerName)} ${c.customerPhone ? '&bull; ' + escapeHtml(c.customerPhone) : ''}</p></div>${statusSelectHtml}</div>
                     ${c.measurements ? `<p class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-800">${escapeHtml(c.measurements)}</p>` : ''}
                     <p class="text-xs text-slate-600">${escapeHtml(c.fittingNotes)}</p>
                     <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 text-xs">
@@ -4121,9 +4883,9 @@ function doPost(e) {
             });
         }
 
-        // ==========================================
-        // Barcode & QR Scanner (Live Camera + File + Manual)
-        // ==========================================
+        // ============================================================
+        // [JS_SECTION: BARCODE_QR_SCANNER] Search tag: #SCANNER_JS
+        // ============================================================
         let isProcessingScan = false;
         let scanBatch = [];
 
@@ -4152,14 +4914,14 @@ function doPost(e) {
             if (finishBtn) finishBtn.disabled = totalPieces === 0;
 
             if (scanBatch.length === 0) {
-                listEl.innerHTML = `<div class="p-2.5 text-slate-400 text-center">Scan barcodes continuously — each piece adds +1 here...</div>`;
+                listEl.innerHTML = `<div class="p-2.5 text-slate-400 text-center">Scan barcodes continuously &mdash; each piece adds +1 here...</div>`;
                 return;
             }
             listEl.innerHTML = scanBatch.map((entry, idx) => `
                 <div class="px-2.5 py-2 flex items-center justify-between gap-2 bg-white">
                     <div class="min-w-0 flex-1">
                         <div class="font-semibold text-slate-900 truncate">${escapeHtml(entry.item.name)}</div>
-                        <div class="text-[11px] text-slate-500">${escapeHtml(entry.scannedSku || entry.item.sku)} • ${escapeHtml(entry.item.size || 'N/A')} • ${formatMoney(entry.unitPrice)}</div>
+                        <div class="text-[11px] text-slate-500">${escapeHtml(entry.scannedSku || entry.item.sku)} &bull; ${escapeHtml(entry.item.size || 'N/A')} &bull; ${formatMoney(entry.unitPrice)}</div>
                     </div>
                     <div class="flex items-center gap-1 shrink-0">
                         <button type="button" onclick="updateBatchQty(${idx}, -1)" class="w-6 h-6 rounded border border-slate-300 bg-slate-50 hover:bg-slate-100 font-bold text-slate-700">-</button>
@@ -4381,9 +5143,9 @@ function doPost(e) {
             } catch {}
         }
 
-        // ==========================================
-        // Modal & Confirm Helpers
-        // ==========================================
+        // ============================================================
+        // [JS_SECTION: MODAL_AND_CONFIRM_HELPERS] Search tag: #MODALS_JS
+        // ============================================================
         function hideAllModalPanels() {
             [customOrderModal, editSaleModal, itemModal, printModal, scanActionModal, scannerModal, duplicateFinderModal, confirmModal].forEach(m => {
                 if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
@@ -4413,9 +5175,9 @@ function doPost(e) {
         });
         modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModals(); });
 
-        // ==========================================
-        // Google Sheets Sync
-        // ==========================================
+        // ============================================================
+        // [JS_SECTION: GOOGLE_SHEETS_SYNC] Search tag: #SHEETS_SYNC
+        // ============================================================
         function updateConnectionStatus(state = 'idle') {
             const statusEl = document.getElementById('auth-status');
             const quickSyncBtn = document.getElementById('quickSyncBtn');
@@ -4512,9 +5274,9 @@ function doPost(e) {
             } catch (err) { console.error("Background sync error:", err); updateConnectionStatus('error'); }
         }
 
-        // ==========================================
-        // CSV & JSON Backup Import/Export
-        // ==========================================
+        // ============================================================
+        // [JS_SECTION: CSV_AND_JSON_BACKUP] Search tag: #BACKUP_JS
+        // ============================================================
         function csvEscape(v) { return `"${String(v ?? '').replace(/"/g, '""')}"`; }
         function downloadFile(content, filename, mimeType) {
             const blob = new Blob([content], { type: mimeType });
@@ -4610,9 +5372,9 @@ function doPost(e) {
             } catch { showToast("Invalid JSON backup file.", "error"); }
         });
 
-        // ==========================================
-        // Utilities
-        // ==========================================
+        // ============================================================
+        // [JS_SECTION: UTILITIES_AND_BOOT] Search tag: #UTILS
+        // ============================================================
         function escapeHtml(unsafe) {
             if (unsafe === null || unsafe === undefined) return '';
             return String(unsafe).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
@@ -4635,3 +5397,23 @@ function doPost(e) {
     </script>
 </body>
 </html>
+
+Quick Tip for Calibrating Your Thermal Printer from the Website
+
+Once you open Print (or Master Settings → Open Visual Label Designer):
+
+1.  Expand 1. Alignment Fix: Margins, Padding, Content Width & Offsets:
+      - If your physical sticker still shifts slightly right and clips the right
+        side, set X Offset (mm) to -1.5 (or -2) and/or set Content Width (%) to
+        94 (it automatically centers inside the label).
+      - Set Printer @page Margin to 0 on all 4 sides and adjust Inner Label
+        Padding (mm) (Top / Right / Bottom / Left) to control whitespace around
+        the border/lines.
+2.  Expand 2. Section Alignments & Typography to align Header, Details, Barcode,
+    Address, and Footer independently (Center, Left, or Right).
+3.  Expand 3. Text Spacing, Borders, Divider Lines & Barcode Dimensions to
+    adjust Top/Bottom Line Width (%), Max Barcode Width (%), Bar Width/Height,
+    and Gaps between every text block.
+4.  Click Save Layout Only (or Save & Print Now) — all your values are saved
+    automatically in Local Storage and synced to Google Sheets.
+
